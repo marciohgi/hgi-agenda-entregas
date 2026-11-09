@@ -52,6 +52,10 @@
   .ok{font-size:12px;color:#2e8b57;margin-right:auto}
   .btn{background:#2f5d8a;color:#fff;border:0;border-radius:6px;padding:9px 18px;font-size:14px;cursor:pointer}
   .btn.sec{background:#e3e8ee;color:#1f2a37}
+  .sync{display:inline-flex;align-items:center;gap:6px;font-size:12px;margin-top:8px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff}
+  .sync i{width:9px;height:9px;border-radius:50%;background:#94a1b2;display:inline-block}
+  .sync.on i{background:#4cd07d}.sync.off i{background:#e74c3c}
+  .upd{font-size:11px;color:#5b6b7d;margin-top:-8px;margin-bottom:12px}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -65,6 +69,7 @@
   <header>
     <h1>Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
+    <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
   </header>
 
   <div class="resumo">
@@ -104,6 +109,7 @@
       <div class="meta" id="meta"></div>
       <div class="rot">Estágio atual</div>
       <div class="atual" id="atual"></div>
+      <div class="upd" id="upd"></div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
       <div class="acoes"><span class="ok" id="ok"></span><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
@@ -134,9 +140,12 @@
     {n:"15",d:"Domingo",fds:true,e:[]}
   ];
   var QTD={fgr:0,aorbe:16,ipanema:6,smart36c:10,om:0,"terral-serrano":0,"terral-aero":24,"nau-laguna":3,cba:0};
+  var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
   var idx={};DIAS.forEach(function(D){D.e.forEach(function(x){idx[x.id]=x;x.dia=D.n+"/11 · "+D.d.split(" ·")[0]})});
-  function salvos(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
-  function estagio(x){var s=salvos();return s[x.id]||x.est}
+  var REM={};
+  function estagio(x){var r=REM[x.id];return (r&&typeof r.estagio==="string"&&r.estagio)?r.estagio:x.est}
+  function qtdTxt(x){var r=REM[x.id],q=(r&&r.hasOwnProperty("qtd"))?r.qtd:QTD[x.id];return q?q+" aptos":"qtd a definir"}
+  var BQ={};
   var tr=document.getElementById("semana");
   DIAS.forEach(function(D){
     var td=document.createElement("td");if(D.fds)td.className="fds";
@@ -145,23 +154,63 @@
     D.e.forEach(function(x){
       var b=document.createElement("button");b.className="item s-"+x.s;b.title=ROT[x.s];
       var nm=document.createElement("span");nm.textContent=x.nome;b.appendChild(nm);
-      var qt=document.createElement("small");qt.className="qtd";qt.textContent=(QTD[x.id]?QTD[x.id]+" aptos":"qtd a definir");b.appendChild(qt);
+      var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x);b.appendChild(qt);BQ[x.id]=qt;
       b.addEventListener("click",function(){abrir(x)});td.appendChild(b);
     });
     tr.appendChild(td);
   });
-  var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),cur=null;
+  var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),upd=document.getElementById("upd"),cur=null;
+  function fmt(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
+  function mostraUpd(x){var r=REM[x.id];upd.textContent=(r&&r.atualizadoEm)?"Atualizado em "+fmt(r.atualizadoEm)+" (horário de Brasília)":""}
   function abrir(x){cur=x;document.getElementById("mt").textContent=x.nome;
     document.getElementById("meta").innerHTML=x.dia+' <span class="pill p-'+x.s+'">'+ROT[x.s]+'</span><br>'+x.q;
-    var t=estagio(x);atual.textContent=t;campo.value=t;ok.textContent="";ov.classList.add("on");campo.focus()}
-  function fechar(){ov.classList.remove("on")}
+    var t=estagio(x);atual.textContent=t;campo.value=t;mostraUpd(x);ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
+  function fechar(){ov.classList.remove("on");cur=null}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
   ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
   document.addEventListener("keydown",function(e){if(e.key==="Escape")fechar()});
+  function render(){Object.keys(BQ).forEach(function(id){BQ[id].textContent=qtdTxt(idx[id])});
+    if(cur){atual.textContent=estagio(cur);mostraUpd(cur)}}
+  var sync=document.getElementById("sync"),synct=document.getElementById("synct");
+  function estado(on){sync.className="sync "+(on?"on":"off");synct.textContent=on?"Sincronizado em tempo real":"Sem conexão"}
+  function aplica(path,data,patch){
+    var parts=path.split("/").filter(Boolean);
+    if(!parts.length){
+      if(patch){Object.keys(data||{}).forEach(function(k){aplica("/"+k,data[k],false)})}
+      else{REM=data||{}}
+    }else{
+      var id=parts[0];
+      if(parts.length===1){
+        if(patch){REM[id]=REM[id]||{};Object.keys(data||{}).forEach(function(k){REM[id][k]=data[k]})}
+        else if(data===null){delete REM[id]}else{REM[id]=data}
+      }else{
+        REM[id]=REM[id]||{};var o=REM[id];for(var i=1;i<parts.length-1;i++){o[parts[i]]=o[parts[i]]||{};o=o[parts[i]]}
+        var last=parts[parts.length-1];
+        if(patch&&data&&typeof data==="object"){o[last]=o[last]||{};Object.keys(data).forEach(function(k){o[last][k]=data[k]})}
+        else if(data===null){delete o[last]}else{o[last]=data}
+      }
+    }
+    render();
+  }
+  function ouvir(){
+    if(!window.EventSource){estado(false);return}
+    var es=new EventSource(DB+"/entregas.json");
+    function h(patch){return function(ev){try{var m=JSON.parse(ev.data);aplica(m.path,m.data,patch);estado(true)}catch(e){}}}
+    es.addEventListener("put",h(false));es.addEventListener("patch",h(true));
+    es.addEventListener("keep-alive",function(){estado(true)});
+    es.addEventListener("cancel",function(){estado(false)});
+    es.addEventListener("auth_revoked",function(){estado(false)});
+    es.onopen=function(){estado(true)};
+    es.onerror=function(){estado(false)};
+  }
+  ouvir();
   document.getElementById("salvar").onclick=function(){
-    if(!cur)return;var s=salvos();var t=campo.value.trim()||cur.est;s[cur.id]=t;
-    try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
-    atual.textContent=t;ok.textContent="Salvo.";
+    if(!cur)return;var x=cur,t=campo.value.trim()||x.est,agora=Date.now();
+    ok.style.color="";ok.textContent="Salvando…";
+    fetch(DB+"/entregas/"+x.id+".json",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({estagio:t,atualizadoEm:agora})})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+      .then(function(){REM[x.id]=REM[x.id]||{};REM[x.id].estagio=t;REM[x.id].atualizadoEm=agora;render();if(cur===x){ok.textContent="Salvo para todos."}})
+      .catch(function(){if(cur===x){ok.style.color="#c0392b";ok.textContent="Não foi possível salvar (sem conexão). Tente de novo."}});
   };
 })();
 </script>

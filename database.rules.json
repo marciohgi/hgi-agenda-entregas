@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "entregas": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
