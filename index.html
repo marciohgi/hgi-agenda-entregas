@@ -56,6 +56,20 @@
   .sync i{width:9px;height:9px;border-radius:50%;background:#94a1b2;display:inline-block}
   .sync.on i{background:#4cd07d}.sync.off i{background:#e74c3c}
   .upd{font-size:11px;color:#5b6b7d;margin-top:-8px;margin-bottom:12px}
+  .htop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .btn-incluir{background:#fff;color:#1e3a5f;border:0;border-radius:8px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);white-space:nowrap}
+  .btn-incluir:hover{background:#e6eef7}
+  .campos{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
+  .campos .full{grid-column:1/-1}
+  .campos label{display:block}
+  .campos input,.campos select{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #b8c4d2;border-radius:6px;margin-top:4px;background:#fff}
+  .req{color:#c0392b}
+  .btn.del{background:#fbe3e1;color:#7b1f16;margin-right:0}
+  .outras{margin-top:10px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:10px 14px;display:none}
+  .outras.on{display:block}
+  .outras .lista{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .outras .item{width:auto;min-width:170px;margin:0}
+  @media (max-width:600px){.campos{grid-template-columns:1fr}}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -67,14 +81,16 @@
 <body>
 <div class="wrap">
   <header>
+    <div class="htop"><div>
     <h1>Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
+    </div><button class="btn-incluir" id="incluir">+ Incluir agenda</button></div>
   </header>
 
   <div class="resumo">
-    <div class="box"><div class="rot">Entregas na semana</div><div class="val">9</div></div>
-    <div class="box"><div class="rot">Apartamentos informados</div><div class="val">59</div><div class="sub">FGR, OM, Terral Serrano e CBA sem quantidade</div></div>
+    <div class="box"><div class="rot">Entregas na semana</div><div class="val" id="r-total">9</div></div>
+    <div class="box"><div class="rot">Apartamentos informados</div><div class="val" id="r-aptos">59</div><div class="sub" id="r-semq">FGR, OM, Terral Serrano e CBA sem quantidade</div></div>
     <div class="box" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
   </div>
 
@@ -99,6 +115,8 @@
     <tbody><tr id="semana"></tr></tbody>
   </table>
 
+  <div class="outras" id="outras"><div class="rot">Outras datas (fora desta semana)</div><div class="lista" id="outras-lista"></div></div>
+
   <footer>Meta mínima: 50 apartamentos/dia</footer>
 </div>
 
@@ -110,86 +128,192 @@
       <div class="rot">Estágio atual</div>
       <div class="atual" id="atual"></div>
       <div class="upd" id="upd"></div>
+      <div class="campos">
+        <label class="rot">Status<select id="e-status"></select></label>
+        <label class="rot">Data<input type="date" id="e-data"></label>
+        <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="e-qtd" placeholder="qtd a definir"></label>
+      </div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
-      <div class="acoes"><span class="ok" id="ok"></span><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
+      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="ov2">
+  <div class="modal" role="dialog" aria-labelledby="mt2">
+    <h2><span id="mt2">Incluir agenda</span><button id="fechar2" aria-label="Fechar">×</button></h2>
+    <div class="mb">
+      <div class="campos">
+        <label class="rot full">Obra / nome <span class="req">*</span><input type="text" id="n-nome" maxlength="80" placeholder="Ex.: Terral Aero"></label>
+        <label class="rot">Data<input type="date" id="n-data" value="2026-11-09"></label>
+        <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="n-qtd" placeholder="qtd a definir"></label>
+        <label class="rot full">Status<select id="n-status"></select></label>
+      </div>
+      <div class="rot">Estágio</div>
+      <textarea id="n-est" placeholder="Situação atual da entrega"></textarea>
+      <div class="acoes"><span class="ok" id="ok2"></span><button class="btn sec" id="cancelar2">Cancelar</button><button class="btn" id="salvar2">Salvar</button></div>
     </div>
   </div>
 </div>
 
 <script>
 (function(){
-  var KEY="hgi-agenda-estagios";
-  var ROT={pronto:"Pronto",andamento:"Em andamento",aguardando:"Aguardando",critico:"Não pode falhar"};
-  var DIAS=[
-    {n:"09",d:"Segunda-feira · hoje",fds:false,e:[]},
-    {n:"10",d:"Terça-feira",fds:false,e:[
-      {id:"fgr",nome:"FGR",s:"andamento",q:"Quantidade a definir",est:"Pronta hoje à tarde. Saiu das mangueiras, em integração. Falta integração, cercamento e acabamento. Esgoto com o Lula."}]},
-    {n:"11",d:"Quarta-feira",fds:false,e:[
-      {id:"aorbe",nome:"Aorbe",s:"pronto",q:"16 aptos",est:"16 apartamentos prontos."},
-      {id:"ipanema",nome:"Ipanema",s:"pronto",q:"6 aptos",est:"6 apartamentos prontos. Entrega prevista 10/11."},
-      {id:"smart36c",nome:"Smart 36 Torre C",s:"pronto",q:"10 aptos",est:"10 apartamentos prontos."},
-      {id:"om",nome:"OM",s:"andamento",q:"Finais 1, 2 e 3 · Oliveira Melo Construtora · quantidade a definir",est:"Final 1 finalizando na produção, corrigido. Finais 2 e 3 corrigindo à tarde."}]},
-    {n:"12",d:"Quinta-feira",fds:false,e:[]},
-    {n:"13",d:"Sexta-feira",fds:false,e:[
-      {id:"terral-serrano",nome:"Terral Serrano",s:"aguardando",q:"Quantidade a definir",est:"Aguardando o José liberar as planilhas de produção."},
-      {id:"terral-aero",nome:"Terral Aero",s:"andamento",q:"24 aptos para o dia 13 (10 no acabamento hoje)",est:"10 apartamentos no acabamento hoje. Total de 24 apartamentos para o dia 13."},
-      {id:"nau-laguna",nome:"Nau Laguna",s:"aguardando",q:"3 aptos prontos · restante a definir",est:"3 apartamentos prontos. Aguardando o José passar a planilha de corte do restante."},
-      {id:"cba",nome:"CBA",s:"critico",q:"Entrega em Santa Catarina · quantidade a definir",est:"Entrega em Santa Catarina. NÃO PODE FALHAR."}]},
-    {n:"14",d:"Sábado",fds:true,e:[]},
-    {n:"15",d:"Domingo",fds:true,e:[]}
-  ];
-  var QTD={fgr:0,aorbe:16,ipanema:6,smart36c:10,om:0,"terral-serrano":0,"terral-aero":24,"nau-laguna":3,cba:0};
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
-  var idx={};DIAS.forEach(function(D){D.e.forEach(function(x){idx[x.id]=x;x.dia=D.n+"/11 · "+D.d.split(" ·")[0]})});
-  var REM={};
-  function estagio(x){var r=REM[x.id];return (r&&typeof r.estagio==="string"&&r.estagio)?r.estagio:x.est}
-  function qtdTxt(x){var r=REM[x.id],q=(r&&r.hasOwnProperty("qtd"))?r.qtd:QTD[x.id];return q?q+" aptos":"qtd a definir"}
-  var BQ={};
-  var tr=document.getElementById("semana");
-  DIAS.forEach(function(D){
-    var td=document.createElement("td");if(D.fds)td.className="fds";
-    td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
-    if(!D.e.length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
-    D.e.forEach(function(x){
-      var b=document.createElement("button");b.className="item s-"+x.s;b.title=ROT[x.s];
-      var nm=document.createElement("span");nm.textContent=x.nome;b.appendChild(nm);
-      var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x);b.appendChild(qt);BQ[x.id]=qt;
-      b.addEventListener("click",function(){abrir(x)});td.appendChild(b);
+  var ROT={pronto:"Pronto",andamento:"Em andamento",aguardando:"Aguardando",critico:"Não pode falhar"};
+  var LAB={pronto:"pronto",andamento:"em andamento",aguardando:"aguardando",critico:"não pode falhar"};
+  var DE_LAB={"pronto":"pronto","em andamento":"andamento","aguardando":"aguardando","não pode falhar":"critico"};
+  var DIAS=[
+    {n:"09",d:"Segunda-feira · hoje",ab:"Seg",fds:false},
+    {n:"10",d:"Terça-feira",ab:"Ter",fds:false},
+    {n:"11",d:"Quarta-feira",ab:"Qua",fds:false},
+    {n:"12",d:"Quinta-feira",ab:"Qui",fds:false},
+    {n:"13",d:"Sexta-feira",ab:"Sex",fds:false},
+    {n:"14",d:"Sábado",ab:"Sáb",fds:true},
+    {n:"15",d:"Domingo",ab:"Dom",fds:true}
+  ];
+  var SEMANAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+  // padrões (usados se o banco estiver fora do ar)
+  var PADRAO={
+    "fgr":{nome:"FGR",statusCodigo:"andamento",data:"2026-11-10",estagio:"Pronta hoje à tarde. Saiu das mangueiras, em integração. Falta integração, cercamento e acabamento. Esgoto com o Lula."},
+    "aorbe":{nome:"Aorbe",statusCodigo:"pronto",data:"2026-11-11",qtd:16,estagio:"16 apartamentos prontos."},
+    "ipanema":{nome:"Ipanema",statusCodigo:"pronto",data:"2026-11-11",qtd:6,estagio:"6 apartamentos prontos. Entrega prevista 10/11."},
+    "smart36c":{nome:"Smart 36 Torre C",statusCodigo:"pronto",data:"2026-11-11",qtd:10,estagio:"10 apartamentos prontos."},
+    "om":{nome:"OM",statusCodigo:"andamento",data:"2026-11-11",estagio:"Final 1 finalizando na produção, corrigido. Finais 2 e 3 corrigindo à tarde."},
+    "terral-serrano":{nome:"Terral Serrano",statusCodigo:"aguardando",data:"2026-11-13",estagio:"Aguardando o José liberar as planilhas de produção."},
+    "terral-aero":{nome:"Terral Aero",statusCodigo:"andamento",data:"2026-11-13",qtd:24,estagio:"10 apartamentos no acabamento hoje. Total de 24 apartamentos para o dia 13."},
+    "nau-laguna":{nome:"Nau Laguna",statusCodigo:"aguardando",data:"2026-11-13",qtd:3,estagio:"3 apartamentos prontos. Aguardando o José passar a planilha de corte do restante."},
+    "cba":{nome:"CBA",statusCodigo:"critico",data:"2026-11-13",estagio:"Entrega em Santa Catarina. NÃO PODE FALHAR."}
+  };
+  var ORDEM=Object.keys(PADRAO);
+  var NOTA={"om":"Finais 1, 2 e 3 · Oliveira Melo Construtora","terral-aero":"24 aptos para o dia 13 (10 no acabamento hoje)","nau-laguna":"3 aptos prontos · restante a definir","cba":"Entrega em Santa Catarina"};
+  var REM=null; // dados do banco (null = ainda não carregou)
+
+  function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function cod(o){if(o&&ROT[o.statusCodigo])return o.statusCodigo;if(o&&DE_LAB[o.status])return DE_LAB[o.status];return "andamento"}
+  function qnum(o){var q=o&&o.qtd;q=(typeof q==="string")?parseInt(q,10):q;return (typeof q==="number"&&isFinite(q)&&q>0)?q:0}
+  function qtdTxt(o){var q=qnum(o);return q?q+" aptos":"qtd a definir"}
+  function fonte(){return REM?REM:PADRAO}
+  function lista(){
+    var f=fonte(),ids=Object.keys(f).filter(function(k){return f[k]&&typeof f[k]==="object"});
+    ids.sort(function(a,b){var ia=ORDEM.indexOf(a),ib=ORDEM.indexOf(b);
+      if(ia>=0&&ib>=0)return ia-ib;if(ia>=0)return -1;if(ib>=0)return 1;
+      return ((f[a].criadoEm||0)-(f[b].criadoEm||0))||(a<b?-1:1)});
+    return ids.map(function(id){var o=f[id];return {id:id,o:o}});
+  }
+  function diaDaSemana(data){var m=/^2026-11-(\d\d)$/.exec(data||"");if(!m)return -1;
+    for(var i=0;i<DIAS.length;i++)if(DIAS[i].n===m[1])return i;return -1}
+  function rotData(data){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(data||"");if(!m)return "Data a definir";
+    var dt=new Date(+m[1],+m[2]-1,+m[3]);return m[3]+"/"+m[2]+(m[1]!=="2026"?"/"+m[1]:"")+" · "+SEMANAS[dt.getDay()]}
+
+  var tr=document.getElementById("semana"),outras=document.getElementById("outras"),outrasL=document.getElementById("outras-lista");
+  function card(x){
+    var c=cod(x.o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];
+    var nm=document.createElement("span");nm.textContent=x.o.nome||x.id;b.appendChild(nm);
+    var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x.o);b.appendChild(qt);
+    b.addEventListener("click",function(){abrir(x.id)});return b;
+  }
+  function render(){
+    var L=lista(),cols=DIAS.map(function(){return []}),fora=[];
+    L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else fora.push(x)});
+    tr.innerHTML="";
+    DIAS.forEach(function(D,i){
+      var td=document.createElement("td");if(D.fds)td.className="fds";
+      td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
+      if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
+      cols[i].forEach(function(x){td.appendChild(card(x))});
+      tr.appendChild(td);
     });
-    tr.appendChild(td);
-  });
+    outrasL.innerHTML="";
+    fora.sort(function(a,b){return (a.o.data||"9")<(b.o.data||"9")?-1:1});
+    fora.forEach(function(x){var b=card(x);var d=document.createElement("small");d.className="qtd";d.textContent=rotData(x.o.data);b.appendChild(d);outrasL.appendChild(b)});
+    outras.classList.toggle("on",fora.length>0);
+    // resumo da semana
+    var sem=[].concat.apply([],cols),tot=0,semq=[];
+    sem.forEach(function(x){var q=qnum(x.o);if(q)tot+=q;else semq.push(x.o.nome||x.id)});
+    document.getElementById("r-total").textContent=sem.length;
+    document.getElementById("r-aptos").textContent=tot;
+    var sq=semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
+    document.getElementById("r-semq").textContent=sq;
+    if(cur){var o=fonte()[cur];if(o){preencheTopo(cur,o)}else{atual.textContent="Esta entrega foi removida.";}}
+  }
+
+  // painel de detalhe
   var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),upd=document.getElementById("upd"),cur=null;
+  var eS=document.getElementById("e-status"),eD=document.getElementById("e-data"),eQ=document.getElementById("e-qtd");
+  [eS,document.getElementById("n-status")].forEach(function(sel){Object.keys(ROT).forEach(function(k){var op=document.createElement("option");op.value=k;op.textContent=ROT[k];sel.appendChild(op)})});
   function fmt(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
-  function mostraUpd(x){var r=REM[x.id];upd.textContent=(r&&r.atualizadoEm)?"Atualizado em "+fmt(r.atualizadoEm)+" (horário de Brasília)":""}
-  function abrir(x){cur=x;document.getElementById("mt").textContent=x.nome;
-    document.getElementById("meta").innerHTML=x.dia+' <span class="pill p-'+x.s+'">'+ROT[x.s]+'</span><br>'+x.q;
-    var t=estagio(x);atual.textContent=t;campo.value=t;mostraUpd(x);ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
+  function preencheTopo(id,o){var c=cod(o);
+    document.getElementById("mt").textContent=o.nome||id;
+    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span><br>'+esc(qtdTxt(o))+(NOTA[id]?" · "+esc(NOTA[id]):"");
+    atual.textContent=o.estagio||"";
+    upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
+  }
+  function abrir(id){var o=fonte()[id];if(!o)return;cur=id;preencheTopo(id,o);
+    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";
+    ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
   function fechar(){ov.classList.remove("on");cur=null}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
   ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape")fechar()});
-  function render(){Object.keys(BQ).forEach(function(id){BQ[id].textContent=qtdTxt(idx[id])});
-    if(cur){atual.textContent=estagio(cur);mostraUpd(cur)}}
+
+  // formulário "Incluir agenda"
+  var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
+  function abrirNovo(){nN.value="";nD.value="2026-11-09";nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
+  function fecharNovo(){ov2.classList.remove("on")}
+  document.getElementById("incluir").onclick=abrirNovo;
+  document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
+  ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo()}});
+  function slug(t){var s=String(t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,30);return s||"entrega"}
+  function novoId(nome){var f=fonte(),id;do{id=slug(nome)+"-"+Date.now().toString(36).slice(-4)+Math.random().toString(36).slice(2,4)}while(f[id]);return id}
+  function erro(el,msg){el.style.color="#c0392b";el.textContent=msg}
+
+  function req(method,path,body){
+    return fetch(DB+path,{method:method,headers:{"Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()});
+  }
+  document.getElementById("salvar2").onclick=function(){
+    var nome=nN.value.trim();if(!nome){erro(ok2,"Informe a obra / nome.");nN.focus();return}
+    var c=nS.value,q=parseInt(nQ.value,10),agora=Date.now(),id=novoId(nome);
+    var o={nome:nome,estagio:nE.value.trim(),status:LAB[c],statusCodigo:c,data:nD.value||"",criadoEm:agora};
+    if(q>0)o.qtd=q;
+    ok2.style.color="";ok2.textContent="Salvando…";
+    req("PUT","/entregas/"+id+".json",o).then(function(){
+      if(REM){REM[id]=o;render()}
+      ok2.textContent="Incluído para todos.";setTimeout(fecharNovo,700);
+    }).catch(function(){erro(ok2,"Não foi possível salvar (sem conexão). Tente de novo.")});
+  };
+  document.getElementById("salvar").onclick=function(){
+    if(!cur)return;var id=cur,o=fonte()[id]||{},t=campo.value.trim()||o.estagio||"",c=eS.value,q=parseInt(eQ.value,10),agora=Date.now();
+    var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
+    ok.style.color="";ok.textContent="Salvando…";
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
+      if(cur===id)ok.textContent="Salvo para todos.";
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar (sem conexão). Tente de novo.")});
+  };
+  document.getElementById("excluir").onclick=function(){
+    if(!cur)return;var id=cur,o=fonte()[id]||{};
+    if(!window.confirm('Excluir a entrega "'+(o.nome||id)+'" para todos? Esta ação não pode ser desfeita.'))return;
+    req("DELETE","/entregas/"+id+".json").then(function(){if(REM){delete REM[id]}fechar();render()})
+      .catch(function(){erro(ok,"Não foi possível excluir (sem conexão).")});
+  };
+
+  // sincronização em tempo real (REST streaming)
   var sync=document.getElementById("sync"),synct=document.getElementById("synct");
   function estado(on){sync.className="sync "+(on?"on":"off");synct.textContent=on?"Sincronizado em tempo real":"Sem conexão"}
+  function setp(obj,parts,data,patch){
+    var o=obj;for(var i=0;i<parts.length-1;i++){if(!o[parts[i]]||typeof o[parts[i]]!=="object")o[parts[i]]={};o=o[parts[i]]}
+    var k=parts[parts.length-1];
+    if(patch&&data&&typeof data==="object"){if(!o[k]||typeof o[k]!=="object")o[k]={};Object.keys(data).forEach(function(j){if(data[j]===null)delete o[k][j];else o[k][j]=data[j]})}
+    else if(data===null){delete o[k]}else{o[k]=data}
+  }
   function aplica(path,data,patch){
     var parts=path.split("/").filter(Boolean);
     if(!parts.length){
-      if(patch){Object.keys(data||{}).forEach(function(k){aplica("/"+k,data[k],false)})}
-      else{REM=data||{}}
-    }else{
-      var id=parts[0];
-      if(parts.length===1){
-        if(patch){REM[id]=REM[id]||{};Object.keys(data||{}).forEach(function(k){REM[id][k]=data[k]})}
-        else if(data===null){delete REM[id]}else{REM[id]=data}
-      }else{
-        REM[id]=REM[id]||{};var o=REM[id];for(var i=1;i<parts.length-1;i++){o[parts[i]]=o[parts[i]]||{};o=o[parts[i]]}
-        var last=parts[parts.length-1];
-        if(patch&&data&&typeof data==="object"){o[last]=o[last]||{};Object.keys(data).forEach(function(k){o[last][k]=data[k]})}
-        else if(data===null){delete o[last]}else{o[last]=data}
-      }
-    }
+      if(patch){REM=REM||{};Object.keys(data||{}).forEach(function(k){if(data[k]===null)delete REM[k];else REM[k]=data[k]})}
+      else{REM=(data&&typeof data==="object")?data:{}}
+    }else{REM=REM||{};setp(REM,parts,data,patch)}
     render();
   }
   function ouvir(){
@@ -203,15 +327,7 @@
     es.onopen=function(){estado(true)};
     es.onerror=function(){estado(false)};
   }
-  ouvir();
-  document.getElementById("salvar").onclick=function(){
-    if(!cur)return;var x=cur,t=campo.value.trim()||x.est,agora=Date.now();
-    ok.style.color="";ok.textContent="Salvando…";
-    fetch(DB+"/entregas/"+x.id+".json",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({estagio:t,atualizadoEm:agora})})
-      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
-      .then(function(){REM[x.id]=REM[x.id]||{};REM[x.id].estagio=t;REM[x.id].atualizadoEm=agora;render();if(cur===x){ok.textContent="Salvo para todos."}})
-      .catch(function(){if(cur===x){ok.style.color="#c0392b";ok.textContent="Não foi possível salvar (sem conexão). Tente de novo."}});
-  };
+  render();ouvir();
 })();
 </script>
 </body>
