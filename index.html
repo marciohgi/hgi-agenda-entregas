@@ -60,6 +60,7 @@
   .nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
   .nav button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
   .nav button:hover{background:rgba(255,255,255,.26)}
+  .nav select{background:#fff;color:#1e3a5f;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:5px 8px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;max-width:100%}
   .nav button:disabled{opacity:.45;cursor:default}
   td.recesso{background:#eceff3;border-style:dashed;color:#8a96a5}
   td.recesso .num{color:#8a96a5}
@@ -95,7 +96,7 @@
     <div class="htop"><div>
     <h1 id="titulo">Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
-    <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button></div>
+    <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
     </div><button class="btn-incluir" id="incluir">+ Incluir agenda</button></div>
   </header>
@@ -243,6 +244,7 @@
     var tit=tituloSemana();document.getElementById("titulo").textContent="Dashboard de Entregas – "+tit;document.title="Dashboard de Entregas – "+tit;
     var fixa=(SEMANA===SEM_FIXA);document.getElementById("box-cba").classList.toggle("esconde",!fixa);document.getElementById("alerta-jose").classList.toggle("esconde",!fixa);
     document.getElementById("hoje").disabled=(SEMANA===limita(iso(segunda(deIso(HOJE)))));
+    var sl=document.getElementById("semanas");if(sl&&sl.options.length){var tem=[].some.call(sl.options,function(o){return o.value===SEMANA});sl.value=tem?SEMANA:"";}
     var px=document.getElementById("prox");px.disabled=(SEMANA>=ULTIMA_SEMANA);px.title=px.disabled?"Último período: recesso a partir de 24/12":"";
     var L=lista(),cols=DIAS.map(function(){return []}),fora=[];
     L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else if(!deIso(x.o.data))fora.push(x)});
@@ -294,6 +296,13 @@
   function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=function(){abrirNovo(SEMANA)};
+  var selS=document.getElementById("semanas");
+  (function(){var d=deIso("2026-11-09");while(iso(d)<=ULTIMA_SEMANA){var a=new Date(d),b=new Date(d);b.setDate(b.getDate()+6);
+    var t=(a.getMonth()===b.getMonth()?pad(a.getDate()):pad(a.getDate())+"/"+pad(a.getMonth()+1))+"–"+pad(b.getDate())+"/"+pad(b.getMonth()+1);
+    if(iso(a)===ULTIMA_SEMANA)t+=" (recesso a partir de 24/12)";
+    var op=document.createElement("option");op.value=iso(a);op.textContent=t;selS.appendChild(op);d.setDate(d.getDate()+7)}
+    var o0=document.createElement("option");o0.value="";o0.textContent="Outra semana";o0.disabled=true;selS.insertBefore(o0,selS.firstChild)})();
+  selS.addEventListener("change",function(){if(selS.value)irPara(selS.value)});
   function irPara(ini){ini=limita(ini);SEMANA=ini;if(history.replaceState)history.replaceState(null,"","#"+ini);else location.hash=ini;render()}
   function desloca(n){var d=deIso(SEMANA);d.setDate(d.getDate()+7*n);irPara(iso(d))}
   document.getElementById("ant").onclick=function(){desloca(-1)};
