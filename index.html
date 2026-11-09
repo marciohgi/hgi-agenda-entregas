@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard de Entregas – Semana de 09 a 15/11/2026</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Arial,Helvetica,sans-serif;background:#eef1f5;color:#1f2a37}
+  .wrap{max-width:1280px;margin:0 auto;padding:22px}
+  header{background:#1e3a5f;color:#fff;border-radius:10px;padding:18px 22px;margin-bottom:14px}
+  header h1{margin:0;font-size:23px}
+  header p{margin:6px 0 0;color:#c9d6e5;font-size:13px}
+  .resumo{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .box{flex:1;min-width:190px;background:#fff;border:1px solid #d5dce5;border-left:5px solid #2f5d8a;border-radius:8px;padding:12px 16px}
+  .rot{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5b6b7d}
+  .val{font-size:24px;font-weight:700;margin-top:4px;color:#1e3a5f}
+  .sub{font-size:12px;color:#5b6b7d;margin-top:2px}
+  .alerta{background:#fdecea;border:2px solid #c0392b;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#7b1f16}
+  .alerta b{font-size:16px;display:block;margin-bottom:4px}
+  .alerta ul{margin:4px 0 0 18px;padding:0;font-size:14px}
+  .legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#3d4d5f;margin:0 4px 6px}
+  .legenda span{display:flex;align-items:center;gap:6px}
+  .legenda i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  table{width:100%;border-collapse:separate;border-spacing:8px;table-layout:fixed}
+  th{background:#2f5d8a;color:#fff;font-size:13px;font-weight:600;padding:9px 6px;border-radius:6px}
+  td{background:#fff;border:1px solid #d5dce5;border-radius:8px;vertical-align:top;height:230px;padding:10px}
+  td.fds{background:#f5f7fa}
+  .num{font-size:26px;font-weight:700;color:#1e3a5f;line-height:1}
+  .dia{font-size:12px;color:#5b6b7d;margin:4px 0 10px}
+  .vazio{font-size:12px;color:#94a1b2;font-style:italic}
+  .item{display:block;width:100%;text-align:left;font:inherit;font-size:13px;font-weight:600;border:0;border-left:5px solid;border-radius:5px;padding:7px 8px;margin-bottom:6px;cursor:pointer;color:#1f2a37}
+  .item:hover{filter:brightness(.95)}
+  .s-pronto{background:#e6f4ea;border-color:#2e8b57}
+  .s-andamento{background:#fff8dc;border-color:#d4a514}
+  .s-aguardando{background:#fdeedc;border-color:#e07b1a}
+  .s-critico{background:#fbe3e1;border-color:#c0392b;color:#7b1f16}
+  .ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+  .ov.on{display:flex}
+  .modal{background:#fff;border-radius:10px;max-width:540px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+  .modal h2{margin:0;background:#1e3a5f;color:#fff;font-size:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .modal h2 button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1}
+  .mb{padding:16px 18px}
+  .meta{font-size:13px;color:#3d4d5f;margin-bottom:12px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:2px 9px;margin-left:6px;color:#fff}
+  .p-pronto{background:#2e8b57}.p-andamento{background:#b8900f}.p-aguardando{background:#e07b1a}.p-critico{background:#c0392b}
+  .atual{background:#f5f7fa;border:1px solid #d5dce5;border-radius:6px;padding:10px 12px;font-size:15px;margin:6px 0 14px;white-space:pre-wrap}
+  textarea{width:100%;min-height:100px;font:inherit;font-size:14px;padding:10px;border:1px solid #b8c4d2;border-radius:6px;resize:vertical;margin-top:6px}
+  .acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;align-items:center}
+  .ok{font-size:12px;color:#2e8b57;margin-right:auto}
+  .btn{background:#2f5d8a;color:#fff;border:0;border-radius:6px;padding:9px 18px;font-size:14px;cursor:pointer}
+  .btn.sec{background:#e3e8ee;color:#1f2a37}
+  footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
+  @media (max-width:900px){
+    table,thead,tbody,tr,th,td{display:block;width:100%}
+    thead{display:none}
+    td{height:auto;min-height:80px;margin-bottom:8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
+    <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
+  </header>
+
+  <div class="resumo">
+    <div class="box"><div class="rot">Entregas na semana</div><div class="val">9</div></div>
+    <div class="box"><div class="rot">Apartamentos informados</div><div class="val">59</div><div class="sub">FGR, OM, Terral Serrano e CBA sem quantidade</div></div>
+    <div class="box" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
+  </div>
+
+  <div class="alerta">
+    <b>⚠ Cobrar o José hoje no final do dia</b>
+    <ul>
+      <li>Planilhas de produção da Terral Serrano</li>
+      <li>Planilha de corte do restante da Nau Laguna</li>
+      <li>Entrega CBA (Santa Catarina)</li>
+    </ul>
+  </div>
+
+  <div class="legenda">
+    <span><i style="background:#2e8b57"></i>Pronto</span>
+    <span><i style="background:#d4a514"></i>Em andamento</span>
+    <span><i style="background:#e07b1a"></i>Aguardando</span>
+    <span><i style="background:#c0392b"></i>Não pode falhar</span>
+  </div>
+
+  <table>
+    <thead><tr><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th><th>Domingo</th></tr></thead>
+    <tbody><tr id="semana"></tr></tbody>
+  </table>
+
+  <footer>Meta mínima: 50 apartamentos/dia</footer>
+</div>
+
+<div class="ov" id="ov">
+  <div class="modal" role="dialog" aria-labelledby="mt">
+    <h2><span id="mt"></span><button id="fechar" aria-label="Fechar">×</button></h2>
+    <div class="mb">
+      <div class="meta" id="meta"></div>
+      <div class="rot">Estágio atual</div>
+      <div class="atual" id="atual"></div>
+      <div class="rot">Atualizar estágio</div>
+      <textarea id="campo"></textarea>
+      <div class="acoes"><span class="ok" id="ok"></span><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY="hgi-agenda-estagios";
+  var ROT={pronto:"Pronto",andamento:"Em andamento",aguardando:"Aguardando",critico:"Não pode falhar"};
+  var DIAS=[
+    {n:"09",d:"Segunda-feira · hoje",fds:false,e:[]},
+    {n:"10",d:"Terça-feira",fds:false,e:[
+      {id:"fgr",nome:"FGR",s:"andamento",q:"Quantidade a definir",est:"Pronta hoje à tarde. Saiu das mangueiras, em integração. Falta integração, cercamento e acabamento. Esgoto com o Lula."}]},
+    {n:"11",d:"Quarta-feira",fds:false,e:[
+      {id:"orbe",nome:"Orbe",s:"pronto",q:"16 aptos · Construtora AOARB",est:"16 apartamentos prontos."},
+      {id:"ipanema",nome:"Ipanema",s:"pronto",q:"6 aptos",est:"6 apartamentos prontos. Entrega prevista 10/11."},
+      {id:"smart36c",nome:"Smart 36 Torre C",s:"pronto",q:"10 aptos",est:"10 apartamentos prontos."},
+      {id:"om",nome:"OM",s:"andamento",q:"Finais 1, 2 e 3 · Oliveira Melo Construtora · quantidade a definir",est:"Final 1 finalizando na produção, corrigido. Finais 2 e 3 corrigindo à tarde."}]},
+    {n:"12",d:"Quinta-feira",fds:false,e:[]},
+    {n:"13",d:"Sexta-feira",fds:false,e:[
+      {id:"terral-serrano",nome:"Terral Serrano",s:"aguardando",q:"Quantidade a definir",est:"Aguardando o José liberar as planilhas de produção."},
+      {id:"terral-aero",nome:"Terral Aero",s:"andamento",q:"24 aptos para o dia 13",est:"10 apartamentos no acabamento hoje. Total de 24 apartamentos para o dia 13."},
+      {id:"nau-laguna",nome:"Nau Laguna",s:"aguardando",q:"3 aptos prontos · restante a definir",est:"3 apartamentos prontos. Aguardando o José passar a planilha de corte do restante."},
+      {id:"cba",nome:"CBA",s:"critico",q:"Entrega em Santa Catarina · quantidade a definir",est:"Entrega em Santa Catarina. NÃO PODE FALHAR."}]},
+    {n:"14",d:"Sábado",fds:true,e:[]},
+    {n:"15",d:"Domingo",fds:true,e:[]}
+  ];
+  var idx={};DIAS.forEach(function(D){D.e.forEach(function(x){idx[x.id]=x;x.dia=D.n+"/11 · "+D.d.split(" ·")[0]})});
+  function salvos(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+  function estagio(x){var s=salvos();return s[x.id]||x.est}
+  var tr=document.getElementById("semana");
+  DIAS.forEach(function(D){
+    var td=document.createElement("td");if(D.fds)td.className="fds";
+    td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
+    if(!D.e.length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
+    D.e.forEach(function(x){
+      var b=document.createElement("button");b.className="item s-"+x.s;b.textContent=x.nome;b.title=ROT[x.s];
+      b.addEventListener("click",function(){abrir(x)});td.appendChild(b);
+    });
+    tr.appendChild(td);
+  });
+  var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),cur=null;
+  function abrir(x){cur=x;document.getElementById("mt").textContent=x.nome;
+    document.getElementById("meta").innerHTML=x.dia+' <span class="pill p-'+x.s+'">'+ROT[x.s]+'</span><br>'+x.q;
+    var t=estagio(x);atual.textContent=t;campo.value=t;ok.textContent="";ov.classList.add("on");campo.focus()}
+  function fechar(){ov.classList.remove("on")}
+  document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
+  ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")fechar()});
+  document.getElementById("salvar").onclick=function(){
+    if(!cur)return;var s=salvos();var t=campo.value.trim()||cur.est;s[cur.id]=t;
+    try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+    atual.textContent=t;ok.textContent="Salvo.";
+  };
+})();
+</script>
+</body>
+</html>
