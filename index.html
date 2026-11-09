@@ -30,6 +30,8 @@
   .dia{font-size:12px;color:#5b6b7d;margin:4px 0 10px}
   .vazio{font-size:12px;color:#94a1b2;font-style:italic}
   .item{display:block;width:100%;text-align:left;font:inherit;font-size:13px;font-weight:600;border:0;border-left:5px solid;border-radius:5px;padding:7px 8px;margin-bottom:6px;cursor:pointer;color:#1f2a37}
+  .item .qtd{display:block;font-size:11px;font-weight:500;color:#3d4d5f;margin-top:2px}
+  .s-critico .qtd{color:#7b1f16}
   .item:hover{filter:brightness(.95)}
   .s-pronto{background:#e6f4ea;border-color:#2e8b57}
   .s-andamento{background:#fff8dc;border-color:#d4a514}
@@ -118,19 +120,20 @@
     {n:"10",d:"Terça-feira",fds:false,e:[
       {id:"fgr",nome:"FGR",s:"andamento",q:"Quantidade a definir",est:"Pronta hoje à tarde. Saiu das mangueiras, em integração. Falta integração, cercamento e acabamento. Esgoto com o Lula."}]},
     {n:"11",d:"Quarta-feira",fds:false,e:[
-      {id:"aorb",nome:"AORB",s:"pronto",q:"16 aptos",est:"16 apartamentos prontos."},
+      {id:"aorbe",nome:"Aorbe",s:"pronto",q:"16 aptos",est:"16 apartamentos prontos."},
       {id:"ipanema",nome:"Ipanema",s:"pronto",q:"6 aptos",est:"6 apartamentos prontos. Entrega prevista 10/11."},
       {id:"smart36c",nome:"Smart 36 Torre C",s:"pronto",q:"10 aptos",est:"10 apartamentos prontos."},
       {id:"om",nome:"OM",s:"andamento",q:"Finais 1, 2 e 3 · Oliveira Melo Construtora · quantidade a definir",est:"Final 1 finalizando na produção, corrigido. Finais 2 e 3 corrigindo à tarde."}]},
     {n:"12",d:"Quinta-feira",fds:false,e:[]},
     {n:"13",d:"Sexta-feira",fds:false,e:[
       {id:"terral-serrano",nome:"Terral Serrano",s:"aguardando",q:"Quantidade a definir",est:"Aguardando o José liberar as planilhas de produção."},
-      {id:"terral-aero",nome:"Terral Aero",s:"andamento",q:"24 aptos para o dia 13",est:"10 apartamentos no acabamento hoje. Total de 24 apartamentos para o dia 13."},
+      {id:"terral-aero",nome:"Terral Aero",s:"andamento",q:"24 aptos para o dia 13 (10 no acabamento hoje)",est:"10 apartamentos no acabamento hoje. Total de 24 apartamentos para o dia 13."},
       {id:"nau-laguna",nome:"Nau Laguna",s:"aguardando",q:"3 aptos prontos · restante a definir",est:"3 apartamentos prontos. Aguardando o José passar a planilha de corte do restante."},
       {id:"cba",nome:"CBA",s:"critico",q:"Entrega em Santa Catarina · quantidade a definir",est:"Entrega em Santa Catarina. NÃO PODE FALHAR."}]},
     {n:"14",d:"Sábado",fds:true,e:[]},
     {n:"15",d:"Domingo",fds:true,e:[]}
   ];
+  var QTD={fgr:0,aorbe:16,ipanema:6,smart36c:10,om:0,"terral-serrano":0,"terral-aero":24,"nau-laguna":3,cba:0};
   var idx={};DIAS.forEach(function(D){D.e.forEach(function(x){idx[x.id]=x;x.dia=D.n+"/11 · "+D.d.split(" ·")[0]})});
   function salvos(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
   function estagio(x){var s=salvos();return s[x.id]||x.est}
@@ -140,7 +143,9 @@
     td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
     if(!D.e.length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
     D.e.forEach(function(x){
-      var b=document.createElement("button");b.className="item s-"+x.s;b.textContent=x.nome;b.title=ROT[x.s];
+      var b=document.createElement("button");b.className="item s-"+x.s;b.title=ROT[x.s];
+      var nm=document.createElement("span");nm.textContent=x.nome;b.appendChild(nm);
+      var qt=document.createElement("small");qt.className="qtd";qt.textContent=(QTD[x.id]?QTD[x.id]+" aptos":"qtd a definir");b.appendChild(qt);
       b.addEventListener("click",function(){abrir(x)});td.appendChild(b);
     });
     tr.appendChild(td);
