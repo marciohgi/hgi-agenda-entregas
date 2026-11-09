@@ -57,6 +57,11 @@
   .sync.on i{background:#4cd07d}.sync.off i{background:#e74c3c}
   .upd{font-size:11px;color:#5b6b7d;margin-top:-8px;margin-bottom:12px}
   .htop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .nav button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .nav button:hover{background:rgba(255,255,255,.26)}
+  .nav button:disabled{opacity:.45;cursor:default}
+  .esconde{display:none!important}
   .btn-incluir{background:#fff;color:#1e3a5f;border:0;border-radius:8px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);white-space:nowrap}
   .btn-incluir:hover{background:#e6eef7}
   .campos{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
@@ -85,8 +90,9 @@
 <div class="wrap">
   <header>
     <div class="htop"><div>
-    <h1>Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
+    <h1 id="titulo">Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
+    <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
     </div><button class="btn-incluir" id="incluir">+ Incluir agenda</button></div>
   </header>
@@ -94,10 +100,10 @@
   <div class="resumo">
     <div class="box"><div class="rot">Entregas na semana</div><div class="val" id="r-total">9</div></div>
     <div class="box"><div class="rot">Apartamentos informados</div><div class="val" id="r-aptos">59</div><div class="sub" id="r-semq">FGR, OM, Terral Serrano e CBA sem quantidade</div></div>
-    <div class="box" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
+    <div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
   </div>
 
-  <div class="alerta">
+  <div class="alerta" id="alerta-jose">
     <b>⚠ Cobrar o José hoje no final do dia</b>
     <ul>
       <li>Planilhas de produção da Terral Serrano</li>
@@ -118,7 +124,7 @@
     <tbody><tr id="semana"></tr></tbody>
   </table>
 
-  <div class="outras" id="outras"><div class="rot">Outras datas (fora desta semana)</div><div class="lista" id="outras-lista"></div></div>
+  <div class="outras" id="outras"><div class="rot">Sem data definida</div><div class="lista" id="outras-lista"></div></div>
 
   <footer>Meta mínima: 50 apartamentos/dia</footer>
 </div>
@@ -166,15 +172,24 @@
   var ROT={pronto:"Pronto",andamento:"Em andamento",aguardando:"Aguardando",critico:"Não pode falhar"};
   var LAB={pronto:"pronto",andamento:"em andamento",aguardando:"aguardando",critico:"não pode falhar"};
   var DE_LAB={"pronto":"pronto","em andamento":"andamento","aguardando":"aguardando","não pode falhar":"critico"};
-  var DIAS=[
-    {n:"09",d:"Segunda-feira · hoje",ab:"Seg",fds:false},
-    {n:"10",d:"Terça-feira",ab:"Ter",fds:false},
-    {n:"11",d:"Quarta-feira",ab:"Qua",fds:false},
-    {n:"12",d:"Quinta-feira",ab:"Qui",fds:false},
-    {n:"13",d:"Sexta-feira",ab:"Sex",fds:false},
-    {n:"14",d:"Sábado",ab:"Sáb",fds:true},
-    {n:"15",d:"Domingo",ab:"Dom",fds:true}
-  ];
+  var NOMES=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"];
+  var SEM_FIXA="2026-11-09"; // semana com o alerta do José e o destaque da CBA
+  function pad(n){return (n<10?"0":"")+n}
+  function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+  function deIso(t){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(t||"");return m?new Date(+m[1],+m[2]-1,+m[3]):null}
+  function segunda(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());var w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);return x}
+  function hojeIso(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}catch(e){return iso(new Date())}}
+  var HOJE=hojeIso();
+  function semanaDoHash(){var d=deIso((location.hash||"").replace(/^#/,""));return d?iso(segunda(d)):iso(segunda(deIso(HOJE)))}
+  var SEMANA=semanaDoHash();
+  var DIAS=[];
+  function montaDias(){var ini=deIso(SEMANA);DIAS=[];
+    for(var i=0;i<7;i++){var d=new Date(ini.getFullYear(),ini.getMonth(),ini.getDate()+i),is=iso(d);
+      DIAS.push({n:pad(d.getDate()),iso:is,d:NOMES[i]+(is===HOJE?" · hoje":""),fds:i>=5})}}
+  function tituloSemana(){var a=deIso(DIAS[0].iso),b=deIso(DIAS[6].iso);
+    var t=(a.getMonth()===b.getMonth()&&a.getFullYear()===b.getFullYear())?pad(a.getDate())+" a "+pad(b.getDate())+"/"+pad(b.getMonth()+1)+"/"+b.getFullYear()
+      :pad(a.getDate())+"/"+pad(a.getMonth()+1)+(a.getFullYear()!==b.getFullYear()?"/"+a.getFullYear():"")+" a "+pad(b.getDate())+"/"+pad(b.getMonth()+1)+"/"+b.getFullYear();
+    return "Semana de "+t}
   var SEMANAS=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
   // padrões (usados se o banco estiver fora do ar)
   var PADRAO={
@@ -204,8 +219,7 @@
       return ((f[a].criadoEm||0)-(f[b].criadoEm||0))||(a<b?-1:1)});
     return ids.map(function(id){var o=f[id];return {id:id,o:o}});
   }
-  function diaDaSemana(data){var m=/^2026-11-(\d\d)$/.exec(data||"");if(!m)return -1;
-    for(var i=0;i<DIAS.length;i++)if(DIAS[i].n===m[1])return i;return -1}
+  function diaDaSemana(data){for(var i=0;i<DIAS.length;i++)if(DIAS[i].iso===data)return i;return -1}
   function rotData(data){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(data||"");if(!m)return "Data a definir";
     var dt=new Date(+m[1],+m[2]-1,+m[3]);return m[3]+"/"+m[2]+(m[1]!=="2026"?"/"+m[1]:"")+" · "+SEMANAS[dt.getDay()]}
 
@@ -219,15 +233,19 @@
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
     b.title=data?"Incluir agenda em "+rotData(data):"Incluir agenda";b.addEventListener("click",function(){abrirNovo(data)});return b}
   function render(){
+    montaDias();
+    var tit=tituloSemana();document.getElementById("titulo").textContent="Dashboard de Entregas – "+tit;document.title="Dashboard de Entregas – "+tit;
+    var fixa=(SEMANA===SEM_FIXA);document.getElementById("box-cba").classList.toggle("esconde",!fixa);document.getElementById("alerta-jose").classList.toggle("esconde",!fixa);
+    document.getElementById("hoje").disabled=(SEMANA===iso(segunda(deIso(HOJE))));
     var L=lista(),cols=DIAS.map(function(){return []}),fora=[];
-    L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else fora.push(x)});
+    L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else if(!deIso(x.o.data))fora.push(x)});
     tr.innerHTML="";
     DIAS.forEach(function(D,i){
       var td=document.createElement("td");if(D.fds)td.className="fds";
       td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
       if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
       cols[i].forEach(function(x){td.appendChild(card(x))});
-      td.appendChild(botaoAdd("2026-11-"+D.n));
+      td.appendChild(botaoAdd(D.iso));
       tr.appendChild(td);
     });
     outrasL.innerHTML="";
@@ -265,9 +283,15 @@
 
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:"2026-11-09";nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){ov2.classList.remove("on")}
-  document.getElementById("incluir").onclick=function(){abrirNovo("2026-11-09")};
+  document.getElementById("incluir").onclick=function(){abrirNovo(SEMANA)};
+  function irPara(ini){SEMANA=ini;if(history.replaceState)history.replaceState(null,"","#"+ini);else location.hash=ini;render()}
+  function desloca(n){var d=deIso(SEMANA);d.setDate(d.getDate()+7*n);irPara(iso(d))}
+  document.getElementById("ant").onclick=function(){desloca(-1)};
+  document.getElementById("prox").onclick=function(){desloca(1)};
+  document.getElementById("hoje").onclick=function(){irPara(iso(segunda(deIso(HOJE))))};
+  window.addEventListener("hashchange",function(){var s=semanaDoHash();if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo()}});
