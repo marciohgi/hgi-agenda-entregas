@@ -61,6 +61,9 @@
   .nav button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
   .nav button:hover{background:rgba(255,255,255,.26)}
   .nav button:disabled{opacity:.45;cursor:default}
+  td.recesso{background:#eceff3;border-style:dashed;color:#8a96a5}
+  td.recesso .num{color:#8a96a5}
+  .rec{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6b7785;background:#dde2e8;border-radius:4px;padding:3px 8px;margin-bottom:8px}
   .esconde{display:none!important}
   .btn-incluir{background:#fff;color:#1e3a5f;border:0;border-radius:8px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);white-space:nowrap}
   .btn-incluir:hover{background:#e6eef7}
@@ -183,9 +186,12 @@
   function semanaDoHash(){var d=deIso((location.hash||"").replace(/^#/,""));return d?iso(segunda(d)):iso(segunda(deIso(HOJE)))}
   var SEMANA=semanaDoHash();
   var DIAS=[];
+  var RECESSO_INI="2026-12-24",ULTIMA_SEMANA="2026-12-21"; // recesso da fábrica: de 24/12 até o fim da semana 21–27/12
+  function limita(sem){return sem>ULTIMA_SEMANA?ULTIMA_SEMANA:sem}
+  SEMANA=limita(SEMANA);
   function montaDias(){var ini=deIso(SEMANA);DIAS=[];
     for(var i=0;i<7;i++){var d=new Date(ini.getFullYear(),ini.getMonth(),ini.getDate()+i),is=iso(d);
-      DIAS.push({n:pad(d.getDate()),iso:is,d:NOMES[i]+(is===HOJE?" · hoje":""),fds:i>=5})}}
+      DIAS.push({n:pad(d.getDate()),iso:is,d:NOMES[i]+(is===HOJE?" · hoje":""),fds:i>=5,rec:(is>=RECESSO_INI&&is<="2026-12-27")})}}
   function tituloSemana(){var a=deIso(DIAS[0].iso),b=deIso(DIAS[6].iso);
     var t=(a.getMonth()===b.getMonth()&&a.getFullYear()===b.getFullYear())?pad(a.getDate())+" a "+pad(b.getDate())+"/"+pad(b.getMonth()+1)+"/"+b.getFullYear()
       :pad(a.getDate())+"/"+pad(a.getMonth()+1)+(a.getFullYear()!==b.getFullYear()?"/"+a.getFullYear():"")+" a "+pad(b.getDate())+"/"+pad(b.getMonth()+1)+"/"+b.getFullYear();
@@ -236,14 +242,16 @@
     montaDias();
     var tit=tituloSemana();document.getElementById("titulo").textContent="Dashboard de Entregas – "+tit;document.title="Dashboard de Entregas – "+tit;
     var fixa=(SEMANA===SEM_FIXA);document.getElementById("box-cba").classList.toggle("esconde",!fixa);document.getElementById("alerta-jose").classList.toggle("esconde",!fixa);
-    document.getElementById("hoje").disabled=(SEMANA===iso(segunda(deIso(HOJE))));
+    document.getElementById("hoje").disabled=(SEMANA===limita(iso(segunda(deIso(HOJE)))));
+    var px=document.getElementById("prox");px.disabled=(SEMANA>=ULTIMA_SEMANA);px.title=px.disabled?"Último período: recesso a partir de 24/12":"";
     var L=lista(),cols=DIAS.map(function(){return []}),fora=[];
     L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else if(!deIso(x.o.data))fora.push(x)});
     tr.innerHTML="";
     DIAS.forEach(function(D,i){
-      var td=document.createElement("td");if(D.fds)td.className="fds";
+      var td=document.createElement("td");td.className=D.rec?"recesso":(D.fds?"fds":"");
       td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
-      if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
+      if(D.rec){td.innerHTML+='<div class="rec">Recesso</div>'}
+      else if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
       cols[i].forEach(function(x){td.appendChild(card(x))});
       td.appendChild(botaoAdd(D.iso));
       tr.appendChild(td);
@@ -286,12 +294,12 @@
   function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=function(){abrirNovo(SEMANA)};
-  function irPara(ini){SEMANA=ini;if(history.replaceState)history.replaceState(null,"","#"+ini);else location.hash=ini;render()}
+  function irPara(ini){ini=limita(ini);SEMANA=ini;if(history.replaceState)history.replaceState(null,"","#"+ini);else location.hash=ini;render()}
   function desloca(n){var d=deIso(SEMANA);d.setDate(d.getDate()+7*n);irPara(iso(d))}
   document.getElementById("ant").onclick=function(){desloca(-1)};
   document.getElementById("prox").onclick=function(){desloca(1)};
   document.getElementById("hoje").onclick=function(){irPara(iso(segunda(deIso(HOJE))))};
-  window.addEventListener("hashchange",function(){var s=semanaDoHash();if(s!==SEMANA){SEMANA=s;render()}});
+  window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo()}});
