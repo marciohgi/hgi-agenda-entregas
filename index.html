@@ -66,8 +66,14 @@
   td.recesso .num{color:#8a96a5}
   .rec{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6b7785;background:#dde2e8;border-radius:4px;padding:3px 8px;margin-bottom:8px}
   .esconde{display:none!important}
-  .btn-incluir{background:#fff;color:#1e3a5f;border:0;border-radius:8px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);white-space:nowrap}
-  .btn-incluir:hover{background:#e6eef7}
+  .btn-incluir{background:#c0392b;color:#fff;border:2px solid #fdecea;border-radius:8px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);white-space:nowrap}
+  .btn-incluir:hover{background:#a93226}
+  .alerta{position:relative}
+  .alerta .concluir{position:absolute;top:8px;right:10px;background:#fff;color:#7b1f16;border:1px solid #c0392b;border-radius:6px;padding:3px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+  .alerta .concluir:hover{background:#fbe3e1}
+  .alerta b{padding-right:110px}
+  .alerta .ldata{font-size:11px;color:#a0473d;margin-top:4px}
+  .btn.verm{background:#c0392b}
   .campos{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
   .campos .full{grid-column:1/-1}
   .campos label{display:block}
@@ -98,7 +104,7 @@
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
     <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
-    </div><button class="btn-incluir" id="incluir">+ Incluir agenda</button></div>
+    </div><button class="btn-incluir" id="incluir">+ Incluir lembrete</button></div>
   </header>
 
   <div class="resumo">
@@ -107,14 +113,7 @@
     <div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
   </div>
 
-  <div class="alerta" id="alerta-jose">
-    <b>⚠ Cobrar o José hoje no final do dia</b>
-    <ul>
-      <li>Planilhas de produção da Terral Serrano</li>
-      <li>Planilha de corte do restante da Nau Laguna</li>
-      <li>Entrega CBA (Santa Catarina)</li>
-    </ul>
-  </div>
+  <div id="lembretes"></div>
 
   <div class="legenda">
     <span><i style="background:#2e8b57"></i>Pronto</span>
@@ -170,6 +169,21 @@
   </div>
 </div>
 
+<div class="ov" id="ov3">
+  <div class="modal" role="dialog" aria-labelledby="mt3">
+    <h2 style="background:#c0392b"><span id="mt3">Incluir lembrete</span><button id="fechar3" aria-label="Fechar">×</button></h2>
+    <div class="mb">
+      <div class="campos">
+        <label class="rot full">Título <span class="req">*</span><input type="text" id="l-tit" maxlength="120" placeholder="Ex.: Cobrar o José hoje no final do dia"></label>
+        <label class="rot">Data<input type="date" id="l-data"></label>
+      </div>
+      <div class="rot">Itens (um por linha, opcional)</div>
+      <textarea id="l-itens" placeholder="Planilhas de produção da Terral Serrano"></textarea>
+      <div class="acoes"><span class="ok" id="ok3"></span><button class="btn sec" id="cancelar3">Cancelar</button><button class="btn verm" id="salvar3">Salvar</button></div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
@@ -213,6 +227,8 @@
   var ORDEM=Object.keys(PADRAO);
   var NOTA={"om":"Finais 1, 2 e 3 · Oliveira Melo Construtora","terral-aero":"24 aptos para o dia 13 (10 no acabamento hoje)","nau-laguna":"3 aptos prontos · restante a definir","cba":"Entrega em Santa Catarina"};
   var REM=null; // dados do banco (null = ainda não carregou)
+  var LEM=null; // lembretes do banco
+  var PADRAO_LEM={"cobrar-jose-2026-11-09":{titulo:"Cobrar o José hoje no final do dia",data:"2026-11-09",itens:["Planilhas de produção da Terral Serrano","Planilha de corte do restante da Nau Laguna","Entrega CBA (Santa Catarina)"]}};
 
   function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
   function cod(o){if(o&&ROT[o.statusCodigo])return o.statusCodigo;if(o&&DE_LAB[o.status])return DE_LAB[o.status];return "andamento"}
@@ -242,7 +258,7 @@
   function render(){
     montaDias();
     var tit=tituloSemana();document.getElementById("titulo").textContent="Dashboard de Entregas – "+tit;document.title="Dashboard de Entregas – "+tit;
-    var fixa=(SEMANA===SEM_FIXA);document.getElementById("box-cba").classList.toggle("esconde",!fixa);document.getElementById("alerta-jose").classList.toggle("esconde",!fixa);
+    var fixa=(SEMANA===SEM_FIXA);document.getElementById("box-cba").classList.toggle("esconde",!fixa);
     document.getElementById("hoje").disabled=(SEMANA===limita(iso(segunda(deIso(HOJE)))));
     var sl=document.getElementById("semanas");if(sl&&sl.options.length){var tem=[].some.call(sl.options,function(o){return o.value===SEMANA});sl.value=tem?SEMANA:"";}
     var px=document.getElementById("prox");px.disabled=(SEMANA>=ULTIMA_SEMANA);px.title=px.disabled?"Último período: recesso a partir de 24/12":"";
@@ -270,6 +286,7 @@
     document.getElementById("r-aptos").textContent=tot;
     var sq=!sem.length?"Nenhuma entrega nesta semana":semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
     document.getElementById("r-semq").textContent=sq;
+    renderLembretes();
     if(cur){var o=fonte()[cur];if(o){preencheTopo(cur,o)}else{atual.textContent="Esta entrega foi removida.";}}
   }
 
@@ -295,7 +312,7 @@
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
   function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){ov2.classList.remove("on")}
-  document.getElementById("incluir").onclick=function(){abrirNovo(SEMANA)};
+  document.getElementById("incluir").onclick=abrirLembrete;
   var selS=document.getElementById("semanas");
   (function(){var d=deIso("2026-11-09");while(iso(d)<=ULTIMA_SEMANA){var a=new Date(d),b=new Date(d);b.setDate(b.getDate()+6);
     var t=(a.getMonth()===b.getMonth()?pad(a.getDate()):pad(a.getDate())+"/"+pad(a.getMonth()+1))+"–"+pad(b.getDate())+"/"+pad(b.getMonth()+1);
@@ -311,7 +328,41 @@
   window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo()}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo();fecharLembrete()}});
+
+  // lembretes
+  var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
+  function fonteL(){return LEM?LEM:PADRAO_LEM}
+  function renderLembretes(){
+    var f=fonteL(),isos=DIAS.map(function(D){return D.iso});
+    var ids=Object.keys(f).filter(function(k){var o=f[k];return o&&typeof o==="object"&&(isos.indexOf(o.data)>=0||!deIso(o.data))});
+    ids.sort(function(a,b){var x=f[a],y=f[b];return ((x.data||"")<(y.data||"")?-1:(x.data||"")>(y.data||"")?1:0)||((x.criadoEm||0)-(y.criadoEm||0))});
+    boxL.innerHTML="";
+    ids.forEach(function(id){var o=f[id],d=document.createElement("div");d.className="alerta";d.setAttribute("data-id",id);
+      var t=document.createElement("b");t.textContent="⚠ "+(o.titulo||"Lembrete");d.appendChild(t);
+      var it=Array.isArray(o.itens)?o.itens:(o.itens&&typeof o.itens==="object"?Object.keys(o.itens).map(function(k){return o.itens[k]}):(typeof o.itens==="string"?o.itens.split("\n"):[]));
+      it=it.filter(function(x){return x&&String(x).trim()});
+      if(it.length){var ul=document.createElement("ul");it.forEach(function(x){var li=document.createElement("li");li.textContent=x;ul.appendChild(li)});d.appendChild(ul)}
+      if(o.data&&o.data!==HOJE){var dd=document.createElement("div");dd.className="ldata";dd.textContent=rotData(o.data);d.appendChild(dd)}
+      var c=document.createElement("button");c.type="button";c.className="concluir";c.textContent="✕ Concluir";c.title="Concluir e remover este lembrete";
+      c.onclick=function(){if(!window.confirm('Concluir o lembrete "'+(o.titulo||"")+'"? Ele some para todos.'))return;
+        req("DELETE","/lembretes/"+id+".json").then(function(){if(LEM){delete LEM[id]}renderLembretes()}).catch(function(){window.alert("Não foi possível concluir (sem conexão).")})};
+      d.appendChild(c);boxL.appendChild(d)});
+  }
+  function abrirLembrete(){var isos=DIAS.map(function(D){return D.iso});
+    lT.value="";lI.value="";lD.value=(isos.indexOf(HOJE)>=0)?HOJE:SEMANA;ok3.textContent="";ok3.style.color="";ov3.classList.add("on");lT.focus()}
+  function fecharLembrete(){ov3.classList.remove("on")}
+  document.getElementById("fechar3").onclick=fecharLembrete;document.getElementById("cancelar3").onclick=fecharLembrete;
+  ov3.addEventListener("click",function(e){if(e.target===ov3)fecharLembrete()});
+  document.getElementById("salvar3").onclick=function(){
+    var t=lT.value.trim();if(!t){erro(ok3,"Informe o título.");lT.focus();return}
+    var it=lI.value.split("\n").map(function(x){return x.trim()}).filter(Boolean),f=fonteL(),id;
+    do{id=slug(t)+"-"+Date.now().toString(36).slice(-4)+Math.random().toString(36).slice(2,4)}while(f[id]);
+    var o={titulo:t,data:lD.value||"",criadoEm:Date.now()};if(it.length)o.itens=it;
+    ok3.style.color="";ok3.textContent="Salvando…";
+    req("PUT","/lembretes/"+id+".json",o).then(function(){if(LEM){LEM[id]=o;renderLembretes()}ok3.textContent="Incluído para todos.";setTimeout(fecharLembrete,700)})
+      .catch(function(){erro(ok3,"Não foi possível salvar (sem conexão). Tente de novo.")});
+  };
   function slug(t){var s=String(t).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,30);return s||"entrega"}
   function novoId(nome){var f=fonte(),id;do{id=slug(nome)+"-"+Date.now().toString(36).slice(-4)+Math.random().toString(36).slice(2,4)}while(f[id]);return id}
   function erro(el,msg){el.style.color="#c0392b";el.textContent=msg}
@@ -356,26 +407,30 @@
     if(patch&&data&&typeof data==="object"){if(!o[k]||typeof o[k]!=="object")o[k]={};Object.keys(data).forEach(function(j){if(data[j]===null)delete o[k][j];else o[k][j]=data[j]})}
     else if(data===null){delete o[k]}else{o[k]=data}
   }
-  function aplica(path,data,patch){
+  function mescla(base,path,data,patch){
     var parts=path.split("/").filter(Boolean);
     if(!parts.length){
-      if(patch){REM=REM||{};Object.keys(data||{}).forEach(function(k){if(data[k]===null)delete REM[k];else REM[k]=data[k]})}
-      else{REM=(data&&typeof data==="object")?data:{}}
-    }else{REM=REM||{};setp(REM,parts,data,patch)}
-    render();
+      if(patch){base=base||{};Object.keys(data||{}).forEach(function(k){if(data[k]===null)delete base[k];else base[k]=data[k]})}
+      else{base=(data&&typeof data==="object")?data:{}}
+    }else{base=base||{};setp(base,parts,data,patch)}
+    return base;
   }
-  function ouvir(){
+  var CON={entregas:false,lembretes:false};
+  function marca(k,on){CON[k]=on;estado(CON.entregas&&CON.lembretes)}
+  function ouvir(caminho,aoMudar){
     if(!window.EventSource){estado(false);return}
-    var es=new EventSource(DB+"/entregas.json");
-    function h(patch){return function(ev){try{var m=JSON.parse(ev.data);aplica(m.path,m.data,patch);estado(true)}catch(e){}}}
+    var es=new EventSource(DB+"/"+caminho+".json");
+    function h(patch){return function(ev){try{var m=JSON.parse(ev.data);aoMudar(m.path,m.data,patch);marca(caminho,true)}catch(e){}}}
     es.addEventListener("put",h(false));es.addEventListener("patch",h(true));
-    es.addEventListener("keep-alive",function(){estado(true)});
-    es.addEventListener("cancel",function(){estado(false)});
-    es.addEventListener("auth_revoked",function(){estado(false)});
-    es.onopen=function(){estado(true)};
-    es.onerror=function(){estado(false)};
+    es.addEventListener("keep-alive",function(){marca(caminho,true)});
+    es.addEventListener("cancel",function(){marca(caminho,false)});
+    es.addEventListener("auth_revoked",function(){marca(caminho,false)});
+    es.onopen=function(){marca(caminho,true)};
+    es.onerror=function(){marca(caminho,false)};
   }
-  render();ouvir();
+  render();
+  ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render()});
+  ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes()});
 })();
 </script>
 </body>

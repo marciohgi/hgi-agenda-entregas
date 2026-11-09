@@ -3,6 +3,10 @@
     "entregas": {
       ".read": true,
       ".write": true
+    },
+    "lembretes": {
+      ".read": true,
+      ".write": true
     }
   }
 }
