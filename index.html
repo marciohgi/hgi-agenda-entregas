@@ -258,7 +258,7 @@
     sem.forEach(function(x){var q=qnum(x.o);if(q)tot+=q;else semq.push(x.o.nome||x.id)});
     document.getElementById("r-total").textContent=sem.length;
     document.getElementById("r-aptos").textContent=tot;
-    var sq=semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
+    var sq=!sem.length?"Nenhuma entrega nesta semana":semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
     document.getElementById("r-semq").textContent=sq;
     if(cur){var o=fonte()[cur];if(o){preencheTopo(cur,o)}else{atual.textContent="Esta entrega foi removida.";}}
   }
