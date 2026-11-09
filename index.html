@@ -70,6 +70,9 @@
   .outras .lista{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
   .outras .item{width:auto;min-width:170px;margin:0}
   @media (max-width:600px){.campos{grid-template-columns:1fr}}
+  .add-dia{display:block;width:100%;background:transparent;border:1.5px dashed #9fb1c6;border-radius:5px;color:#2f5d8a;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;margin-top:2px;cursor:pointer;text-align:center}
+  .add-dia:hover{background:#eef3f9;border-color:#2f5d8a}
+  .outras .add-dia{width:auto;min-width:120px;margin:0}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -213,6 +216,8 @@
     var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x.o);b.appendChild(qt);
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
+  function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
+    b.title=data?"Incluir agenda em "+rotData(data):"Incluir agenda";b.addEventListener("click",function(){abrirNovo(data)});return b}
   function render(){
     var L=lista(),cols=DIAS.map(function(){return []}),fora=[];
     L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else fora.push(x)});
@@ -222,11 +227,13 @@
       td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
       if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
       cols[i].forEach(function(x){td.appendChild(card(x))});
+      td.appendChild(botaoAdd("2026-11-"+D.n));
       tr.appendChild(td);
     });
     outrasL.innerHTML="";
     fora.sort(function(a,b){return (a.o.data||"9")<(b.o.data||"9")?-1:1});
     fora.forEach(function(x){var b=card(x);var d=document.createElement("small");d.className="qtd";d.textContent=rotData(x.o.data);b.appendChild(d);outrasL.appendChild(b)});
+    if(fora.length)outrasL.appendChild(botaoAdd(""));
     outras.classList.toggle("on",fora.length>0);
     // resumo da semana
     var sem=[].concat.apply([],cols),tot=0,semq=[];
@@ -258,9 +265,9 @@
 
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
-  function abrirNovo(){nN.value="";nD.value="2026-11-09";nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:"2026-11-09";nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){ov2.classList.remove("on")}
-  document.getElementById("incluir").onclick=abrirNovo;
+  document.getElementById("incluir").onclick=function(){abrirNovo("2026-11-09")};
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
   document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo()}});
