@@ -22,10 +22,10 @@
   .legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#3d4d5f;margin:0 4px 6px}
   .legenda span{display:flex;align-items:center;gap:6px}
   .legenda i{width:12px;height:12px;border-radius:3px;display:inline-block}
-  table{width:100%;border-collapse:separate;border-spacing:8px;table-layout:fixed}
-  th{background:#2f5d8a;color:#fff;font-size:13px;font-weight:600;padding:9px 6px;border-radius:6px}
-  td{background:#fff;border:1px solid #d5dce5;border-radius:8px;vertical-align:top;min-height:230px;height:auto;padding:10px}
-  td.fds{background:#f5f7fa}
+  table.cal{width:100%;border-collapse:separate;border-spacing:8px;table-layout:fixed}
+  table.cal th{background:#2f5d8a;color:#fff;font-size:13px;font-weight:600;padding:9px 6px;border-radius:6px}
+  table.cal td{background:#fff;border:1px solid #d5dce5;border-radius:8px;vertical-align:top;min-height:230px;height:auto;padding:10px}
+  table.cal td.fds{background:#f5f7fa}
   .num{font-size:26px;font-weight:700;color:#1e3a5f;line-height:1}
   .dia{font-size:12px;color:#5b6b7d;margin:4px 0 10px}
   .vazio{font-size:12px;color:#94a1b2;font-style:italic}
@@ -39,10 +39,10 @@
   .s-critico{background:#fbe3e1;border-color:#c0392b;color:#7b1f16}
   .ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
   .ov.on{display:flex}
-  .modal{background:#fff;border-radius:10px;max-width:620px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:visible}
+  .modal{background:#fff;border-radius:10px;max-width:680px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:visible;max-height:96vh}
   .modal h2{margin:0;background:#1e3a5f;color:#fff;font-size:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:10px 10px 0 0}
   .modal h2 button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1}
-  .mb{padding:16px 18px}
+  .mb{padding:16px 18px;max-height:calc(96vh - 56px);overflow:auto}
   .meta{font-size:13px;color:#3d4d5f;margin-bottom:12px}
   .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:2px 9px;margin-left:6px;color:#fff}
   .p-pronto{background:#2e8b57}.p-andamento{background:#b8900f}.p-aguardando{background:#e07b1a}.p-critico{background:#c0392b}
@@ -76,6 +76,7 @@
   .btn.verm{background:#c0392b}
   .campos{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
   .campos.tres{grid-template-columns:1fr 1fr 1fr;gap:10px 10px}
+  .campos.quatro{grid-template-columns:1fr 1fr 1fr 1fr;gap:10px 8px}
   .campos .full{grid-column:1/-1}
   .campos label{display:block}
   .campos input,.campos select,.sel-etapa{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #b8c4d2;border-radius:6px;margin-top:4px;background:#fff}
@@ -102,7 +103,8 @@
   .outras.on{display:block}
   .outras .lista{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
   .outras .item{width:auto;min-width:170px;margin:0}
-  @media (max-width:600px){.campos,.campos.tres{grid-template-columns:1fr}}
+  @media (max-width:900px){.campos.quatro{grid-template-columns:1fr 1fr}}
+  @media (max-width:600px){.campos,.campos.tres,.campos.quatro{grid-template-columns:1fr}}
   .add-dia{display:block;width:100%;background:transparent;border:1.5px dashed #9fb1c6;border-radius:5px;color:#2f5d8a;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;margin-top:2px;cursor:pointer;text-align:center}
   .add-dia:hover{background:#eef3f9;border-color:#2f5d8a}
   .outras .add-dia{width:auto;min-width:120px;margin:0}
@@ -161,10 +163,81 @@
   .lista-atraso .sec.entrega{color:#c86220}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
-    table,thead,tbody,tr,th,td{display:block;width:100%}
-    thead{display:none}
-    td{height:auto;min-height:80px;margin-bottom:8px}
+    table.cal,table.cal thead,table.cal tbody,table.cal tr,table.cal th,table.cal td{display:block;width:100%}
+    table.cal thead{display:none}
+    table.cal td{height:auto;min-height:80px;margin-bottom:8px}
   }
+  .htop-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}
+  .btn-relatorio{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.7);border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .btn-relatorio:hover{background:rgba(255,255,255,.14)}
+  .dest .dest-parc{font-weight:700;color:#1e3a5f}
+  .dest .dest-parc.ok{color:#2e8b57}
+  .dest .dest-lote{font-weight:700;color:#c86220}
+  .item.alerta-lote-chegando{background:#fff6d0;border-color:#d4a514}
+  .item .alerta-mini.lote-chegando{background:#fff3b0;color:#6a5300;border:1px solid #d4a514}
+  .item.alerta-lote-vencido{background:#fdecea;border-color:#c0392b}
+  .item .alerta-mini.lote-vencido{background:#c0392b;color:#fff;border:1px solid #922b21;animation:pisca-cerca 1s linear infinite}
+  .item.alerta-lote-div{background:#fff0e4;border-color:#c86220}
+  .item .alerta-mini.lote-div{background:#c86220;color:#fff;border:1px solid #9a4a16}
+  .item.alerta-sobrecarga{box-shadow:inset 0 0 0 1px #E87731}
+  .item .alerta-mini.sobrecarga{background:#1f2a37;color:#fff;border:1px solid #E87731}
+  .alerta-lote-chegando.alerta{background:#fff6d0;border-color:#d4a514;color:#6a5300}
+  .alerta-lote-chegando.alerta .ldata{color:#6a5300}
+  .alerta-lote-vencido.alerta{background:#c0392b;border-color:#7b1f16;color:#fff;animation:pisca-cerca 1s linear infinite}
+  .alerta-lote-vencido.alerta b,.alerta-lote-vencido.alerta .ldata{color:#fff}
+  .alerta-lote-div.alerta{background:#c86220;border-color:#8a3d10;color:#fff}
+  .alerta-lote-div.alerta b,.alerta-lote-div.alerta .ldata{color:#fff}
+  .alerta-sobrecarga.alerta{background:#1f2a37;border-color:#E87731;color:#fff}
+  .alerta-sobrecarga.alerta b,.alerta-sobrecarga.alerta .ldata{color:#fff}
+  .lista-atraso .obra.lote-vencido{background:#fdecea;border-color:#c0392b}
+  .lista-atraso .obra.lote-chegando{background:#fff6d0;border-color:#d4a514}
+  .lista-atraso .obra.lote-div{background:#fff0e4;border-color:#c86220}
+  .lista-atraso .obra.sobrecarga{background:#1f2a37;color:#fff;border-color:#E87731}
+  .lista-atraso .obra.sobrecarga .nome,.lista-atraso .obra.sobrecarga .det,.lista-atraso .obra.sobrecarga .dias{color:#fff}
+  .lista-atraso .sec.lote{color:#c86220}
+  .lista-atraso .sec.sobre{color:#1f2a37}
+  .sec-parciais,.sec-lotes{background:#f7f9fc;border:1px solid #d5dce5;border-radius:8px;padding:10px 12px;margin:0 0 12px}
+  .sec-parciais .rot,.sec-lotes .rot{margin-bottom:6px}
+  .parcial-resumo{font-size:14px;font-weight:700;color:#1e3a5f;margin:2px 0 10px}
+  .parcial-resumo .ok-int{color:#2e8b57}
+  .lista-parciais .parc{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e3e8ee;font-size:13px}
+  .lista-parciais .parc:last-child{border-bottom:0}
+  .lista-parciais .parc button{background:#fbe3e1;color:#7b1f16;border:0;border-radius:5px;padding:4px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+  .plan-lote{display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:end;margin-bottom:6px}
+  .plan-lote .lab{font-size:13px;font-weight:700;color:#1e3a5f;padding-bottom:8px}
+  .lote-soma{font-size:12px;color:#5b6b7d;margin-top:4px}
+  .lote-soma.erro{color:#c0392b;font-weight:700}
+  .btn.mini{padding:8px 14px;font-size:13px;margin-top:8px}
+  .parc-ok{font-size:12px;margin-top:6px}
+  .modal-rel{max-width:900px}
+  .folha-rel{background:#fff;color:#1f2a37;padding:18px 20px;border:1px solid #d5dce5;border-radius:8px;margin-top:12px}
+  .folha-rel .rel-topo{display:flex;align-items:center;gap:16px;border-bottom:3px solid #E87731;padding-bottom:12px;margin-bottom:16px}
+  .folha-rel .rel-topo img{height:56px;width:auto;display:block}
+  .folha-rel .rel-topo h1{margin:0;font-size:20px;color:#1f2a37}
+  .folha-rel .rel-topo p{margin:4px 0 0;color:#5b6b7d;font-size:13px}
+  .folha-rel .rel-dia{margin:0 0 18px}
+  .folha-rel .rel-dia h3{margin:0 0 8px;background:#1f2a37;color:#fff;padding:7px 10px;font-size:13px;letter-spacing:.3px;border-left:4px solid #E87731}
+  #relatorio-print table{border-collapse:collapse;border-spacing:0;table-layout:auto;width:100%;display:table;margin:0}
+  #relatorio-print thead{display:table-header-group}
+  #relatorio-print tbody{display:table-row-group}
+  #relatorio-print tfoot{display:table-footer-group}
+  #relatorio-print tr{display:table-row}
+  #relatorio-print th,#relatorio-print td{display:table-cell;width:auto;min-height:0;height:auto;margin:0;border:1px solid #d0d5dc;border-radius:0;vertical-align:middle;padding:6px 8px;background:#fff;font-size:12px;color:#1f2a37;font-weight:400}
+  #relatorio-print th{background:#2C2C2C;color:#fff;font-weight:700;text-align:left}
+  #relatorio-print tfoot td,#relatorio-print .tot-dia{font-weight:700;background:#f4f4f4}
+  .folha-rel .rel-geral{margin-top:8px;background:#1f2a37;color:#fff;padding:10px 12px;font-weight:700;border-left:4px solid #E87731}
+  .folha-rel .rel-vazio{color:#5b6b7d;font-style:italic}
+  .rel-dica{font-size:12px;color:#5b6b7d;margin:8px 0 0}
+  @media print{
+    @page{size:A4;margin:12mm}
+    body{background:#fff}
+    .wrap,.dd-etapa,.ov:not(.ov-rel),.ov-rel .no-print,.ov-rel h2{display:none!important}
+    .ov-rel{position:static!important;display:block!important;background:none;padding:0;inset:auto}
+    .ov-rel .modal{box-shadow:none;max-width:none;width:100%;max-height:none;border-radius:0}
+    .ov-rel .mb{display:none!important}
+    #relatorio-print{border:0;padding:0;margin:0;border-radius:0}
+  }
+  @media (prefers-reduced-motion:reduce){.item .alerta-mini.lote-vencido,.alerta-lote-vencido.alerta{animation:none}}
 </style>
 </head>
 <body>
@@ -175,7 +248,7 @@
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
     <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
-    </div><button class="btn-incluir" id="incluir">+ Incluir lembrete</button></div>
+    </div><div class="htop-acoes"><button type="button" class="btn-relatorio" id="relatorio">Relatório de pré-impressão</button><button class="btn-incluir" id="incluir">+ Incluir lembrete</button></div></div>
   </header>
 
   <div class="resumo">
@@ -194,7 +267,7 @@
     <span><i style="background:#c0392b"></i>Não pode falhar</span>
   </div>
 
-  <table>
+  <table class="cal">
     <thead><tr><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th><th>Sábado</th><th>Domingo</th></tr></thead>
     <tbody><tr id="semana"></tr></tbody>
   </table>
@@ -211,13 +284,34 @@
       <div class="meta" id="meta"></div>
       <div class="destaque-ficha" id="destaque-ficha"></div>
       <div class="cerca-box" id="cerca-box"></div>
-      <div class="campos tres">
+      <div class="campos quatro">
         <label class="rot">Status<select id="e-status"></select></label>
         <label class="rot">Padrão<select id="e-padrao"></select></label>
         <label class="rot">Estágio<button type="button" class="sel-etapa" id="e-etapa" aria-haspopup="listbox" aria-expanded="false" data-valor=""><span class="sel-etapa-txt">— estágio —</span><span class="sel-etapa-seta" aria-hidden="true">▾</span></button></label>
+        <label class="rot">Lote<select id="e-lote"></select></label>
       </div>
       <div class="marcadores-etapa" id="e-marcadores" aria-label="Progresso do estágio"></div>
       <div class="estagio-nota" id="e-etapa-nota"></div>
+      <div class="sec-lotes" id="sec-lotes" hidden>
+        <div class="rot">Planejamento dos lotes</div>
+        <div id="e-lotes-plan"></div>
+        <div class="lote-soma" id="e-lotes-soma"></div>
+      </div>
+      <div class="sec-parciais" id="sec-parciais">
+        <div class="rot">Entregas parciais</div>
+        <div class="parcial-resumo" id="e-parcial-resumo"></div>
+        <div class="campos">
+          <label class="rot">Data prevista do próximo lote<input type="date" id="e-prox-lote"></label>
+        </div>
+        <div class="lista-parciais" id="e-parciais-lista"></div>
+        <div class="campos tres" style="margin-top:8px">
+          <label class="rot">Qtd deste lançamento<input type="number" min="1" step="1" id="e-parc-qtd" placeholder="qtd"></label>
+          <label class="rot">Data da entrega<input type="date" id="e-parc-data"></label>
+          <label class="rot">Lote<select id="e-parc-lote"></select></label>
+        </div>
+        <button type="button" class="btn sec mini" id="e-parc-add">Lançar entrega parcial</button>
+        <div class="parc-ok" id="e-parc-ok"></div>
+      </div>
       <div class="campos">
         <label class="rot">Data<input type="date" id="e-data"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="e-qtd" placeholder="qtd a definir"></label>
@@ -241,10 +335,11 @@
         <label class="rot">Data<input type="date" id="n-data" value="2026-11-09"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="n-qtd" placeholder="qtd a definir"></label>
       </div>
-      <div class="campos tres">
+      <div class="campos quatro">
         <label class="rot">Status<select id="n-status"></select></label>
         <label class="rot">Padrão<select id="n-padrao"></select></label>
         <label class="rot">Estágio<button type="button" class="sel-etapa" id="n-etapa" aria-haspopup="listbox" aria-expanded="false" data-valor=""><span class="sel-etapa-txt">— estágio —</span><span class="sel-etapa-seta" aria-hidden="true">▾</span></button></label>
+        <label class="rot">Lote<select id="n-lote"></select></label>
       </div>
       <div class="marcadores-etapa" id="n-marcadores" aria-label="Progresso do estágio"></div>
       <div class="rot">Situação / observações</div>
@@ -279,7 +374,28 @@
   </div>
 </div>
 
+<div class="ov ov-rel" id="ov-rel">
+  <div class="modal modal-rel" role="dialog" aria-labelledby="mt-rel">
+    <h2><span id="mt-rel">Relatório de pré-impressão</span><button type="button" id="fechar-rel" aria-label="Fechar">×</button></h2>
+    <div class="mb no-print">
+      <div class="campos">
+        <label class="rot">Data inicial<input type="date" id="rel-ini"></label>
+        <label class="rot">Data final<input type="date" id="rel-fim"></label>
+      </div>
+      <div class="acoes" style="margin-top:8px">
+        <button type="button" class="btn" id="rel-gerar">Gerar relatório</button>
+        <button type="button" class="btn" id="rel-print">Imprimir</button>
+        <button type="button" class="btn sec" id="rel-pdf">Salvar PDF</button>
+        <button type="button" class="btn sec" id="cancelar-rel">Fechar</button>
+      </div>
+      <p class="rel-dica" id="rel-dica" hidden>No diálogo de impressão, escolha “Salvar como PDF” como destino.</p>
+    </div>
+    <div id="relatorio-print" class="folha-rel" hidden></div>
+  </div>
+</div>
+
 <div class="dd-etapa" id="e-dd-etapa" role="listbox" hidden></div>
+
 <div class="dd-etapa" id="n-dd-etapa" role="listbox" hidden></div>
 
 <script>
@@ -355,12 +471,12 @@
   function ehDiaUtil(is){if(!is||(is>=RECESSO_CERCA_INI&&is<=RECESSO_CERCA_FIM))return false;var d=deIso(is);if(!d)return false;var w=d.getDay();return w!==0&&w!==6}
   function recuaDiasUteis(data,n){var d=data,falta=n,guard=0;while(falta>0&&guard++<400){d=somaIso(d,-1);if(ehDiaUtil(d))falta--}return d}
   function diasCorridos(a,b){var da=deIso(a),db=deIso(b);if(!da||!db)return 0;return Math.round((db-da)/86400000)}
-  function diasProducaoCerca(o){var i=infoPadrao(o&&o.padrao),q=qnum(o);if(!i||!q||!deIso(o.data))return 0;return Math.ceil(q/i.min)}
-  function dataCerca(o){var n=diasProducaoCerca(o);return n?recuaDiasUteis(o.data,n):null}
+  function diasProducaoCerca(o){var i=infoPadrao(o&&o.padrao),q=qtdCerca(o),d=dataRefEntrega(o);if(!i||!q||!deIso(d))return 0;return Math.ceil(q/i.min)}
+  function dataCerca(o){var n=diasProducaoCerca(o),d=dataRefEntrega(o);return n?recuaDiasUteis(d,n):null}
   function entrouProducao(o){if(etapaNum(o)>=3)return true;if(o&&o.entrouProducao)return true;var c=cod(o);return c==="pronto"||c==="andamento"}
-  function estadoCerca(o,hoje){hoje=hoje||HOJE;if(!infoPadrao(o&&o.padrao)||!qnum(o)||!deIso(o&&o.data))return {tipo:"incompleto",cerca:null};var cerca=dataCerca(o);if(entrouProducao(o))return {tipo:"entrou",cerca:cerca};if(hoje===cerca)return {tipo:"hoje",cerca:cerca};if(hoje>cerca)return {tipo:"atraso",cerca:cerca,n:diasCorridos(cerca,hoje)};var ini=somaIso(cerca,-7);if(hoje>=ini&&hoje<cerca)return {tipo:"programar",cerca:cerca,n:diasCorridos(hoje,cerca)};return {tipo:"ok",cerca:cerca}}
+  function estadoCerca(o,hoje){hoje=hoje||HOJE;if(integralEntregue(o))return {tipo:"entregue",cerca:null};if(!infoPadrao(o&&o.padrao)||!qtdCerca(o)||!deIso(dataRefEntrega(o)))return {tipo:"incompleto",cerca:null};var cerca=dataCerca(o);if(entrouProducao(o))return {tipo:"entrou",cerca:cerca};if(hoje===cerca)return {tipo:"hoje",cerca:cerca};if(hoje>cerca)return {tipo:"atraso",cerca:cerca,n:diasCorridos(cerca,hoje)};var ini=somaIso(cerca,-7);if(hoje>=ini&&hoje<cerca)return {tipo:"programar",cerca:cerca,n:diasCorridos(hoje,cerca)};return {tipo:"ok",cerca:cerca}}
   function textoAlertaCerca(st){if(!st)return null;if(st.tipo==="programar")return {tit:"Uma semana para entrar no prazo limite",sub:st.n===1?"falta 1 dia":"faltam "+st.n+" dias"};if(st.tipo==="hoje")return {tit:"Tem que entrar na produção hoje",sub:"Cerca hoje"};if(st.tipo==="atraso")return {tit:"Estamos atrasados — acelerar essa obra",sub:st.n===1?"1 dia de atraso":st.n+" dias de atraso"};return null}
-  function estadoEntrega(o,hoje){hoje=hoje||HOJE;if(!o||!deIso(o.data))return {tipo:"ok"};if(hoje===o.data)return {tipo:"dia"};if(hoje>o.data&&cod(o)!=="pronto")return {tipo:"vencida",n:diasCorridos(o.data,hoje)};return {tipo:"ok"}}
+  function estadoEntrega(o,hoje){hoje=hoje||HOJE;if(integralEntregue(o))return {tipo:"ok"};var d=dataRefEntrega(o);if(!o||!deIso(d))return {tipo:"ok"};if(hoje===d)return {tipo:"dia",data:d};if(hoje>d&&cod(o)!=="pronto")return {tipo:"vencida",n:diasCorridos(d,hoje),data:d};return {tipo:"ok"}}
   function textoAlertaEntrega(st){if(!st)return null;if(st.tipo==="dia")return {tit:"🚚 Hoje é dia de entrega",sub:"Entrega prevista para hoje"};if(st.tipo==="vencida")return {tit:"Entrega vencida há "+(st.n===1?"1 dia":st.n+" dias"),sub:"Após a data prevista"};return null}
   function limita(sem){return sem>ULTIMA_SEMANA?ULTIMA_SEMANA:sem}
   SEMANA=limita(SEMANA);
@@ -395,6 +511,157 @@
   function qnum(o){var q=o&&o.qtd;q=(typeof q==="string")?parseInt(q,10):q;return (typeof q==="number"&&isFinite(q)&&q>0)?q:0}
   function qtdTxt(o){var q=qnum(o);return q?q+" aptos":"qtd a definir"}
   function qtdImoveis(o){var q=qnum(o);return q?q+(q===1?" imóvel":" imóveis"):"Qtd a definir"}
+
+  function numLotes(o){var n=o&&o.lotes;n=(typeof n==="string")?parseInt(n,10):n;return (typeof n==="number"&&isFinite(n)&&n>=1&&n<=6)?n:0}
+  function rotLotes(n){n=+n;if(n===1)return "Integral";if(n>=2&&n<=6)return n+" lotes";return "— lote —"}
+  function listaParciais(o){
+    var p=o&&o.entregasParciais,arr=[],k,x,q;
+    if(!p||typeof p!=="object")return arr;
+    for(k in p)if(Object.prototype.hasOwnProperty.call(p,k)){
+      x=p[k];if(!x||typeof x!=="object")continue;
+      q=(typeof x.qtd==="string")?parseInt(x.qtd,10):x.qtd;
+      arr.push({id:k,qtd:(typeof q==="number"&&isFinite(q)&&q>0)?q:0,data:x.data||"",criadoEm:x.criadoEm||0,lote:parseInt(x.lote,10)||0});
+    }
+    arr.sort(function(a,b){return (a.data||"").localeCompare(b.data||"")||((a.criadoEm||0)-(b.criadoEm||0))||(a.id<b.id?-1:1)});
+    return arr;
+  }
+  function entregueTotal(o){return listaParciais(o).reduce(function(s,x){return s+x.qtd},0)}
+  function faltam(o){var q=qnum(o),e=entregueTotal(o);return q?Math.max(0,q-e):0}
+  function integralEntregue(o){var q=qnum(o);return q>0&&entregueTotal(o)>=q}
+  function obraPronta(o){return integralEntregue(o)||cod(o)==="pronto"}
+  function listaLotesPrevistos(o){
+    var p=o&&o.lotesPrevistos,arr=[],k,x,n,q;
+    if(p&&typeof p==="object"){
+      for(k in p)if(Object.prototype.hasOwnProperty.call(p,k)){
+        x=p[k];if(!x||typeof x!=="object")continue;
+        n=parseInt(x.n||k,10)||0;q=(typeof x.qtd==="string")?parseInt(x.qtd,10):x.qtd;
+        if(n>=1)arr.push({n:n,qtd:(typeof q==="number"&&isFinite(q)&&q>0)?q:0,data:x.data||"",implicito:false});
+      }
+      arr.sort(function(a,b){return a.n-b.n});
+    }
+    if(!arr.length){
+      var qtd=qnum(o),d="";
+      if(faltam(o)>0&&deIso(o&&o.proximoLoteData))d=o.proximoLoteData;
+      else d=(o&&o.data)||"";
+      if(qtd||deIso(d))arr.push({n:1,qtd:qtd,data:d,implicito:true});
+    }
+    return arr;
+  }
+  function entregueNoLote(o,n){
+    n=parseInt(n,10)||0;
+    var ps=listaParciais(o),lots=listaLotesPrevistos(o),ent={},i,lt,rest,left;
+    ps.filter(function(p){return p.lote>=1}).forEach(function(p){ent[p.lote]=(ent[p.lote]||0)+p.qtd});
+    ps.filter(function(p){return !p.lote}).forEach(function(p){
+      left=p.qtd;
+      for(i=0;i<lots.length&&left>0;i++){
+        lt=lots[i];rest=Math.max(0,(lt.qtd||0)-(ent[lt.n]||0));
+        if(rest<=0)continue;
+        var take=Math.min(rest,left);ent[lt.n]=(ent[lt.n]||0)+take;left-=take;
+      }
+      if(left>0){var last=lots.length?lots[lots.length-1].n:(n||1);ent[last]=(ent[last]||0)+left}
+    });
+    return ent[n]||0;
+  }
+  function saldoLote(o,lt){return Math.max(0,(lt.qtd||0)-entregueNoLote(o,lt.n))}
+  function proximoLotePendente(o){
+    var lots=listaLotesPrevistos(o),i,lt,ent,sal;
+    for(i=0;i<lots.length;i++){
+      lt=lots[i];ent=entregueNoLote(o,lt.n);sal=Math.max(0,(lt.qtd||0)-ent);
+      if(sal>0||(!lt.qtd&&!integralEntregue(o)))return {n:lt.n,qtd:lt.qtd,data:lt.data,saldo:sal||faltam(o),entregue:ent};
+    }
+    return null;
+  }
+  function dataRefEntrega(o){
+    if(faltam(o)>0&&deIso(o&&o.proximoLoteData))return o.proximoLoteData;
+    var pend=proximoLotePendente(o);
+    if(pend&&deIso(pend.data))return pend.data;
+    return (o&&o.data)||"";
+  }
+  function qtdCerca(o){return qnum(o)?faltam(o):0}
+  function ritmoObra(o){var i=infoPadrao(o&&o.padrao);return i?{ritmo:i.min,estimado:false}:{ritmo:50,estimado:true}}
+  function cargaDias(qtd,o){var r=ritmoObra(o),q=qtd||0;return {dias:q?Math.ceil(q/r.ritmo):0,estimado:r.estimado,ritmo:r.ritmo}}
+  function diasUteisNoIntervalo(a,b){
+    if(!deIso(a)||!deIso(b)||b<a)return 0;
+    var n=0,d=a,guard=0;while(d<=b&&guard++<800){if(ehDiaUtil(d))n++;d=somaIso(d,1)}return n;
+  }
+  function lotesPendentesCarga(){
+    var out=[];
+    lista().forEach(function(x){
+      var o=x.o;if(obraPronta(o))return;
+      var lots=listaLotesPrevistos(o),expl=lots.length&&!lots[0].implicito,i,lt,saldo,c,data;
+      if(expl){
+        for(i=0;i<lots.length;i++){
+          lt=lots[i];saldo=saldoLote(o,lt);if(saldo<=0)continue;
+          data=deIso(lt.data)?lt.data:dataRefEntrega(o);if(!deIso(data))continue;
+          c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:lt.n,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado});
+        }
+      }else{
+        saldo=qnum(o)?faltam(o):0;if(saldo<=0)return;
+        data=dataRefEntrega(o);if(!deIso(data))return;
+        c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:0,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado});
+      }
+    });
+    return out;
+  }
+  function alertasSobrecarga(hoje,extra){
+    hoje=hoje||HOJE;
+    var pend=lotesPendentesCarga();
+    if(extra){
+      pend=pend.filter(function(p){return !(extra.id&&p.id===extra.id&&((extra.lote||0)===(p.lote||0)))});
+      if(extra.dias>0&&deIso(extra.data))pend.push(extra);
+    }
+    var datas={},itens=[];
+    pend.forEach(function(p){if(p.data>=hoje)datas[p.data]=1});
+    Object.keys(datas).sort().forEach(function(D){
+      var Y=diasUteisNoIntervalo(hoje,D),X=0,est=false;
+      pend.forEach(function(p){if(p.data<=D){X+=p.dias;if(p.estimado)est=true}});
+      if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,ids:pend.filter(function(p){return p.data<=D}).map(function(p){return p.id}),
+        tit:"Sobrecarga: janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,
+        sub:est?"Ritmo 50/dia (estimado) em ao menos uma obra · pulando recesso 24–31/12":"Soma das cargas dos lotes pendentes · pulando recesso 24–31/12"});
+    });
+    return itens;
+  }
+  function usaAlertasPorLote(o){var lots=listaLotesPrevistos(o);return numLotes(o)>=2||(lots.length&&!lots[0].implicito)}
+  function estadosLotes(o,hoje){
+    hoje=hoje||HOJE;var out=[];
+    if(!usaAlertasPorLote(o)||integralEntregue(o))return out;
+    listaLotesPrevistos(o).forEach(function(lt){
+      var ent=entregueNoLote(o,lt.n),prev=lt.qtd||0,saldo=Math.max(0,prev-ent),d=deIso(lt.data)?lt.data:"",st={n:lt.n,previsto:prev,entregue:ent,saldo:saldo,data:d,tipos:[]};
+      if(saldo>0&&d){
+        if(hoje===d)st.tipos.push({tipo:"dia",tit:"🚚 Hoje é dia de entrega do Lote "+lt.n,sub:"Lote "+lt.n+" previsto para hoje"});
+        else if(hoje>d){var nv=diasCorridos(d,hoje);st.tipos.push({tipo:"vencido",tit:"Lote "+lt.n+" vencido há "+(nv===1?"1 dia":nv+" dias")+" — não entregue",sub:"Previsto "+rotDataCurto(d),n:nv})}
+        else{var ini=somaIso(d,-3);if(hoje>=ini&&hoje<d){var nc=diasCorridos(hoje,d);st.tipos.push({tipo:"chegando",tit:"Lote "+lt.n+" chegando — "+(nc===1?"falta 1 dia":"faltam "+nc+" dias"),sub:"Previsto "+rotDataCurto(d),n:nc})}}
+      }
+      if(prev>0&&ent>0&&ent!==prev&&(ent>prev||!d||hoje>=d)){
+        var dif=ent-prev;st.tipos.push({tipo:"div",tit:"Lote "+lt.n+": previsto "+prev+", entregue "+ent+" ("+(dif>0?"+":"")+dif+")",sub:"Quantidade diverge do planejado"});
+      }
+      if(st.tipos.length)out.push(st);
+    });
+    return out;
+  }
+  function txtParcialCard(o){
+    var q=qnum(o),ent=entregueTotal(o);
+    if(integralEntregue(o))return "Entregue integral";
+    if(!q||(ent<=0&&numLotes(o)<2&&!deIso(o.proximoLoteData)&&!usaAlertasPorLote(o)))return "";
+    var t="Entregue "+ent+"/"+q+" · faltam "+faltam(o);
+    var d=o.proximoLoteData||((proximoLotePendente(o)||{}).data)||"";
+    if(deIso(d)&&faltam(o)>0)t+=" · próximo lote "+rotDataCurto(d);
+    return t;
+  }
+  function aparicoesNaSemana(x){
+    var o=x.o,map={};
+    function add(d,rotulo){if(!deIso(d))return;if(!map[d])map[d]={data:d,rotulo:rotulo||""};else if(rotulo&&!map[d].rotulo)map[d].rotulo=rotulo}
+    add(o.data,"");
+    listaLotesPrevistos(o).forEach(function(lt){
+      if(lt.implicito||!deIso(lt.data))return;
+      add(lt.data,"Lote "+lt.n+" — faltam "+saldoLote(o,lt));
+    });
+    if(deIso(o.proximoLoteData)){
+      var pl=proximoLotePendente(o);
+      add(o.proximoLoteData,"Lote "+(pl?pl.n:"")+" — faltam "+faltam(o));
+    }
+    return map;
+  }
   function rotDataCurto(data){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(data||"");if(!m)return "Data a definir";return m[3]+"/"+m[2]+(m[1]!=="2026"?"/"+m[1]:"")}
   function fonte(){return REM?REM:PADRAO}
   function lista(){
@@ -409,23 +676,37 @@
     var dt=new Date(+m[1],+m[2]-1,+m[3]);return m[3]+"/"+m[2]+(m[1]!=="2026"?"/"+m[1]:"")+" · "+SEMANAS[dt.getDay()]}
 
   var tr=document.getElementById("semana"),outras=document.getElementById("outras"),outrasL=document.getElementById("outras-lista");
-  function card(x){
+  function card(x,opt){
+    opt=opt||{};
     var o=x.o,c=cod(o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];b.setAttribute("data-id",x.id);
     var nm=document.createElement("span");nm.className="nome";nm.textContent=o.nome||x.id;b.appendChild(nm);
     var dest=document.createElement("div");dest.className="dest";
     function linha(cls,txt){var d=document.createElement("div");d.className=cls;d.textContent=txt;dest.appendChild(d)}
     linha("dest-qtd",qtdImoveis(o));
+    if(numLotes(o))linha("dest-lote",rotLotes(numLotes(o)));
     linha("dest-pad",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
     linha("dest-etapa",rotEtapa(etapaNum(o),true));
     linha("dest-data",deIso(o.data)?"Entrega "+rotDataCurto(o.data):"Data a definir");
+    if(opt.rotuloLote)linha("dest-lote",opt.rotuloLote);
+    var parc=txtParcialCard(o);if(parc)linha(integralEntregue(o)?"dest-parc ok":"dest-parc",parc);
     var st=estadoCerca(o,HOJE);
     if(st.cerca)linha("dest-cerca","Cerca "+rotDataCurto(st.cerca));
     b.appendChild(dest);
     if(st.tipo==="incompleto"){var miss=document.createElement("span");miss.className="cerca-faltando";miss.textContent="Defina padrão/qtd/data para calcular a cerca";b.appendChild(miss)}
+    function mini(clsItem,clsMini,tit,sub){if(clsItem)b.classList.add(clsItem);var ad=document.createElement("span");ad.className="alerta-mini"+(clsMini?" "+clsMini:"");ad.appendChild(document.createTextNode(tit));if(sub){var sm=document.createElement("small");sm.textContent=sub;ad.appendChild(sm)}b.appendChild(ad)}
     var al=textoAlertaCerca(st);
-    if(al){b.classList.add("alerta-"+st.tipo);var ad=document.createElement("span");ad.className="alerta-mini";ad.appendChild(document.createTextNode(al.tit));if(al.sub){var sm=document.createElement("small");sm.textContent=al.sub;ad.appendChild(sm)}b.appendChild(ad)}
+    if(al)mini("alerta-"+st.tipo,"",al.tit,al.sub);
     var en=estadoEntrega(o,HOJE),alE=textoAlertaEntrega(en);
-    if(alE){b.classList.add(en.tipo==="dia"?"alerta-entrega":"alerta-vencida");var ae=document.createElement("span");ae.className="alerta-mini entrega";ae.appendChild(document.createTextNode(alE.tit));if(alE.sub){var sme=document.createElement("small");sme.textContent=alE.sub;ae.appendChild(sme)}b.appendChild(ae)}
+    if(alE)mini(en.tipo==="dia"?"alerta-entrega":"alerta-vencida","entrega",alE.tit,alE.sub);
+    estadosLotes(o,HOJE).forEach(function(ls){ls.tipos.forEach(function(t){
+      var cls=t.tipo==="chegando"?"alerta-lote-chegando":t.tipo==="vencido"?"alerta-lote-vencido":t.tipo==="div"?"alerta-lote-div":t.tipo==="dia"?"alerta-entrega":"";
+      var cm=t.tipo==="chegando"?"lote-chegando":t.tipo==="vencido"?"lote-vencido":t.tipo==="div"?"lote-div":t.tipo==="dia"?"entrega":"";
+      if(t.tipo==="dia"&&alE&&alE.tit.indexOf("Hoje é dia de entrega")>=0)return;
+      mini(cls,cm,t.tit,t.sub);
+    })});
+    var datasObra=aparicoesNaSemana(x);
+    var sob=alertasSobrecarga(HOJE).filter(function(a){return datasObra[a.data]||(dataRefEntrega(o)===a.data)});
+    sob.forEach(function(a){mini("alerta-sobrecarga","sobrecarga",a.tit,a.sub)});
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
@@ -438,14 +719,18 @@
     var sl=document.getElementById("semanas");if(sl&&sl.options.length){var tem=[].some.call(sl.options,function(o){return o.value===SEMANA});sl.value=tem?SEMANA:"";}
     var px=document.getElementById("prox");px.disabled=(SEMANA>=ULTIMA_SEMANA);px.title=px.disabled?"Último período: recesso a partir de 24/12":"";
     var L=lista(),cols=DIAS.map(function(){return []}),fora=[];
-    L.forEach(function(x){var i=diaDaSemana(x.o.data);if(i>=0)cols[i].push(x);else if(!deIso(x.o.data))fora.push(x)});
+    L.forEach(function(x){
+      var ap=aparicoesNaSemana(x),d,i,alguma=false;
+      for(d in ap)if(Object.prototype.hasOwnProperty.call(ap,d)){i=diaDaSemana(d);if(i>=0){cols[i].push({x:x,rotulo:ap[d].rotulo});alguma=true}}
+      if(!alguma&&!deIso(x.o.data))fora.push(x);
+    });
     tr.innerHTML="";
     DIAS.forEach(function(D,i){
       var td=document.createElement("td");td.className=D.rec?"recesso":(D.fds?"fds":"");
       td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
       if(D.rec){td.innerHTML+='<div class="rec">Recesso</div>'}
       else if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
-      cols[i].forEach(function(x){td.appendChild(card(x))});
+      cols[i].forEach(function(it){td.appendChild(card(it.x,{rotuloLote:it.rotulo}))});
       td.appendChild(botaoAdd(D.iso));
       tr.appendChild(td);
     });
@@ -454,10 +739,10 @@
     fora.forEach(function(x){outrasL.appendChild(card(x))});
     if(fora.length)outrasL.appendChild(botaoAdd(""));
     outras.classList.toggle("on",fora.length>0);
-    // resumo da semana
-    var sem=[].concat.apply([],cols),tot=0,semq=[];
-    sem.forEach(function(x){var q=qnum(x.o);if(q)tot+=q;else semq.push(x.o.nome||x.id)});
-    document.getElementById("r-total").textContent=sem.length;
+    // resumo da semana (obras únicas; um pedido em dois dias não conta duas vezes)
+    var sem=[].concat.apply([],cols),tot=0,semq=[],visto={},nuniq=0;
+    sem.forEach(function(it){var x=it.x||it,id=x.id;if(visto[id])return;visto[id]=1;nuniq++;var q=qnum(x.o);if(q)tot+=q;else semq.push(x.o.nome||id)});
+    document.getElementById("r-total").textContent=nuniq;
     document.getElementById("r-aptos").textContent=tot;
     var sq=!sem.length?"Nenhuma entrega nesta semana":semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
     document.getElementById("r-semq").textContent=sq;
@@ -483,17 +768,28 @@
     function cel(rot,val,full){var l=document.createElement("div");if(full)l.className="full";var r=document.createElement("div");r.className="rot";r.textContent=rot;l.appendChild(r);var v=document.createElement("div");v.className="val2";v.textContent=val;l.appendChild(v);box.appendChild(l)}
     cel("Imóveis",qtdImoveis(o));cel("Padrão",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
     cel("Prazo de entrega",deIso(o.data)?rotData(o.data):"Data a definir");cel("Estágio da produção",rotEtapa(etapaNum(o),false),true);
+    if(numLotes(o))cel("Lote",rotLotes(numLotes(o)));
+    var parc=txtParcialCard(o);if(parc)cel("Entregas",parc,true);
     var cb=document.getElementById("cerca-box");if(!cb)return;
     var st=estadoCerca(o,HOJE);
     cb.className="cerca-box"+(st.tipo==="incompleto"?" faltando":"");
-    if(st.tipo==="incompleto"){cb.textContent="Defina padrão/qtd/data para calcular a cerca";
-      var alE0=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE0){cb.className="cerca-box";cb.innerHTML=esc(cb.textContent)+"<br><b>"+esc(alE0.tit)+"</b>"+(alE0.sub?" — "+esc(alE0.sub):"")}
-      return}
-    var dias=diasProducaoCerca(o);
-    cb.innerHTML="Cerca mínima: <b>"+esc(rotData(st.cerca))+"</b> · "+dias+(dias===1?" dia útil":" dias úteis")+" de produção (seg–sex a partir da entrega; recesso 24–31/12 pulado).";
+    function acrescentaAlertas(base){
+      var html=base||"";
+      var alE=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE)html+="<br><b>"+esc(alE.tit)+"</b>"+(alE.sub?" — "+esc(alE.sub):"");
+      estadosLotes(o,HOJE).forEach(function(ls){ls.tipos.forEach(function(t){html+="<br><b>"+esc(t.tit)+"</b>"+(t.sub?" — "+esc(t.sub):"")})});
+      var ds=aparicoesNaSemana({id:id,o:o});
+      alertasSobrecarga(HOJE).filter(function(a){return ds[a.data]||dataRefEntrega(o)===a.data}).forEach(function(a){html+="<br><b>"+esc(a.tit)+"</b>"+(a.sub?" — "+esc(a.sub):"")});
+      return html;
+    }
+    if(st.tipo==="entregue"){cb.className="cerca-box";cb.innerHTML="<b>Entregue integral</b>"+acrescentaAlertas("");return}
+    if(st.tipo==="incompleto"){cb.textContent="Defina padrão/qtd/data para calcular a cerca";cb.innerHTML=esc(cb.textContent)+acrescentaAlertas("");if(cb.innerHTML.indexOf("<b>")>=0)cb.className="cerca-box";return}
+    var dias=diasProducaoCerca(o),sal=qtdCerca(o),ref=dataRefEntrega(o);
+    var extraSal=sal!==qnum(o)?" (sobre o saldo de "+sal+")":"";
+    var extraDt=ref&&ref!==o.data?" a partir de "+rotDataCurto(ref):"";
+    cb.innerHTML="Cerca mínima: <b>"+esc(rotData(st.cerca))+"</b> · "+dias+(dias===1?" dia útil":" dias úteis")+" de produção"+extraSal+extraDt+" (seg–sex; recesso 24–31/12 pulado).";
     var al=textoAlertaCerca(st);if(al)cb.innerHTML+="<br>"+esc(al.tit)+(al.sub?" — "+esc(al.sub):"");
     if(st.tipo==="entrou"){var motivo=etapaNum(o)>=3?rotEtapa(etapaNum(o),true):(o.entrouProducao?"marcada em "+rotDataCurto(o.entrouProducao):"status "+ROT[cod(o)]);cb.innerHTML+="<br>Já entrou na produção ("+esc(motivo)+")."}
-    var alE=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE)cb.innerHTML+="<br><b>"+esc(alE.tit)+"</b>"+(alE.sub?" — "+esc(alE.sub):"");
+    cb.innerHTML+=acrescentaAlertas("");
   }
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
@@ -502,6 +798,7 @@
     preencheDestaque(id,o);
     rotuloEtapaEls("e-etapa-nota",o);
     setEtapaCaixa("e",etapaNum(o));
+    if(typeof preencheLotesFicha==="function")preencheLotesFicha(o);
     atual.textContent=o.estagio||"";
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
   }
@@ -516,7 +813,8 @@
   }
   function abrir(id){var o=fonte()[id];if(!o)return;cur=id;etapaEdit=etapaNum(o);preencheTopo(id,o);
     campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";
-    eP.value=infoPadrao(o.padrao)?o.padrao:"";setEtapaCaixa("e",etapaEdit);
+    eP.value=infoPadrao(o.padrao)?o.padrao:"";setEtapaCaixa("e",etapaEdit);if(eLote)eLote.value=numLotes(o)?String(numLotes(o)):"";
+    if(typeof preencheLotesFicha==="function")preencheLotesFicha(o);
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
   function fechar(){fechaDDs();ov.classList.remove("on");cur=null}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
@@ -525,8 +823,10 @@
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
   var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),eEt=document.getElementById("e-etapa"),nEt=document.getElementById("n-etapa");
+  var eLote=document.getElementById("e-lote"),nLote=document.getElementById("n-lote");
   function enchePadrao(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— padrão —";sel.appendChild(z);PADROES.forEach(function(p){var op=document.createElement("option");op.value=p.id;op.textContent=p.id;sel.appendChild(op)})}
-  enchePadrao(eP);enchePadrao(nP);
+  function encheLote(sel){if(!sel)return;sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— lote —";sel.appendChild(z);var op=document.createElement("option");op.value="1";op.textContent="Integral";sel.appendChild(op);for(var i=2;i<=6;i++){op=document.createElement("option");op.value=String(i);op.textContent=i+" lotes";sel.appendChild(op)}}
+  enchePadrao(eP);enchePadrao(nP);encheLote(eLote);encheLote(nLote);
   (function montaListasEtapa(){
     function monta(dd){
       if(!dd)return;dd.innerHTML="";
@@ -548,7 +848,205 @@
       render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);eP.value=pad;ok.textContent="Salvo para todos."}}
     }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o padrão (sem conexão).")});
   }
+
   eP.addEventListener("change",function(){salvaPadraoAgora();atualizaFichaLive()});
+  function planosDe(o,n){
+    var atuais=listaLotesPrevistos(o).filter(function(lt){return !lt.implicito}),map={},i,q=qnum(o),base,rest,arr=[];
+    atuais.forEach(function(lt){map[lt.n]=lt});
+    if(n>=2){
+      base=n&&q?Math.floor(q/n):0;rest=q-base*n;
+      for(i=1;i<=n;i++)arr.push({n:i,qtd:map[i]&&map[i].qtd?map[i].qtd:(base+(i===n?rest:0)),data:(map[i]&&map[i].data)||(i===1&&o.data?o.data:"")});
+    }
+    return arr;
+  }
+  function objPlanos(arr){var p=null;if(arr&&arr.length){p={};arr.forEach(function(lt){p[String(lt.n)]={n:lt.n,qtd:lt.qtd||0,data:lt.data||""}})}return p}
+  function avisoSobrecarga(alertas){
+    if(!alertas||!alertas.length)return true;
+    return window.confirm(alertas.map(function(a){return a.tit+(a.estimado?" (estimado)":"")}).join("\n")+"\n\nSalvar mesmo assim?");
+  }
+  function pioraSobrecarga(antes,depois){
+    return (depois||[]).filter(function(d){
+      var ant=(antes||[]).filter(function(a){return a.data===d.data})[0];
+      if(!ant)return true;
+      return (d.precisa-d.tem)>(ant.precisa-ant.tem);
+    });
+  }
+  function extraCargaPlanos(id,o,planos){
+    var extras=[],i,lt,c;
+    for(i=0;i<planos.length;i++){
+      lt=planos[i];if(!(lt.qtd>0)||!deIso(lt.data))continue;
+      c=cargaDias(lt.qtd,o);extras.push({id:id,lote:lt.n,data:lt.data,dias:c.dias,estimado:c.estimado,saldo:lt.qtd});
+    }
+    return extras;
+  }
+  function sobrecargaDosPlanos(id,o,planos){
+    var pend=lotesPendentesCarga().filter(function(p){return p.id!==id}),ex=extraCargaPlanos(id,o,planos);
+    var todas=pend.concat(ex),hoje=HOJE,datas={},itens=[];
+    todas.forEach(function(p){if(p.data>=hoje)datas[p.data]=1});
+    Object.keys(datas).sort().forEach(function(D){
+      var Y=diasUteisNoIntervalo(hoje,D),X=0,est=false;
+      todas.forEach(function(p){if(p.data<=D){X+=p.dias;if(p.estimado)est=true}});
+      if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,tit:"Sobrecarga: janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,sub:""});
+    });
+    return itens;
+  }
+  function preencheSelectParcLote(o){
+    var sel=document.getElementById("e-parc-lote");if(!sel)return;
+    var n=numLotes(o),i,op;
+    sel.innerHTML="";op=document.createElement("option");op.value="";op.textContent=n>=2?"próximo pendente":"—";sel.appendChild(op);
+    if(n>=2){for(i=1;i<=n;i++){op=document.createElement("option");op.value=String(i);op.textContent="Lote "+i;sel.appendChild(op)}}
+  }
+  function renderPlanosLote(o){
+    var box=document.getElementById("e-lotes-plan"),sec=document.getElementById("sec-lotes"),soma=document.getElementById("e-lotes-soma");
+    if(!box||!sec)return;
+    var n=numLotes(o);
+    sec.hidden=!(n>=2);
+    box.innerHTML="";
+    if(n<2){if(soma)soma.textContent="";return}
+    var planos=planosDe(o,n),tot=0;
+    planos.forEach(function(lt){
+      tot+=lt.qtd||0;
+      var row=document.createElement("div");row.className="plan-lote";
+      var lab=document.createElement("div");lab.className="lab";lab.textContent="Lote "+lt.n;row.appendChild(lab);
+      var lq=document.createElement("label");lq.className="rot";lq.textContent="Qtd";
+      var iq=document.createElement("input");iq.type="number";iq.min="0";iq.step="1";iq.value=lt.qtd||"";iq.setAttribute("data-lote",lt.n);iq.setAttribute("data-campo","qtd");
+      lq.appendChild(iq);row.appendChild(lq);
+      var ld=document.createElement("label");ld.className="rot";ld.textContent="Data prevista";
+      var idt=document.createElement("input");idt.type="date";idt.value=lt.data||"";idt.setAttribute("data-lote",lt.n);idt.setAttribute("data-campo","data");
+      ld.appendChild(idt);row.appendChild(ld);
+      box.appendChild(row);
+    });
+    var q=qnum(o);
+    if(soma){soma.className="lote-soma"+(q&&tot!==q?" erro":"");soma.textContent=q?("Soma dos lotes: "+tot+" de "+q+(tot!==q?" — a soma deve coincidir com a quantidade da obra":"")):("Soma dos lotes: "+tot)}
+  }
+  function renderParciais(o){
+    var listaEl=document.getElementById("e-parciais-lista"),res=document.getElementById("e-parcial-resumo"),px=document.getElementById("e-prox-lote");
+    if(px&&document.activeElement!==px)px.value=o.proximoLoteData||"";
+    if(res){
+      var t=txtParcialCard(o);
+      res.innerHTML="";
+      if(integralEntregue(o)){var s=document.createElement("span");s.className="ok-int";s.textContent="Entregue integral";res.appendChild(s)}
+      else if(t)res.textContent=t;
+      else res.textContent=qnum(o)?"Entregue 0/"+qnum(o)+" · faltam "+qnum(o):"Defina a quantidade para lançar entregas parciais";
+    }
+    if(!listaEl)return;
+    listaEl.innerHTML="";
+    listaParciais(o).forEach(function(p){
+      var d=document.createElement("div");d.className="parc";
+      var tx=document.createElement("div");
+      tx.textContent=p.qtd+" apto"+(p.qtd===1?"":"s")+" em "+(deIso(p.data)?rotDataCurto(p.data):"sem data")+(p.lote?" · Lote "+p.lote:"");
+      d.appendChild(tx);
+      var bt=document.createElement("button");bt.type="button";bt.textContent="Remover";bt.setAttribute("data-id",p.id);
+      d.appendChild(bt);listaEl.appendChild(d);
+    });
+    preencheSelectParcLote(o);
+  }
+  function preencheLotesFicha(o){
+    if(!o)return;
+    if(eLote&&document.activeElement!==eLote)eLote.value=numLotes(o)?String(numLotes(o)):"";
+    renderPlanosLote(o);renderParciais(o);
+  }
+  function lePlanosDaTela(){
+    var box=document.getElementById("e-lotes-plan");if(!box)return [];
+    var map={},arr=[];
+    Array.prototype.forEach.call(box.querySelectorAll("input[data-lote]"),function(inp){
+      var n=parseInt(inp.getAttribute("data-lote"),10)||0;if(!n)return;
+      if(!map[n])map[n]={n:n,qtd:0,data:""};
+      if(inp.getAttribute("data-campo")==="qtd")map[n].qtd=parseInt(inp.value,10)||0;
+      else map[n].data=inp.value||"";
+    });
+    Object.keys(map).sort(function(a,b){return (+a)-(+b)}).forEach(function(k){arr.push(map[k])});
+    return arr;
+  }
+  function salvaPlanosLote(opts){
+    opts=opts||{};
+    if(!cur)return;
+    var id=cur,o=fonte()[id]||{},n=numLotes(o),planos=lePlanosDaTela(),p={atualizadoEm:Date.now()};
+    if(n>=2){
+      var av=pioraSobrecarga(alertasSobrecarga(HOJE),sobrecargaDosPlanos(id,o,planos));
+      if(!opts.silencioso&&!avisoSobrecarga(av)){preencheLotesFicha(o);return}
+      p.lotesPrevistos=objPlanos(planos);
+      var pend=planos.filter(function(lt){return saldoLote(Object.assign({},o,{lotesPrevistos:p.lotesPrevistos}),lt)>0&&deIso(lt.data)}).sort(function(a,b){return a.data<b.data?-1:1})[0];
+      var px=document.getElementById("e-prox-lote");
+      if(pend&&px&&!px.value){px.value=pend.data;p.proximoLoteData=pend.data}
+    }else{p.lotesPrevistos=null}
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar os lotes (sem conexão).")});
+  }
+  function salvaLotesAgora(){
+    if(!cur)return;
+    var id=cur,o=fonte()[id]||{},n=eLote?parseInt(eLote.value,10)||0:0,p={atualizadoEm:Date.now()};
+    if(n>=1&&n<=6)p.lotes=n;else p.lotes=null;
+    if(n>=2){
+      var planos=planosDe(Object.assign({},o,{lotes:n}),n);
+      var av=pioraSobrecarga(alertasSobrecarga(HOJE),sobrecargaDosPlanos(id,Object.assign({},o,{lotes:n}),planos));
+      if(!avisoSobrecarga(av)){if(eLote)eLote.value=numLotes(o)?String(numLotes(o)):"";return}
+      p.lotesPrevistos=objPlanos(planos);
+    }else{p.lotesPrevistos=null}
+    ok.style.color="";ok.textContent="Salvando…";
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo);ok.textContent="Salvo para todos."}}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o lote (sem conexão).")});
+  }
+  function salvaProxLote(){
+    if(!cur)return;
+    var id=cur,px=document.getElementById("e-prox-lote"),val=px?px.value||null:null,p={atualizadoEm:Date.now(),proximoLoteData:val};
+    if(val){
+      var o=fonte()[id]||{},c=cargaDias(faltam(o)||qnum(o),o),av=pioraSobrecarga(alertasSobrecarga(HOJE),alertasSobrecarga(HOJE,{id:id,lote:0,data:val,dias:c.dias,estimado:c.estimado}));
+      if(!avisoSobrecarga(av)){preencheLotesFicha(o);return}
+    }
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){if(val)REM[id].proximoLoteData=val;else delete REM[id].proximoLoteData;REM[id].atualizadoEm=p.atualizadoEm}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar a data do próximo lote.")});
+  }
+  function lancaParcial(){
+    if(!cur)return;
+    var id=cur,o=fonte()[id]||{},okp=document.getElementById("e-parc-ok"),iq=document.getElementById("e-parc-qtd"),idat=document.getElementById("e-parc-data"),il=document.getElementById("e-parc-lote");
+    var q=parseInt(iq&&iq.value,10)||0,dat=idat?idat.value:"",lt=il?parseInt(il.value,10)||0:0;
+    function msg(t,err){if(!okp)return;okp.style.color=err?"#c0392b":"#2e8b57";okp.textContent=t}
+    if(!qnum(o)){msg("Defina a quantidade da obra antes de lançar.",true);return}
+    if(q<=0){msg("Informe a quantidade deste lançamento.",true);if(iq)iq.focus();return}
+    if(!deIso(dat)){msg("Informe a data da entrega parcial.",true);if(idat)idat.focus();return}
+    if(entregueTotal(o)+q>qnum(o)){msg("Não é possível lançar: entregue ficaria "+(entregueTotal(o)+q)+", acima de "+qnum(o)+".",true);return}
+    msg("Salvando…",false);
+    var body={qtd:q,data:dat,criadoEm:Date.now()};if(lt)body.lote=lt;
+    req("POST","/entregas/"+id+"/entregasParciais.json",body).then(function(r){
+      var key=r&&r.name;if(REM&&REM[id]){if(!REM[id].entregasParciais||typeof REM[id].entregasParciais!=="object")REM[id].entregasParciais={};if(key)REM[id].entregasParciais[key]=body}
+      var oo=fonte()[id]||o,pl=proximoLotePendente(oo);
+      if(pl&&deIso(pl.data)&&oo.proximoLoteData!==pl.data){
+        return req("PATCH","/entregas/"+id+".json",{proximoLoteData:pl.data,atualizadoEm:Date.now()}).then(function(){
+          if(REM&&REM[id])REM[id].proximoLoteData=pl.data;
+        });
+      }
+    }).then(function(){
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
+      if(iq)iq.value="";msg("Lançamento gravado.",false);
+    }).catch(function(){msg("Não foi possível lançar (sem conexão).",true)});
+  }
+  function removeParcial(pid){
+    if(!cur||!pid)return;
+    var id=cur,o=fonte()[id]||{};
+    if(!window.confirm("Remover este lançamento de entrega parcial?"))return;
+    var p={};p[pid]=null;
+    req("PATCH","/entregas/"+id+"/entregasParciais.json",p).then(function(){
+      if(REM&&REM[id]&&REM[id].entregasParciais)delete REM[id].entregasParciais[pid];
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
+    }).catch(function(){erro(ok,"Não foi possível remover o lançamento.")});
+  }
+  if(eLote)eLote.addEventListener("change",function(){salvaLotesAgora();atualizaFichaLive()});
+  var planBox=document.getElementById("e-lotes-plan");
+  if(planBox)planBox.addEventListener("change",function(e){if(e.target&&e.target.getAttribute("data-lote"))salvaPlanosLote({})});
+  var pxEl=document.getElementById("e-prox-lote");
+  if(pxEl)pxEl.addEventListener("change",salvaProxLote);
+  var addP=document.getElementById("e-parc-add");
+  if(addP)addP.addEventListener("click",lancaParcial);
+  var listaP=document.getElementById("e-parciais-lista");
+  if(listaP)listaP.addEventListener("click",function(e){var b=e.target.closest("button[data-id]");if(b)removeParcial(b.getAttribute("data-id"))});
+
   function posicionaDD(btn,dd){
     var r=btn.getBoundingClientRect(),larg=Math.max(r.width,240);
     dd.style.left=Math.max(8,Math.min(r.left,window.innerWidth-larg-8))+"px";
@@ -585,7 +1083,7 @@
   window.addEventListener("scroll",fechaDDs,true);
   eQ.addEventListener("input",atualizaFichaLive);
   eD.addEventListener("input",atualizaFichaLive);eS.addEventListener("change",atualizaFichaLive);
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";etapaNovo=0;setEtapaCaixa("n",0);
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";if(nLote)nLote.value="";etapaNovo=0;setEtapaCaixa("n",0);
     ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){fechaDDs();ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=abrirLembrete;
@@ -604,7 +1102,7 @@
   window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var eDd=document.getElementById("e-dd-etapa"),nDd=document.getElementById("n-dd-etapa");if((eDd&&eDd.classList.contains("on"))||(nDd&&nDd.classList.contains("on"))){fechaDDs();e.preventDefault();return}var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var eDd=document.getElementById("e-dd-etapa"),nDd=document.getElementById("n-dd-etapa");if((eDd&&eDd.classList.contains("on"))||(nDd&&nDd.classList.contains("on"))){fechaDDs();e.preventDefault();return}var orl=document.getElementById("ov-rel");if(orl&&orl.classList.contains("on")){fecharRel();e.preventDefault();return}var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
 
   // lembretes
   var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
@@ -654,6 +1152,7 @@
     if(q>0)o.qtd=q;
     var padN=valorPadrao(nP);if(padN){o.padrao=padN;o.ritmo=ritmoDe(padN)}
     if(etapaNovo>=1){o.etapa=etapaNovo;if(etapaNovo>=3)o.entrouProducao=HOJE}
+    var nLt=nLote?parseInt(nLote.value,10)||0:0;if(nLt>=1&&nLt<=6)o.lotes=nLt;
     ok2.style.color="";ok2.textContent="Salvando…";
     req("PUT","/entregas/"+id+".json",o).then(function(){
       if(REM){REM[id]=o;render()}
@@ -665,6 +1164,8 @@
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
     var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}else{p.padrao=null;p.ritmo=null}
     if(etapaEdit>=1){p.etapa=etapaEdit;if(etapaEdit>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}}else{p.etapa=null;p.entrouProducao=null}
+    var nLt=eLote?parseInt(eLote.value,10)||0:0;if(nLt>=1&&nLt<=6)p.lotes=nLt;else p.lotes=null;
+    var px=document.getElementById("e-prox-lote");if(px){p.proximoLoteData=px.value||null}
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
@@ -710,20 +1211,27 @@
   }
   function renderAlertasCerca(){
     var box=document.getElementById("alertas-cerca");if(!box)return;box.innerHTML="";
-    var itens=[],ordem={atraso:0,hoje:1,dia:2,vencida:3,programar:4};
+    var itens=[],ordem={atraso:0,hoje:1,vencido:2,dia:3,vencida:4,div:5,sobrecarga:6,chegando:7,programar:8};
     lista().forEach(function(x){
       var st=estadoCerca(x.o,HOJE),al=textoAlertaCerca(st);if(al)itens.push({x:x,st:st,al:al,kind:"cerca"});
       var en=estadoEntrega(x.o,HOJE),alE=textoAlertaEntrega(en);if(alE)itens.push({x:x,st:en,al:alE,kind:"entrega"});
+      estadosLotes(x.o,HOJE).forEach(function(ls){ls.tipos.forEach(function(t){
+        if(t.tipo==="dia"&&alE)return;
+        itens.push({x:x,st:{tipo:t.tipo,data:ls.data},al:{tit:t.tit,sub:t.sub},kind:"lote"});
+      })});
     });
-    itens.sort(function(a,b){return (ordem[a.st.tipo]-ordem[b.st.tipo])||((a.x.o.data||"")<(b.x.o.data||"")?-1:((a.x.o.data||"")>(b.x.o.data||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
+    alertasSobrecarga(HOJE).forEach(function(a){
+      itens.push({x:{id:a.ids&&a.ids[0],o:fonte()[(a.ids&&a.ids[0])]||{nome:"Fábrica",data:a.data}},st:{tipo:"sobrecarga",data:a.data},al:{tit:a.tit,sub:a.sub},kind:"sobre",ids:a.ids});
+    });
+    itens.sort(function(a,b){var oa=ordem[a.st.tipo],ob=ordem[b.st.tipo];if(oa==null)oa=9;if(ob==null)ob=9;return (oa-ob)||((a.x.o.data||"")<(b.x.o.data||"")?-1:((a.x.o.data||"")>(b.x.o.data||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
     itens.forEach(function(it){
-      var cls=it.kind==="entrega"?(it.st.tipo==="dia"?"alerta-entrega":"alerta-vencida"):("alerta-"+it.st.tipo);
-      var d=document.createElement("div");d.className="alerta "+(it.kind==="entrega"?"alerta-entrega-topo ":"alerta-cerca ")+cls;d.setAttribute("data-id",it.x.id);
+      var cls=it.kind==="entrega"?(it.st.tipo==="dia"?"alerta-entrega":"alerta-vencida"):it.kind==="lote"?(it.st.tipo==="chegando"?"alerta-lote-chegando":it.st.tipo==="vencido"?"alerta-lote-vencido":it.st.tipo==="div"?"alerta-lote-div":it.st.tipo==="dia"?"alerta-entrega":"alerta-lote-div"):it.kind==="sobre"?"alerta-sobrecarga":("alerta-"+it.st.tipo);
+      var d=document.createElement("div");d.className="alerta "+(it.kind==="entrega"||it.kind==="lote"?"alerta-entrega-topo ":"alerta-cerca ")+cls;if(it.x.id)d.setAttribute("data-id",it.x.id);
       var t=document.createElement("b");t.textContent="⚠ "+it.al.tit;d.appendChild(t);
-      var extra=it.kind==="cerca"&&it.st.cerca?(" · cerca "+rotDataCurto(it.st.cerca)):(it.x.o.data?" · entrega "+rotDataCurto(it.x.o.data):"");
-      var p=document.createElement("div");p.textContent=(it.x.o.nome||it.x.id)+extra;d.appendChild(p);
-      var s=document.createElement("div");s.className="ldata";s.textContent=it.al.sub;d.appendChild(s);
-      d.addEventListener("click",function(){if(it.x.o.data&&deIso(it.x.o.data))irPara(iso(segunda(deIso(it.x.o.data))));abrir(it.x.id)});
+      var extra=it.kind==="cerca"&&it.st.cerca?(" · cerca "+rotDataCurto(it.st.cerca)):((it.st.data||it.x.o.data)?" · "+rotDataCurto(it.st.data||it.x.o.data):"");
+      var p=document.createElement("div");p.textContent=(it.x.o.nome||it.x.id||"")+extra;d.appendChild(p);
+      var s=document.createElement("div");s.className="ldata";s.textContent=it.al.sub||"";d.appendChild(s);
+      d.addEventListener("click",function(){var dt=it.st.data||it.x.o.data;if(dt&&deIso(dt))irPara(iso(segunda(deIso(dt))));if(it.x.id)abrir(it.x.id)});
       box.appendChild(d);
     });
   }
@@ -733,18 +1241,26 @@
   setInterval(recarregaRelogio,30000);
   document.addEventListener("visibilitychange",function(){if(!document.hidden)recarregaRelogio()});
   render();
-  var POPUP_ATRASO_KEY="hgi-agenda-popup-v2",popupAtrasoChecado=false;
+  var POPUP_ATRASO_KEY="hgi-agenda-popup-v3",popupAtrasoChecado=false;
   function fecharAtraso(){var oa=document.getElementById("ov-atraso");if(oa)oa.classList.remove("on")}
   function obrasCercaUrgente(){
-    var atrasadas=[],hojeCerca=[],entregasDia=[];
+    var atrasadas=[],hojeCerca=[],entregasDia=[],loteVenc=[],loteChega=[],loteDiv=[],sobre=alertasSobrecarga(HOJE);
     lista().forEach(function(x){
       var st=estadoCerca(x.o,HOJE);
       if(st.tipo==="atraso")atrasadas.push({x:x,st:st});
       else if(st.tipo==="hoje")hojeCerca.push({x:x,st:st});
       if(estadoEntrega(x.o,HOJE).tipo==="dia")entregasDia.push({x:x,st:st});
+      estadosLotes(x.o,HOJE).forEach(function(ls){ls.tipos.forEach(function(t){
+        var it={x:x,st:ls,al:t};
+        if(t.tipo==="vencido")loteVenc.push(it);
+        else if(t.tipo==="chegando")loteChega.push(it);
+        else if(t.tipo==="div")loteDiv.push(it);
+        else if(t.tipo==="dia"&&estadoEntrega(x.o,HOJE).tipo!=="dia")entregasDia.push({x:x,st:st,al:t});
+      })});
     });
     atrasadas.sort(function(a,b){return (b.st.n||0)-(a.st.n||0)});
-    return {atrasadas:atrasadas,hoje:hojeCerca,entregas:entregasDia};
+    loteVenc.sort(function(a,b){return (b.al.n||0)-(a.al.n||0)});
+    return {atrasadas:atrasadas,hoje:hojeCerca,entregas:entregasDia,loteVenc:loteVenc,loteChega:loteChega,loteDiv:loteDiv,sobre:sobre};
   }
   function montaSecaoPopup(titulo,cls){var h=document.createElement("div");h.className="sec"+(cls?" "+cls:"");h.textContent=titulo;return h}
   function montaItemAtraso(it,tipo){
@@ -752,14 +1268,14 @@
     var inf=document.createElement("div");
     var nm=document.createElement("div");nm.className="nome";nm.textContent=o.nome||it.x.id;inf.appendChild(nm);
     var det=document.createElement("div");det.className="det";
-    var extra=tipo==="entrega"?(o.data?" · entrega "+rotDataCurto(o.data):""):(it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");
+    var extra=tipo==="entrega"?(o.data?" · entrega "+rotDataCurto(o.data):""):(it.st&&it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");
     det.textContent=qtdImoveis(o)+" · "+(infoPadrao(o.padrao)?o.padrao:"Padrão a definir")+extra;
     inf.appendChild(det);
     var dias=document.createElement("div");dias.className="dias";
-    dias.textContent=tipo==="entrega"?"🚚 Hoje é dia de entrega":(tipo==="hoje"?"Tem que entrar na produção hoje":(it.st.n===1?"1 dia de atraso":it.st.n+" dias de atraso"));
+    dias.textContent=(it.al&&it.al.tit)?it.al.tit:(tipo==="entrega"?"🚚 Hoje é dia de entrega":(tipo==="hoje"?"Tem que entrar na produção hoje":(it.st.n===1?"1 dia de atraso":it.st.n+" dias de atraso")));
     inf.appendChild(dias);
     d.appendChild(inf);
-    var b=document.createElement("button");b.type="button";b.className="btn"+(tipo==="hoje"?" verm":"");b.textContent="Ver obra";
+    var b=document.createElement("button");b.type="button";b.className="btn"+(tipo==="hoje"||tipo==="lote-vencido"?" verm":"");b.textContent="Ver obra";
     b.addEventListener("click",function(){fecharAtraso();if(o.data&&deIso(o.data))irPara(iso(segunda(deIso(o.data))));abrir(it.x.id)});
     d.appendChild(b);return d;
   }
@@ -768,19 +1284,103 @@
     popupAtrasoChecado=true;
     try{if(sessionStorage.getItem(POPUP_ATRASO_KEY))return}catch(e){}
     var u=obrasCercaUrgente();
-    if(!u.atrasadas.length&&!u.hoje.length&&!u.entregas.length)return;
+    if(!u.atrasadas.length&&!u.hoje.length&&!u.entregas.length&&!u.loteVenc.length&&!u.loteChega.length&&!u.loteDiv.length&&!u.sobre.length)return;
     var box=document.getElementById("lista-atraso");if(!box)return;box.innerHTML="";
     if(u.atrasadas.length){box.appendChild(montaSecaoPopup("Passaram da cerca sem entrar na produção"));u.atrasadas.forEach(function(it){box.appendChild(montaItemAtraso(it,"atraso"))})}
     if(u.hoje.length){box.appendChild(montaSecaoPopup("Cerca é hoje"));u.hoje.forEach(function(it){box.appendChild(montaItemAtraso(it,"hoje"))})}
+    if(u.loteVenc.length){box.appendChild(montaSecaoPopup("Lotes vencidos — não entregues","lote"));u.loteVenc.forEach(function(it){box.appendChild(montaItemAtraso(it,"lote-vencido"))})}
+    if(u.loteChega.length){box.appendChild(montaSecaoPopup("Lotes chegando","lote"));u.loteChega.forEach(function(it){box.appendChild(montaItemAtraso(it,"lote-chegando"))})}
+    if(u.loteDiv.length){box.appendChild(montaSecaoPopup("Divergência de quantidade no lote","lote"));u.loteDiv.forEach(function(it){box.appendChild(montaItemAtraso(it,"lote-div"))})}
+    if(u.sobre.length){box.appendChild(montaSecaoPopup("Sobrecarga de produção","sobre"));u.sobre.forEach(function(a){
+      var d=document.createElement("div");d.className="obra sobrecarga";
+      var inf=document.createElement("div");
+      var nm=document.createElement("div");nm.className="nome";nm.textContent=a.tit;inf.appendChild(nm);
+      var det=document.createElement("div");det.className="det";det.textContent=a.sub||"";inf.appendChild(det);
+      d.appendChild(inf);box.appendChild(d);
+    })}
     if(u.entregas.length){box.appendChild(montaSecaoPopup("Entregas de hoje","entrega"));u.entregas.forEach(function(it){box.appendChild(montaItemAtraso(it,"entrega"))})}
     var tit=document.getElementById("mt-atraso");
-    if(tit)tit.textContent=(u.atrasadas.length||u.hoje.length)?"Estamos atrasados — acelerar essas obras":"🚚 Entregas de hoje";
+    if(tit)tit.textContent=(u.atrasadas.length||u.hoje.length||u.loteVenc.length||u.sobre.length)?"Estamos atrasados — acelerar essas obras":(u.entregas.length?"🚚 Entregas de hoje":"Atenção nas entregas");
     document.getElementById("ov-atraso").classList.add("on");
     try{sessionStorage.setItem(POPUP_ATRASO_KEY,"1")}catch(e){}
   }
   document.getElementById("fechar-atraso").onclick=fecharAtraso;
   document.getElementById("fechar-atraso-x").onclick=fecharAtraso;
   document.getElementById("ov-atraso").addEventListener("click",function(e){if(e.target===document.getElementById("ov-atraso"))fecharAtraso()});
+
+  function itensRelatorio(ini,fim){
+    var itens=[];
+    lista().forEach(function(x){
+      var o=x.o,lots=listaLotesPrevistos(o),expl=lots.length&&!lots[0].implicito,usados={},pl;
+      function add(data,qtd,lote){
+        if(!deIso(data)||data<ini||data>fim)return;
+        var key=data+"|"+(lote||0);
+        if(usados[key])return;usados[key]=1;
+        itens.push({data:data,nome:o.nome||x.id,qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapa(etapaNum(o),true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
+      }
+      if(expl){
+        lots.forEach(function(lt){if(deIso(lt.data))add(lt.data,saldoLote(o,lt)||lt.qtd,lt.n)});
+        if(deIso(o.data)&&!usados[o.data+"|0"]&&!lots.some(function(lt){return lt.data===o.data}))add(o.data,faltam(o)||qnum(o),0);
+        if(deIso(o.proximoLoteData)){pl=proximoLotePendente(o);add(o.proximoLoteData,faltam(o),pl?pl.n:0)}
+      }else{
+        add(dataRefEntrega(o),faltam(o)||qnum(o),0);
+        if(deIso(o.data)&&o.data!==dataRefEntrega(o))add(o.data,qnum(o),0);
+      }
+    });
+    itens.sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:(a.nome||"").localeCompare(b.nome||"")});
+    return itens;
+  }
+  function montaFolhaRelatorio(ini,fim){
+    var itens=itensRelatorio(ini,fim),hojeTxt;
+    try{hojeTxt=new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",dateStyle:"short",timeStyle:"short"}).format(new Date())+" (horário de Brasília)"}catch(e){hojeTxt=""}
+    var html='<div class="rel-topo"><img src="logo-grupo-hgi.png" alt="Grupo HGI"><div><h1>Relatório de pré-impressão de entregas</h1><p>Grupo HGI · Kits elétricos, hidráulicos e gás</p><p>Período: '+esc(rotDataCurto(ini))+' a '+esc(rotDataCurto(fim))+(hojeTxt?" · Gerado em "+esc(hojeTxt):"")+'</p></div></div>';
+    if(!itens.length){html+='<p class="rel-vazio">Nenhuma entrega prevista neste período.</p>';return html}
+    var dias=[],i,curD="",totGeral=0;
+    itens.forEach(function(it){if(it.data!==curD){dias.push({data:it.data,itens:[]});curD=it.data}dias[dias.length-1].itens.push(it)});
+    dias.forEach(function(dia){
+      var tot=0;
+      html+='<div class="rel-dia"><h3>'+esc(rotData(dia.data))+'</h3><table><thead><tr><th>Cliente / obra</th><th>Qtd / saldo</th><th>Padrão</th><th>Estágio</th><th>Status</th><th>Observação</th></tr></thead><tbody>';
+      dia.itens.forEach(function(it){
+        tot+=it.qtd||0;
+        var qtxt=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis")+(it.lote?" · Lote "+it.lote:"");
+        html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(qtxt)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
+      });
+      totGeral+=tot;
+      html+='</tbody><tfoot><tr><td colspan="6" class="tot-dia">Total do dia: '+tot+(tot===1?" imóvel":" imóveis")+"</td></tr></tfoot></table></div>";
+    });
+    html+='<div class="rel-geral">Total geral: '+totGeral+(totGeral===1?" imóvel":" imóveis")+" · "+itens.length+(itens.length===1?" linha":" linhas")+"</div>";
+    return html;
+  }
+  function fecharRel(){var ov=document.getElementById("ov-rel");if(ov)ov.classList.remove("on")}
+  function abrirRel(){
+    var ov=document.getElementById("ov-rel"),ini=document.getElementById("rel-ini"),fim=document.getElementById("rel-fim");
+    if(ini&&!ini.value)ini.value=SEMANA||HOJE;
+    if(fim&&!fim.value){var d=deIso(ini.value||HOJE);if(d){d.setDate(d.getDate()+11);fim.value=iso(d)}else fim.value=HOJE}
+    var dica=document.getElementById("rel-dica");if(dica)dica.hidden=true;
+    if(ov)ov.classList.add("on");
+  }
+  function gerarRel(){
+    var ini=document.getElementById("rel-ini"),fim=document.getElementById("rel-fim"),folha=document.getElementById("relatorio-print");
+    if(!ini||!fim||!folha)return;
+    if(!deIso(ini.value)||!deIso(fim.value)){folha.hidden=false;folha.innerHTML='<p class="rel-vazio">Informe a data inicial e a data final.</p>';return}
+    var a=ini.value,b=fim.value;if(a>b){var x=a;a=b;b=x;ini.value=a;fim.value=b}
+    folha.hidden=false;folha.innerHTML=montaFolhaRelatorio(a,b);
+  }
+  function imprimirRel(pdf){
+    var folha=document.getElementById("relatorio-print"),dica=document.getElementById("rel-dica");
+    if(folha&&folha.hidden)gerarRel();
+    if(dica){dica.hidden=!pdf;if(pdf)dica.textContent="No diálogo de impressão, escolha “Salvar como PDF” como destino."}
+    if(document.getElementById("ov-rel"))document.getElementById("ov-rel").classList.add("on");
+    setTimeout(function(){window.print()},50);
+  }
+  document.getElementById("relatorio").onclick=abrirRel;
+  document.getElementById("fechar-rel").onclick=fecharRel;
+  document.getElementById("cancelar-rel").onclick=fecharRel;
+  document.getElementById("ov-rel").addEventListener("click",function(e){if(e.target===document.getElementById("ov-rel"))fecharRel()});
+  document.getElementById("rel-gerar").onclick=gerarRel;
+  document.getElementById("rel-print").onclick=function(){imprimirRel(false)};
+  document.getElementById("rel-pdf").onclick=function(){imprimirRel(true)};
+
   ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();tentarPopupAtraso()});
   ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
   agendaProximaHora();
