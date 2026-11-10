@@ -203,10 +203,18 @@
   .lista-parciais .parc{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #e3e8ee;font-size:13px}
   .lista-parciais .parc:last-child{border-bottom:0}
   .lista-parciais .parc button{background:#fbe3e1;color:#7b1f16;border:0;border-radius:5px;padding:4px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
-  .plan-lote{display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:end;margin-bottom:6px}
+  .plan-lote{display:grid;grid-template-columns:70px 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:6px}
   .plan-lote .lab{font-size:13px;font-weight:700;color:#1e3a5f;padding-bottom:8px}
+  .plan-lote .btn-rem-lote{background:#fbe3e1;color:#7b1f16;border:0;border-radius:5px;padding:7px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:1px}
   .lote-soma{font-size:12px;color:#5b6b7d;margin-top:4px}
   .lote-soma.erro{color:#c0392b;font-weight:700}
+  .sec-lotes .add-dia{margin-top:8px}
+  .lote-novo{background:#fff;border:1.5px dashed #9fb1c6;border-radius:6px;padding:10px;margin:8px 0}
+  .lote-novo .plan-lote{grid-template-columns:1fr 1fr}
+  .chk-soma{display:flex;align-items:center;gap:8px;font-size:13px;color:#1f2a37;margin:8px 0 6px;font-weight:600;cursor:pointer}
+  .chk-soma input{width:16px;height:16px;margin:0}
+  .lote-novo-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .lote-vazio{font-size:12px;color:#5b6b7d;margin:4px 0 6px}
   .btn.mini{padding:8px 14px;font-size:13px;margin-top:8px}
   .parc-ok{font-size:12px;margin-top:6px}
   .modal-rel{max-width:900px}
@@ -292,10 +300,23 @@
       </div>
       <div class="marcadores-etapa" id="e-marcadores" aria-label="Progresso do estágio"></div>
       <div class="estagio-nota" id="e-etapa-nota"></div>
-      <div class="sec-lotes" id="sec-lotes" hidden>
+      <div class="sec-lotes" id="sec-lotes">
         <div class="rot">Planejamento dos lotes</div>
         <div id="e-lotes-plan"></div>
+        <div class="lote-vazio" id="e-lotes-vazio"></div>
         <div class="lote-soma" id="e-lotes-soma"></div>
+        <div class="lote-novo" id="e-lote-novo" hidden>
+          <div class="plan-lote">
+            <label class="rot">Qtd de imóveis<input type="number" min="1" step="1" id="e-lote-novo-qtd" placeholder="qtd"></label>
+            <label class="rot">Data prevista<input type="date" id="e-lote-novo-data"></label>
+          </div>
+          <label class="chk-soma"><input type="checkbox" id="e-lote-soma-total"> Soma ao total do pedido</label>
+          <div class="lote-novo-acoes">
+            <button type="button" class="btn sec mini" id="e-lote-novo-ok">Incluir lote</button>
+            <button type="button" class="btn sec mini" id="e-lote-novo-cancel">Cancelar</button>
+          </div>
+        </div>
+        <button type="button" class="add-dia" id="e-lote-add">+ Adicionar lote</button>
       </div>
       <div class="sec-parciais" id="sec-parciais">
         <div class="rot">Entregas parciais</div>
@@ -512,8 +533,8 @@
   function qtdTxt(o){var q=qnum(o);return q?q+" aptos":"qtd a definir"}
   function qtdImoveis(o){var q=qnum(o);return q?q+(q===1?" imóvel":" imóveis"):"Qtd a definir"}
 
-  function numLotes(o){var n=o&&o.lotes;n=(typeof n==="string")?parseInt(n,10):n;return (typeof n==="number"&&isFinite(n)&&n>=1&&n<=6)?n:0}
-  function rotLotes(n){n=+n;if(n===1)return "Integral";if(n>=2&&n<=6)return n+" lotes";return "— lote —"}
+  function numLotes(o){var n=o&&o.lotes;n=(typeof n==="string")?parseInt(n,10):n;return (typeof n==="number"&&isFinite(n)&&n>=1)?n:0}
+  function rotLotes(n){n=+n;if(n===1)return "Integral";if(n>=2)return n+" lotes";return "— lote —"}
   function listaParciais(o){
     var p=o&&o.entregasParciais,arr=[],k,x,q;
     if(!p||typeof p!=="object")return arr;
@@ -816,7 +837,7 @@
     eP.value=infoPadrao(o.padrao)?o.padrao:"";setEtapaCaixa("e",etapaEdit);if(eLote)eLote.value=numLotes(o)?String(numLotes(o)):"";
     if(typeof preencheLotesFicha==="function")preencheLotesFicha(o);
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
-  function fechar(){fechaDDs();ov.classList.remove("on");cur=null}
+  function fechar(){fechaDDs();if(typeof fechaFormNovoLote==="function")fechaFormNovoLote();ov.classList.remove("on");cur=null}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
   ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
 
@@ -826,6 +847,12 @@
   var eLote=document.getElementById("e-lote"),nLote=document.getElementById("n-lote");
   function enchePadrao(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— padrão —";sel.appendChild(z);PADROES.forEach(function(p){var op=document.createElement("option");op.value=p.id;op.textContent=p.id;sel.appendChild(op)})}
   function encheLote(sel){if(!sel)return;sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— lote —";sel.appendChild(z);var op=document.createElement("option");op.value="1";op.textContent="Integral";sel.appendChild(op);for(var i=2;i<=6;i++){op=document.createElement("option");op.value=String(i);op.textContent=i+" lotes";sel.appendChild(op)}}
+  function garanteOpcaoLote(sel,n){
+    n=parseInt(n,10)||0;if(!sel||n<1)return;
+    if(!sel.querySelector('option[value="'+n+'"]')){
+      var op=document.createElement("option");op.value=String(n);op.textContent=n===1?"Integral":(n+" lotes");sel.appendChild(op);
+    }
+  }
   enchePadrao(eP);enchePadrao(nP);encheLote(eLote);encheLote(nLote);
   (function montaListasEtapa(){
     function monta(dd){
@@ -892,18 +919,18 @@
   }
   function preencheSelectParcLote(o){
     var sel=document.getElementById("e-parc-lote");if(!sel)return;
-    var n=numLotes(o),i,op;
+    var n=Math.max(numLotes(o),listaLotesPrevistos(o).filter(function(lt){return !lt.implicito}).length),i,op;
     sel.innerHTML="";op=document.createElement("option");op.value="";op.textContent=n>=2?"próximo pendente":"—";sel.appendChild(op);
-    if(n>=2){for(i=1;i<=n;i++){op=document.createElement("option");op.value=String(i);op.textContent="Lote "+i;sel.appendChild(op)}}
+    if(n>=1){for(i=1;i<=n;i++){op=document.createElement("option");op.value=String(i);op.textContent="Lote "+i;sel.appendChild(op)}}
   }
   function renderPlanosLote(o){
-    var box=document.getElementById("e-lotes-plan"),sec=document.getElementById("sec-lotes"),soma=document.getElementById("e-lotes-soma");
+    var box=document.getElementById("e-lotes-plan"),sec=document.getElementById("sec-lotes"),soma=document.getElementById("e-lotes-soma"),vaz=document.getElementById("e-lotes-vazio");
     if(!box||!sec)return;
-    var n=numLotes(o);
-    sec.hidden=!(n>=2);
+    sec.hidden=false;
     box.innerHTML="";
-    if(n<2){if(soma)soma.textContent="";return}
-    var planos=planosDe(o,n),tot=0;
+    var planos=listaLotesPrevistos(o).filter(function(lt){return !lt.implicito});
+    if(!planos.length&&numLotes(o)>=2)planos=planosDe(o,numLotes(o));
+    var tot=0;
     planos.forEach(function(lt){
       tot+=lt.qtd||0;
       var row=document.createElement("div");row.className="plan-lote";
@@ -914,10 +941,16 @@
       var ld=document.createElement("label");ld.className="rot";ld.textContent="Data prevista";
       var idt=document.createElement("input");idt.type="date";idt.value=lt.data||"";idt.setAttribute("data-lote",lt.n);idt.setAttribute("data-campo","data");
       ld.appendChild(idt);row.appendChild(ld);
+      var br=document.createElement("button");br.type="button";br.className="btn-rem-lote";br.textContent="Remover";br.setAttribute("data-remove-lote",lt.n);row.appendChild(br);
       box.appendChild(row);
     });
+    if(vaz)vaz.textContent=planos.length?"":"Nenhum lote adicional planejado. A entrega segue integral, ou use + Adicionar lote para fracionar ou aumentar o pedido.";
     var q=qnum(o);
-    if(soma){soma.className="lote-soma"+(q&&tot!==q?" erro":"");soma.textContent=q?("Soma dos lotes: "+tot+" de "+q+(tot!==q?" — a soma deve coincidir com a quantidade da obra":"")):("Soma dos lotes: "+tot)}
+    if(soma){
+      if(!planos.length){soma.className="lote-soma";soma.textContent="";return}
+      soma.className="lote-soma"+(q&&tot!==q?" erro":"");
+      soma.textContent=q?("Soma dos lotes: "+tot+" de "+q+(tot!==q?(tot>q?" — a soma ultrapassa a quantidade da obra":" — a soma deve coincidir com a quantidade da obra"):"")):("Soma dos lotes: "+tot);
+    }
   }
   function renderParciais(o){
     var listaEl=document.getElementById("e-parciais-lista"),res=document.getElementById("e-parcial-resumo"),px=document.getElementById("e-prox-lote");
@@ -943,7 +976,8 @@
   }
   function preencheLotesFicha(o){
     if(!o)return;
-    if(eLote&&document.activeElement!==eLote)eLote.value=numLotes(o)?String(numLotes(o)):"";
+    var n=numLotes(o);
+    if(eLote){garanteOpcaoLote(eLote,n);if(document.activeElement!==eLote)eLote.value=n?String(n):""}
     renderPlanosLote(o);renderParciais(o);
   }
   function lePlanosDaTela(){
@@ -961,24 +995,30 @@
   function salvaPlanosLote(opts){
     opts=opts||{};
     if(!cur)return;
-    var id=cur,o=fonte()[id]||{},n=numLotes(o),planos=lePlanosDaTela(),p={atualizadoEm:Date.now()};
-    if(n>=2){
-      var av=pioraSobrecarga(alertasSobrecarga(HOJE),sobrecargaDosPlanos(id,o,planos));
+    var id=cur,o=fonte()[id]||{},planos=lePlanosDaTela(),p={atualizadoEm:Date.now()},tot=0;
+    planos.forEach(function(lt){tot+=lt.qtd||0});
+    if(planos.length){
+      if(tot>qnum(o)&&!opts.silencioso){
+        if(window.confirm("A soma dos lotes ("+tot+") ultrapassa a quantidade do pedido ("+qnum(o)+"). Atualizar o total do pedido para "+tot+"?"))p.qtd=tot;
+      }
+      var oAv=Object.assign({},o,{qtd:p.qtd||o.qtd,lotes:planos.length,lotesPrevistos:objPlanos(planos)});
+      var av=pioraSobrecarga(alertasSobrecarga(HOJE),sobrecargaDosPlanos(id,oAv,planos));
       if(!opts.silencioso&&!avisoSobrecarga(av)){preencheLotesFicha(o);return}
-      p.lotesPrevistos=objPlanos(planos);
+      p.lotes=planos.length;p.lotesPrevistos=objPlanos(planos);
       var pend=planos.filter(function(lt){return saldoLote(Object.assign({},o,{lotesPrevistos:p.lotesPrevistos}),lt)>0&&deIso(lt.data)}).sort(function(a,b){return a.data<b.data?-1:1})[0];
       var px=document.getElementById("e-prox-lote");
       if(pend&&px&&!px.value){px.value=pend.data;p.proximoLoteData=pend.data}
     }else{p.lotesPrevistos=null}
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}
+      if(p.qtd&&document.getElementById("e-qtd")&&cur===id)document.getElementById("e-qtd").value=p.qtd;
       render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
     }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar os lotes (sem conexão).")});
   }
   function salvaLotesAgora(){
     if(!cur)return;
     var id=cur,o=fonte()[id]||{},n=eLote?parseInt(eLote.value,10)||0:0,p={atualizadoEm:Date.now()};
-    if(n>=1&&n<=6)p.lotes=n;else p.lotes=null;
+    if(n>=1)p.lotes=n;else p.lotes=null;
     if(n>=2){
       var planos=planosDe(Object.assign({},o,{lotes:n}),n);
       var av=pioraSobrecarga(alertasSobrecarga(HOJE),sobrecargaDosPlanos(id,Object.assign({},o,{lotes:n}),planos));
@@ -1038,9 +1078,121 @@
       render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
     }).catch(function(){erro(ok,"Não foi possível remover o lançamento.")});
   }
+  function materializaPlanos(o){
+    var arr=listaLotesPrevistos(o).filter(function(lt){return !lt.implicito}).map(function(lt){return {n:lt.n,qtd:lt.qtd||0,data:lt.data||""}});
+    if(arr.length)return arr;
+    if(qnum(o)||deIso(o&&o.data))return [{n:1,qtd:qnum(o),data:o.data||""}];
+    return [];
+  }
+  function fechaFormNovoLote(){
+    var box=document.getElementById("e-lote-novo");
+    if(box)box.hidden=true;
+  }
+  var somaChkManual=false;
+  function atualizaChkSomaPadrao(){
+    if(somaChkManual||!cur)return;
+    var chk=document.getElementById("e-lote-soma-total"),iq=document.getElementById("e-lote-novo-qtd");
+    if(!chk||!iq)return;
+    var o=fonte()[cur]||{},qNovo=parseInt(iq.value,10)||0;
+    var soma=materializaPlanos(o).reduce(function(s,lt){return s+(lt.qtd||0)},0)+qNovo;
+    chk.checked=qNovo>0&&soma>qnum(o);
+  }
+  function abreFormNovoLote(){
+    if(!cur)return;
+    somaChkManual=false;
+    var box=document.getElementById("e-lote-novo"),btn=document.getElementById("e-lote-add");
+    var iq=document.getElementById("e-lote-novo-qtd"),idat=document.getElementById("e-lote-novo-data"),chk=document.getElementById("e-lote-soma-total");
+    if(iq)iq.value="";
+    if(idat)idat.value="";
+    if(chk)chk.checked=false;
+    if(box)box.hidden=false;
+    if(iq)iq.focus();
+  }
+  function incluiLoteNovo(){
+    if(!cur)return;
+    var id=cur,o=fonte()[id]||{},iq=document.getElementById("e-lote-novo-qtd"),idat=document.getElementById("e-lote-novo-data"),chk=document.getElementById("e-lote-soma-total");
+    var q=parseInt(iq&&iq.value,10)||0,d=idat?idat.value:"",soma=chk&&chk.checked;
+    if(q<=0){if(iq)iq.focus();if(ok)erro(ok,"Informe a quantidade do novo lote.");return}
+    if(!deIso(d)){if(idat)idat.focus();if(ok)erro(ok,"Informe a data prevista do novo lote.");return}
+    var planos=materializaPlanos(o),copia=planos.map(function(lt){return {n:lt.n,qtd:lt.qtd,data:lt.data}});
+    if(!soma){
+      var alocado=copia.reduce(function(s,lt){return s+(lt.qtd||0)},0),folga=Math.max(0,qnum(o)-alocado),need=q-folga,i,take;
+      if(need>0){
+        for(i=copia.length-1;i>=0&&need>0;i--){take=Math.min(copia[i].qtd||0,need);copia[i].qtd-=take;need-=take}
+        if(need>0){
+          if(!window.confirm("A quantidade deste lote excede o saldo do pedido. Somar ao total do pedido?"))return;
+          soma=true;copia=planos.map(function(lt){return {n:lt.n,qtd:lt.qtd,data:lt.data}});
+        }else{copia=copia.filter(function(lt){return (lt.qtd||0)>0})}
+      }
+    }
+    var proxN=copia.length?Math.max.apply(null,copia.map(function(lt){return lt.n}))+1:1;
+    copia.push({n:proxN,qtd:q,data:d});
+    var tot=copia.reduce(function(s,lt){return s+(lt.qtd||0)},0);
+    var p={atualizadoEm:Date.now(),lotes:copia.length,lotesPrevistos:objPlanos(copia)};
+    if(soma)p.qtd=tot;
+    var oAv=Object.assign({},o,{lotes:p.lotes,lotesPrevistos:p.lotesPrevistos,qtd:p.qtd||o.qtd});
+    var av=pioraSobrecarga(alertasSobrecarga(HOJE),sobrecargaDosPlanos(id,oAv,copia));
+    if(!avisoSobrecarga(av))return;
+    var px=document.getElementById("e-prox-lote");
+    if(px&&!px.value&&deIso(d)){px.value=d;p.proximoLoteData=d}
+    if(ok){ok.style.color="";ok.textContent="Salvando…"}
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}
+      if(p.qtd&&document.getElementById("e-qtd"))document.getElementById("e-qtd").value=p.qtd;
+      fechaFormNovoLote();
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo);if(ok)ok.textContent="Lote incluído."}}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível incluir o lote (sem conexão).")});
+  }
+  function removeLotePlan(n){
+    if(!cur)return;
+    n=parseInt(n,10)||0;if(!n)return;
+    var id=cur,o=fonte()[id]||{},planos=lePlanosDaTela();
+    if(!planos.length)planos=materializaPlanos(o);
+    var alvo=planos.filter(function(lt){return lt.n===n})[0];
+    var desc=alvo?("Lote "+n+(alvo.qtd?" · "+alvo.qtd+" imóveis":"")+(alvo.data?" · "+rotDataCurto(alvo.data):"")):"Lote "+n;
+    if(!window.confirm("Remover "+desc+"?"))return;
+    var rest=planos.filter(function(lt){return lt.n!==n}).sort(function(a,b){return a.n-b.n});
+    var mapa={},i=0;rest.forEach(function(lt){mapa[lt.n]=++i;lt.n=i});
+    var p={atualizadoEm:Date.now()};
+    if(!rest.length){p.lotes=null;p.lotesPrevistos=null}
+    else{p.lotes=rest.length;p.lotesPrevistos=objPlanos(rest)}
+    var parcs=o.entregasParciais,novoParcs=null;
+    if(parcs&&typeof parcs==="object"){
+      novoParcs={};
+      Object.keys(parcs).forEach(function(k){
+        var x=parcs[k];if(!x||typeof x!=="object")return;
+        var y={qtd:x.qtd,data:x.data||"",criadoEm:x.criadoEm||0};
+        var ln=parseInt(x.lote,10)||0;
+        if(ln===n){/* lançamento fica sem lote associado */}
+        else if(ln&&mapa[ln])y.lote=mapa[ln];
+        else if(ln)y.lote=ln;
+        novoParcs[k]=y;
+      });
+      p.entregasParciais=novoParcs;
+    }
+    var av=pioraSobrecarga(alertasSobrecarga(HOJE),rest.length?sobrecargaDosPlanos(id,Object.assign({},o,{lotes:p.lotes,lotesPrevistos:p.lotesPrevistos}),rest):[]);
+    if(!avisoSobrecarga(av))return;
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);preencheLotesFicha(oo)}}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível remover o lote (sem conexão).")});
+  }
   if(eLote)eLote.addEventListener("change",function(){salvaLotesAgora();atualizaFichaLive()});
   var planBox=document.getElementById("e-lotes-plan");
-  if(planBox)planBox.addEventListener("change",function(e){if(e.target&&e.target.getAttribute("data-lote"))salvaPlanosLote({})});
+  if(planBox){
+    planBox.addEventListener("change",function(e){if(e.target&&e.target.getAttribute("data-lote"))salvaPlanosLote({})});
+    planBox.addEventListener("click",function(e){var b=e.target.closest("[data-remove-lote]");if(b)removeLotePlan(b.getAttribute("data-remove-lote"))});
+  }
+  var btnAddLote=document.getElementById("e-lote-add");
+  if(btnAddLote)btnAddLote.addEventListener("click",abreFormNovoLote);
+  var btnLoteOk=document.getElementById("e-lote-novo-ok");
+  if(btnLoteOk)btnLoteOk.addEventListener("click",incluiLoteNovo);
+  var btnLoteCancel=document.getElementById("e-lote-novo-cancel");
+  if(btnLoteCancel)btnLoteCancel.addEventListener("click",fechaFormNovoLote);
+  var iqNovo=document.getElementById("e-lote-novo-qtd");
+  if(iqNovo)iqNovo.addEventListener("input",atualizaChkSomaPadrao);
+  var chkSoma=document.getElementById("e-lote-soma-total");
+  if(chkSoma)chkSoma.addEventListener("change",function(){somaChkManual=true});
   var pxEl=document.getElementById("e-prox-lote");
   if(pxEl)pxEl.addEventListener("change",salvaProxLote);
   var addP=document.getElementById("e-parc-add");
@@ -1153,7 +1305,7 @@
     if(q>0)o.qtd=q;
     var padN=valorPadrao(nP);if(padN){o.padrao=padN;o.ritmo=ritmoDe(padN)}
     if(etapaNovo>=1){o.etapa=etapaNovo;if(etapaNovo>=3)o.entrouProducao=HOJE}
-    var nLt=nLote?parseInt(nLote.value,10)||0:0;if(nLt>=1&&nLt<=6)o.lotes=nLt;
+    var nLt=nLote?parseInt(nLote.value,10)||0:0;if(nLt>=1)o.lotes=nLt;
     ok2.style.color="";ok2.textContent="Salvando…";
     req("PUT","/entregas/"+id+".json",o).then(function(){
       if(REM){REM[id]=o;render()}
@@ -1165,7 +1317,7 @@
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
     var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}else{p.padrao=null;p.ritmo=null}
     if(etapaEdit>=1){p.etapa=etapaEdit;if(etapaEdit>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}}else{p.etapa=null;p.entrouProducao=null}
-    var nLt=eLote?parseInt(eLote.value,10)||0:0;if(nLt>=1&&nLt<=6)p.lotes=nLt;else p.lotes=null;
+    var nLt=eLote?parseInt(eLote.value,10)||0:0;if(nLt>=1)p.lotes=nLt;else p.lotes=null;
     var px=document.getElementById("e-prox-lote");if(px){p.proximoLoteData=px.value||null}
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
