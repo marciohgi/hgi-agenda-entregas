@@ -39,7 +39,7 @@
   .s-critico{background:#fbe3e1;border-color:#c0392b;color:#7b1f16}
   .ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
   .ov.on{display:flex}
-  .modal{background:#fff;border-radius:10px;max-width:540px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+  .modal{background:#fff;border-radius:10px;max-width:620px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
   .modal h2{margin:0;background:#1e3a5f;color:#fff;font-size:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
   .modal h2 button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1}
   .mb{padding:16px 18px}
@@ -75,6 +75,7 @@
   .alerta .ldata{font-size:11px;color:#a0473d;margin-top:4px}
   .btn.verm{background:#c0392b}
   .campos{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
+  .campos.tres{grid-template-columns:1fr 1fr 1fr;gap:10px 10px}
   .campos .full{grid-column:1/-1}
   .campos label{display:block}
   .campos input,.campos select{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #b8c4d2;border-radius:6px;margin-top:4px;background:#fff}
@@ -84,28 +85,10 @@
   .outras.on{display:block}
   .outras .lista{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
   .outras .item{width:auto;min-width:170px;margin:0}
-  @media (max-width:600px){.campos{grid-template-columns:1fr}}
+  @media (max-width:600px){.campos,.campos.tres{grid-template-columns:1fr}}
   .add-dia{display:block;width:100%;background:transparent;border:1.5px dashed #9fb1c6;border-radius:5px;color:#2f5d8a;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;margin-top:2px;cursor:pointer;text-align:center}
   .add-dia:hover{background:#eef3f9;border-color:#2f5d8a}
   .outras .add-dia{width:auto;min-width:120px;margin:0}
-  .badge-padrao{display:block;font-size:10px;font-weight:700;letter-spacing:.2px;border-radius:4px;padding:3px 7px;margin-top:5px;border:1px solid;line-height:1.3;text-align:left}
-  .btn-padrao{display:block;width:100%;font:inherit;font-size:13px;font-weight:700;text-align:left;border:1.5px solid;border-radius:6px;padding:8px 12px;margin-top:4px;cursor:pointer;background:#fff;color:#1f2a37}
-  .btn-padrao:hover{filter:brightness(.97)}
-  .badge-padrao .lab,.btn-padrao .lab{display:block}
-  .badge-padrao .rit,.btn-padrao .rit{display:block;font-size:10px;font-weight:600;margin-top:2px;opacity:.92}
-  .btn-padrao .rit{font-size:12px}
-  .p-mcmv{background:#fff;color:#E87731;border-color:#E87731}
-  .p-medio{background:#fff;color:#3a3a3a;border-color:#5a5a5a}
-  .p-alto{background:#3a3a3a;color:#fff;border-color:#3a3a3a}
-  .p-altissimo{background:#E87731;color:#fff;border-color:#E87731}
-  .p-vazio{background:#fff;color:#6b7785;border-color:#b8c4d2;border-style:dashed;font-weight:600}
-  .ov-padrao{z-index:20}
-  .padrao-ops{display:flex;flex-direction:column;gap:8px}
-  .padrao-ops button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;font:inherit;font-size:15px;font-weight:700;text-align:left;border:2px solid;border-radius:8px;padding:12px 14px;cursor:pointer}
-  .padrao-ops button:hover{filter:brightness(.97)}
-  .padrao-ops button.sel{box-shadow:0 0 0 3px rgba(232,119,49,.4)}
-  .padrao-ops .lab{flex:1}
-  .padrao-ops .rit{font-size:12px;font-weight:600;white-space:nowrap;text-align:right;opacity:.92}
   .dest{display:block;margin-top:6px;font-weight:500}
   .dest div{font-size:11px;line-height:1.35;color:#1f2a37}
   .dest .dest-qtd{font-size:13px;font-weight:700;color:#1e3a5f}
@@ -136,17 +119,18 @@
   .cerca-box{background:#f5f7fa;border:1px dashed #b8c4d2;border-radius:6px;padding:8px 12px;margin:0 0 12px;font-size:13px;color:#3d4d5f}
   .cerca-box b{color:#1e3a5f}
   .cerca-box.faltando{color:#6b7785;font-style:italic}
-  .estagio-prod{margin:0 0 14px}
-  .trilha{display:flex;gap:3px;margin-top:6px}
-  .trilha button{flex:1;min-width:0;border:1px solid #b8c4d2;background:#f5f7fa;border-radius:5px;padding:6px 2px;cursor:pointer;font:inherit;text-align:center;line-height:1.2}
-  .trilha button:hover{filter:brightness(.97)}
-  .trilha .n{display:block;font-size:12px;font-weight:700;color:#1e3a5f}
-  .trilha .l{display:block;font-size:9px;font-weight:600;color:#5b6b7d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .trilha button.feita{background:#f8d4bc;border-color:#E87731}
-  .trilha button.atual{background:#E87731;border-color:#c86220}
-  .trilha button.atual .n,.trilha button.atual .l{color:#fff}
-  .estagio-rot{font-size:13px;font-weight:700;color:#1e3a5f;margin-top:6px}
-  .estagio-nota{font-size:11px;color:#5b6b7d;margin-top:2px}
+  .estagio-nota{font-size:11px;color:#5b6b7d;margin:0 0 10px}
+  .barra-etapa{height:6px;background:#e3e8ee;border-radius:4px;overflow:hidden;margin:2px 0 8px}
+  .barra-etapa i{display:block;height:100%;width:0;background:#E87731;border-radius:4px}
+  .ov-atraso{z-index:30}
+  .lista-atraso .obra{border:1px solid #d5dce5;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .lista-atraso .obra.hoje{background:#fdecea;border-color:#c0392b}
+  .lista-atraso .obra.atraso{background:#f3d6d3;border-color:#5c1210}
+  .lista-atraso .nome{font-weight:700;color:#1f2a37}
+  .lista-atraso .det{font-size:13px;margin-top:2px;color:#3d4d5f}
+  .lista-atraso .dias{font-size:13px;font-weight:700;margin-top:2px}
+  .lista-atraso .obra.atraso .dias{color:#5c1210}
+  .lista-atraso .obra.hoje .dias{color:#c0392b}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -199,21 +183,20 @@
       <div class="meta" id="meta"></div>
       <div class="destaque-ficha" id="destaque-ficha"></div>
       <div class="cerca-box" id="cerca-box"></div>
-      <div class="estagio-prod">
-        <div class="rot">Estágio da produção</div>
-        <div class="trilha" id="e-trilha" role="list" aria-label="Estágio da produção"></div>
-        <div class="estagio-rot" id="e-etapa-rot"></div>
-        <div class="estagio-nota" id="e-etapa-nota"></div>
+      <div class="campos tres">
+        <label class="rot">Status<select id="e-status"></select></label>
+        <label class="rot">Padrão<select id="e-padrao"></select></label>
+        <label class="rot">Estágio<select id="e-etapa"></select></label>
+      </div>
+      <div class="barra-etapa" id="e-barra" aria-hidden="true"><i></i></div>
+      <div class="estagio-nota" id="e-etapa-nota"></div>
+      <div class="campos">
+        <label class="rot">Data<input type="date" id="e-data"></label>
+        <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="e-qtd" placeholder="qtd a definir"></label>
       </div>
       <div class="rot">Situação atual</div>
       <div class="atual" id="atual"></div>
       <div class="upd" id="upd"></div>
-      <div class="campos">
-        <label class="rot">Status<select id="e-status"></select></label>
-        <label class="rot">Data<input type="date" id="e-data"></label>
-        <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="e-qtd" placeholder="qtd a definir"></label>
-        <label class="rot full">Padrão<button type="button" class="btn-padrao p-vazio" id="e-padrao">Definir padrão</button></label>
-      </div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
       <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
@@ -229,14 +212,13 @@
         <label class="rot full">Obra / nome <span class="req">*</span><input type="text" id="n-nome" maxlength="80" placeholder="Ex.: Terral Aero"></label>
         <label class="rot">Data<input type="date" id="n-data" value="2026-11-09"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="n-qtd" placeholder="qtd a definir"></label>
-        <label class="rot full">Status<select id="n-status"></select></label>
-        <label class="rot full">Padrão<button type="button" class="btn-padrao p-vazio" id="n-padrao">Definir padrão</button></label>
       </div>
-      <div class="estagio-prod">
-        <div class="rot">Estágio da produção</div>
-        <div class="trilha" id="n-trilha" role="list" aria-label="Estágio da produção"></div>
-        <div class="estagio-rot" id="n-etapa-rot"></div>
+      <div class="campos tres">
+        <label class="rot">Status<select id="n-status"></select></label>
+        <label class="rot">Padrão<select id="n-padrao"></select></label>
+        <label class="rot">Estágio<select id="n-etapa"></select></label>
       </div>
+      <div class="barra-etapa" id="n-barra" aria-hidden="true"><i></i></div>
       <div class="rot">Situação / observações</div>
       <textarea id="n-est" placeholder="Situação atual da entrega"></textarea>
       <div class="acoes"><span class="ok" id="ok2"></span><button class="btn sec" id="cancelar2">Cancelar</button><button class="btn" id="salvar2">Salvar</button></div>
@@ -259,12 +241,12 @@
   </div>
 </div>
 
-<div class="ov ov-padrao" id="ov4">
-  <div class="modal" role="dialog" aria-labelledby="mt4" aria-modal="true">
-    <h2><span id="mt4">Escolher padrão</span><button type="button" id="fechar4" aria-label="Fechar">×</button></h2>
+<div class="ov ov-atraso" id="ov-atraso">
+  <div class="modal" role="dialog" aria-labelledby="mt-atraso" aria-modal="true">
+    <h2 style="background:#5c1210"><span id="mt-atraso">Estamos atrasados — acelerar essas obras</span><button type="button" id="fechar-atraso-x" aria-label="Fechar">×</button></h2>
     <div class="mb">
-      <p class="meta" style="margin-bottom:12px">Selecione o padrão desta entrega. Cada um tem um ritmo médio de produção.</p>
-      <div class="padrao-ops" id="padrao-ops"></div>
+      <div class="lista-atraso" id="lista-atraso"></div>
+      <div class="acoes"><button class="btn sec" id="fechar-atraso" type="button">Fechar</button></div>
     </div>
   </div>
 </div>
@@ -285,23 +267,15 @@
   var PADRAO_CLS={"Minha Casa Minha Vida":"p-mcmv","Médio Padrão":"p-medio","Alto Padrão":"p-alto","Altíssimo Padrão":"p-altissimo"};
   function infoPadrao(v){return (v&&PADRAO_MAP[v])?PADRAO_MAP[v]:null}
   function clsPadrao(v){return PADRAO_CLS[v]||"p-vazio"}
-  function valorPadrao(btn){return (btn&&btn.getAttribute("data-valor"))||""}
+  function valorPadrao(sel){return (sel&&infoPadrao(sel.value))?sel.value:""}
   function ritmoDe(v){var i=infoPadrao(v);return i?i.ritmo:""}
   function prazoTxt(qtd,info){qtd=parseInt(qtd,10);if(!info||!(qtd>0))return "";var dMin=Math.ceil(qtd/info.max),dMax=Math.ceil(qtd/info.min);return dMin===dMax?dMin+(dMin===1?" dia":" dias"):dMin+"–"+dMax+" dias"}
-  function preenchePadraoEl(el,val,qtd,isBtn){
-    var i=infoPadrao(val);
-    if(isBtn)el.setAttribute("data-valor",i?i.id:"");
-    el.className=(isBtn?"btn-padrao ":"badge-padrao ")+clsPadrao(val);
-    el.textContent="";
-    if(!i){el.textContent="Definir padrão";return}
-    var a=document.createElement("span");a.className="lab";a.textContent=i.id;el.appendChild(a);
-    var b=document.createElement("span");b.className="rit";var pz=prazoTxt(qtd,i);b.textContent=pz?i.ritmo+" · "+pz:i.ritmo;el.appendChild(b);
-  }
-  function aplicaBtnPadrao(btn,val,qtd){preenchePadraoEl(btn,val,qtd,true)}
-  var ETAPAS=["Projeto","PCP","Produção de etiqueta","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"];
-  var ETAPAS_CURTO=["Projeto","PCP","Produção de etiqueta","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"];
-  function etapaNum(o){var e=o&&o.etapa;e=(typeof e==="string")?parseInt(e,10):e;return (typeof e==="number"&&isFinite(e)&&e>=1&&e<=9)?e:0}
-  function rotEtapa(n,curto){n=+n;if(!(n>=1&&n<=9))return "Estágio a definir";return n+"/9 "+(curto?ETAPAS_CURTO:ETAPAS)[n-1]}
+  var N_ETAPAS=8;
+  var ETAPAS=["Projeto","PCP","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"];
+  var ETAPAS_CURTO=["Projeto","PCP","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"];
+  function etapaNum(o){var e=o&&o.etapa;e=(typeof e==="string")?parseInt(e,10):e;return (typeof e==="number"&&isFinite(e)&&e>=1&&e<=N_ETAPAS)?e:0}
+  function rotEtapa(n,curto){n=+n;if(!(n>=1&&n<=N_ETAPAS))return "Estágio a definir";return n+"/"+N_ETAPAS+" "+(curto?ETAPAS_CURTO:ETAPAS)[n-1]}
+  function atualizaBarra(id,n){var el=document.getElementById(id);if(!el)return;var i=el.querySelector("i");if(!i)return;n=parseInt(n,10)||0;i.style.width=(n>=1?Math.round(n/N_ETAPAS*100):0)+"%"}
   var NOMES=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"];
   var SEM_FIXA="2026-11-09"; // semana com o alerta do José e o destaque da CBA
   function pad(n){return (n<10?"0":"")+n}
@@ -434,21 +408,12 @@
   [eS,document.getElementById("n-status")].forEach(function(sel){Object.keys(ROT).forEach(function(k){var op=document.createElement("option");op.value=k;op.textContent=ROT[k];sel.appendChild(op)})});
   function fmt(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
   var etapaEdit=0,etapaNovo=0;
-  function montaTrilha(el,atual,aoClicar){if(!el)return;el.innerHTML="";
-    for(var i=1;i<=9;i++){var b=document.createElement("button");b.type="button";
-      if(atual===i)b.className="atual";else if(atual>i)b.className="feita";
-      b.title=i+". "+ETAPAS[i-1];b.setAttribute("data-etapa",String(i));
-      var n=document.createElement("span");n.className="n";n.textContent=String(i);b.appendChild(n);
-      var l=document.createElement("span");l.className="l";l.textContent=ETAPAS_CURTO[i-1];b.appendChild(l);
-      b.addEventListener("click",(function(n){return function(e){e.preventDefault();e.stopPropagation();aoClicar(n)}})(i));
-      el.appendChild(b)}}
-  function rotuloEtapaEls(idRot,idNota,o){
-    var n=etapaNum(o),rot=document.getElementById(idRot);if(rot)rot.textContent=rotEtapa(n,false);
-    var nota=document.getElementById(idNota);if(!nota)return;
-    if(n>=3)nota.textContent="Entrou na produção a partir da etapa 3 (Produção de etiqueta).";
+  function rotuloEtapaEls(idNota,o){
+    var n=etapaNum(o),nota=document.getElementById(idNota);if(!nota)return;
+    if(n>=3)nota.textContent="Entrou na produção a partir da etapa 3 (Corte de fio).";
     else if(cod(o)==="pronto"||cod(o)==="andamento")nota.textContent="O status "+ROT[cod(o)]+" também indica que a obra já entrou na produção.";
     else if(o&&o.entrouProducao)nota.textContent="Entrou na produção em "+rotDataCurto(o.entrouProducao)+".";
-    else nota.textContent="A cerca e os alertas valem até a obra chegar na etapa 3."}
+    else nota.textContent="A cerca e os alertas valem até a obra chegar na etapa 3 (Corte de fio)."}
   function preencheDestaque(id,o){
     var box=document.getElementById("destaque-ficha");if(!box)return;box.innerHTML="";
     function cel(rot,val,full){var l=document.createElement("div");if(full)l.className="full";var r=document.createElement("div");r.className="rot";r.textContent=rot;l.appendChild(r);var v=document.createElement("div");v.className="val2";v.textContent=val;l.appendChild(v);box.appendChild(l)}
@@ -468,51 +433,54 @@
     var inf=infoPadrao(o.padrao),ex="";if(inf){var pz=prazoTxt(qnum(o),inf);ex="<br>"+esc(inf.id)+" · "+esc(inf.ritmo)+(pz?" · "+esc(pz):"")}
     document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
     preencheDestaque(id,o);
-    montaTrilha(document.getElementById("e-trilha"),etapaNum(o),escolheEtapa);
-    rotuloEtapaEls("e-etapa-rot","e-etapa-nota",o);
+    rotuloEtapaEls("e-etapa-nota",o);
+    atualizaBarra("e-barra",etapaNum(o));
     atual.textContent=o.estagio||"";
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
   }
   function escolheEtapa(n){
-    etapaEdit=n;if(!cur)return;var id=cur,o=fonte()[id]||{},p={etapa:n,atualizadoEm:Date.now()};
+    n=parseInt(n,10)||0;etapaEdit=n;if(!cur)return;var id=cur,o=fonte()[id]||{},p={atualizadoEm:Date.now()};
+    if(n>=1&&n<=N_ETAPAS)p.etapa=n;else p.etapa=null;
     if(n>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}
     req("PATCH","/entregas/"+id+".json",p).then(function(){
-      if(REM&&REM[id]){if(p.entrouProducao===null)delete REM[id].entrouProducao;else if(p.entrouProducao)REM[id].entrouProducao=p.entrouProducao;REM[id].etapa=n;REM[id].atualizadoEm=p.atualizadoEm}
-      render();if(cur===id){var oo=fonte()[id];if(oo)preencheTopo(id,oo)}
+      if(REM&&REM[id]){if(p.entrouProducao===null)delete REM[id].entrouProducao;else if(p.entrouProducao)REM[id].entrouProducao=p.entrouProducao;if(p.etapa===null)delete REM[id].etapa;else REM[id].etapa=n;REM[id].atualizadoEm=p.atualizadoEm}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);if(eEt)eEt.value=n?String(n):""}}
     }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o estágio (sem conexão).")});
   }
   function abrir(id){var o=fonte()[id];if(!o)return;cur=id;etapaEdit=etapaNum(o);preencheTopo(id,o);
-    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";aplicaBtnPadrao(eP,o.padrao||"",qnum(o));
+    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";
+    eP.value=infoPadrao(o.padrao)?o.padrao:"";eEt.value=etapaEdit?String(etapaEdit):"";
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
-  function fechar(){ov.classList.remove("on");cur=null;fecharPadrao()}
+  function fechar(){ov.classList.remove("on");cur=null}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
   ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
 
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
-  var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),ov4=document.getElementById("ov4"),opsP=document.getElementById("padrao-ops"),padraoAlvo=null;
-  function qtdDoAlvo(btn){return parseInt((btn===nP?nQ:eQ).value,10)||0}
-  function montaOps(qtd){opsP.innerHTML="";PADROES.forEach(function(p){var b=document.createElement("button");b.type="button";b.className=clsPadrao(p.id);b.setAttribute("data-valor",p.id);
-    var a=document.createElement("span");a.className="lab";a.textContent=p.id;b.appendChild(a);
-    var r=document.createElement("span");r.className="rit";var pz=prazoTxt(qtd,p);r.textContent=pz?p.ritmo+" · "+pz:p.ritmo;b.appendChild(r);opsP.appendChild(b)})}
-  function abrirPadrao(btn){padraoAlvo=btn;montaOps(qtdDoAlvo(btn));var cur=valorPadrao(btn);[].forEach.call(opsP.querySelectorAll("button"),function(b){b.classList.toggle("sel",b.getAttribute("data-valor")===cur)});ov4.classList.add("on")}
-  function fecharPadrao(){ov4.classList.remove("on");padraoAlvo=null}
-  eP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(eP)});
-  nP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(nP)});
-  opsP.addEventListener("click",function(e){var b=e.target.closest("button[data-valor]");if(!b||!padraoAlvo)return;aplicaBtnPadrao(padraoAlvo,b.getAttribute("data-valor"),qtdDoAlvo(padraoAlvo));fecharPadrao();atualizaFichaLive()});
+  var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),eEt=document.getElementById("e-etapa"),nEt=document.getElementById("n-etapa");
+  function enchePadrao(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— padrão —";sel.appendChild(z);PADROES.forEach(function(p){var op=document.createElement("option");op.value=p.id;op.textContent=p.id;sel.appendChild(op)})}
+  function encheEtapa(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— estágio —";sel.appendChild(z);for(var i=1;i<=N_ETAPAS;i++){var op=document.createElement("option");op.value=String(i);op.textContent=i+" "+ETAPAS_CURTO[i-1];sel.appendChild(op)}}
+  enchePadrao(eP);enchePadrao(nP);encheEtapa(eEt);encheEtapa(nEt);
   function objetoFicha(){if(!cur)return {};var o={},base=fonte()[cur]||{},k;for(k in base)if(Object.prototype.hasOwnProperty.call(base,k))o[k]=base[k];
-    o.data=eD.value||"";o.qtd=parseInt(eQ.value,10)||0;var pad=valorPadrao(eP);if(pad){o.padrao=pad;o.ritmo=ritmoDe(pad)}o.etapa=etapaEdit;o.statusCodigo=eS.value;o.status=LAB[eS.value];return o}
-  function atualizaFichaLive(){if(!cur)return;preencheDestaque(cur,objetoFicha())}
-  eQ.addEventListener("input",function(){aplicaBtnPadrao(eP,valorPadrao(eP),parseInt(eQ.value,10)||0);atualizaFichaLive()});
-  nQ.addEventListener("input",function(){aplicaBtnPadrao(nP,valorPadrao(nP),parseInt(nQ.value,10)||0)});
+    o.data=eD.value||"";o.qtd=parseInt(eQ.value,10)||0;var pad=valorPadrao(eP);if(pad){o.padrao=pad;o.ritmo=ritmoDe(pad)}else{delete o.padrao;delete o.ritmo}o.etapa=etapaEdit;o.statusCodigo=eS.value;o.status=LAB[eS.value];return o}
+  function atualizaFichaLive(){if(!cur)return;var o=objetoFicha();preencheDestaque(cur,o);rotuloEtapaEls("e-etapa-nota",o);atualizaBarra("e-barra",etapaEdit)}
+  function salvaPadraoAgora(){
+    if(!cur)return;var id=cur,pad=valorPadrao(eP),p={atualizadoEm:Date.now()};
+    if(pad){p.padrao=pad;p.ritmo=ritmoDe(pad)}else{p.padrao=null;p.ritmo=null}
+    ok.style.color="";ok.textContent="Salvando…";
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){if(pad){REM[id].padrao=pad;REM[id].ritmo=p.ritmo}else{delete REM[id].padrao;delete REM[id].ritmo}REM[id].atualizadoEm=p.atualizadoEm}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);eP.value=pad;ok.textContent="Salvo para todos."}}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o padrão (sem conexão).")});
+  }
+  eP.addEventListener("change",function(){salvaPadraoAgora();atualizaFichaLive()});
+  eEt.addEventListener("change",function(){etapaEdit=parseInt(eEt.value,10)||0;escolheEtapa(etapaEdit);atualizaBarra("e-barra",etapaEdit)});
+  nEt.addEventListener("change",function(){etapaNovo=parseInt(nEt.value,10)||0;atualizaBarra("n-barra",etapaNovo)});
+  eQ.addEventListener("input",atualizaFichaLive);
   eD.addEventListener("input",atualizaFichaLive);eS.addEventListener("change",atualizaFichaLive);
-  document.getElementById("fechar4").onclick=fecharPadrao;
-  ov4.addEventListener("click",function(e){if(e.target===ov4)fecharPadrao()});
-  function clicaEtapaNovo(n){etapaNovo=n;montaTrilha(document.getElementById("n-trilha"),n,clicaEtapaNovo);document.getElementById("n-etapa-rot").textContent=rotEtapa(n,false)}
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";aplicaBtnPadrao(nP,"");etapaNovo=0;
-    montaTrilha(document.getElementById("n-trilha"),0,clicaEtapaNovo);document.getElementById("n-etapa-rot").textContent=rotEtapa(0,false);
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";nEt.value="";etapaNovo=0;atualizaBarra("n-barra",0);
     ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
-  function fecharNovo(){ov2.classList.remove("on");fecharPadrao()}
+  function fecharNovo(){ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=abrirLembrete;
   var selS=document.getElementById("semanas");
   (function(){var d=deIso("2026-11-09");while(iso(d)<=ULTIMA_SEMANA){var a=new Date(d),b=new Date(d);b.setDate(b.getDate()+6);
@@ -529,7 +497,7 @@
   window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(ov4.classList.contains("on")){fecharPadrao();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
 
   // lembretes
   var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
@@ -588,8 +556,8 @@
   document.getElementById("salvar").onclick=function(){
     if(!cur)return;var id=cur,o=fonte()[id]||{},t=campo.value.trim()||o.estagio||"",c=eS.value,q=parseInt(eQ.value,10),agora=Date.now();
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
-    var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}
-    if(etapaEdit>=1){p.etapa=etapaEdit;if(etapaEdit>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}}
+    var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}else{p.padrao=null;p.ritmo=null}
+    if(etapaEdit>=1){p.etapa=etapaEdit;if(etapaEdit>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}}else{p.etapa=null;p.entrouProducao=null}
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
@@ -653,7 +621,45 @@
   setInterval(recarregaRelogio,30000);
   document.addEventListener("visibilitychange",function(){if(!document.hidden)recarregaRelogio()});
   render();
-  ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render()});
+  var POPUP_ATRASO_KEY="hgi-agenda-popup-atraso",popupAtrasoChecado=false;
+  function fecharAtraso(){var oa=document.getElementById("ov-atraso");if(oa)oa.classList.remove("on")}
+  function obrasCercaUrgente(){
+    var atrasadas=[],hojeCerca=[];
+    lista().forEach(function(x){var st=estadoCerca(x.o,HOJE);if(st.tipo==="atraso")atrasadas.push({x:x,st:st});else if(st.tipo==="hoje")hojeCerca.push({x:x,st:st})});
+    atrasadas.sort(function(a,b){return (b.st.n||0)-(a.st.n||0)});
+    return {atrasadas:atrasadas,hoje:hojeCerca};
+  }
+  function montaItemAtraso(it,tipo){
+    var o=it.x.o,d=document.createElement("div");d.className="obra "+tipo;
+    var inf=document.createElement("div");
+    var nm=document.createElement("div");nm.className="nome";nm.textContent=o.nome||it.x.id;inf.appendChild(nm);
+    var det=document.createElement("div");det.className="det";
+    det.textContent=qtdImoveis(o)+" · "+(infoPadrao(o.padrao)?o.padrao:"Padrão a definir")+(it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");
+    inf.appendChild(det);
+    var dias=document.createElement("div");dias.className="dias";
+    dias.textContent=tipo==="hoje"?"Tem que entrar na produção hoje":(it.st.n===1?"1 dia de atraso":it.st.n+" dias de atraso");
+    inf.appendChild(dias);
+    d.appendChild(inf);
+    var b=document.createElement("button");b.type="button";b.className="btn"+(tipo==="hoje"?" verm":"");b.textContent="Ver obra";
+    b.addEventListener("click",function(){fecharAtraso();if(o.data&&deIso(o.data))irPara(iso(segunda(deIso(o.data))));abrir(it.x.id)});
+    d.appendChild(b);return d;
+  }
+  function tentarPopupAtraso(){
+    if(popupAtrasoChecado||!REM)return;
+    popupAtrasoChecado=true;
+    try{if(sessionStorage.getItem(POPUP_ATRASO_KEY))return}catch(e){}
+    var u=obrasCercaUrgente();
+    if(!u.atrasadas.length&&!u.hoje.length)return;
+    var box=document.getElementById("lista-atraso");if(!box)return;box.innerHTML="";
+    u.atrasadas.forEach(function(it){box.appendChild(montaItemAtraso(it,"atraso"))});
+    u.hoje.forEach(function(it){box.appendChild(montaItemAtraso(it,"hoje"))});
+    document.getElementById("ov-atraso").classList.add("on");
+    try{sessionStorage.setItem(POPUP_ATRASO_KEY,"1")}catch(e){}
+  }
+  document.getElementById("fechar-atraso").onclick=fecharAtraso;
+  document.getElementById("fechar-atraso-x").onclick=fecharAtraso;
+  document.getElementById("ov-atraso").addEventListener("click",function(e){if(e.target===document.getElementById("ov-atraso"))fecharAtraso()});
+  ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();tentarPopupAtraso()});
   ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
   agendaProximaHora();
 })();
