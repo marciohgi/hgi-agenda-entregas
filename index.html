@@ -103,15 +103,23 @@
   .item.alerta-atraso{background:#f3d6d3;border-color:#5c1210;box-shadow:inset 0 0 0 1px #5c1210}
   .item.alerta-atraso .alerta-mini{background:#5c1210;color:#fff;border:1px solid #3d0c0a}
   .item .cerca-faltando{display:block;margin-top:6px;font-size:10px;font-weight:600;color:#6b7785;line-height:1.3}
+  .item.alerta-entrega{background:#fff0e4;border-color:#E87731;box-shadow:inset 0 0 0 2px #E87731}
+  .item.alerta-entrega .alerta-mini.entrega{background:#E87731;color:#fff;border:1px solid #c86220;animation:pisca-cerca 1s linear infinite}
+  .item.alerta-vencida{background:#ffe8d6;border-color:#c86220;box-shadow:inset 0 0 0 1px #c86220}
+  .item.alerta-vencida:not(.alerta-entrega) .alerta-mini.entrega{background:#c86220;color:#fff;border:1px solid #9a4a16}
   @keyframes pisca-cerca{0%,100%{opacity:1}50%{opacity:.42}}
-  @media (prefers-reduced-motion:reduce){.item.alerta-hoje .alerta-mini,.alerta-hoje{animation:none}}
+  @media (prefers-reduced-motion:reduce){.item.alerta-hoje .alerta-mini,.alerta-hoje,.item.alerta-entrega .alerta-mini.entrega,.alerta-entrega.alerta{animation:none}}
   .alerta-programar.alerta{background:#fff6d0;border-color:#d4a514;color:#6a5300}
   .alerta-hoje.alerta{background:#c0392b;border-color:#7b1f16;color:#fff;animation:pisca-cerca 1s linear infinite}
   .alerta-atraso.alerta{background:#5c1210;border-color:#3d0c0a;color:#fff}
-  .alerta-cerca{cursor:pointer}
-  .alerta-cerca b{padding-right:8px}
+  .alerta-entrega.alerta{background:#fff0e4;border-color:#E87731;color:#8a3d10;animation:pisca-cerca 1s linear infinite}
+  .alerta-vencida.alerta{background:#c86220;border-color:#8a3d10;color:#fff}
+  .alerta-cerca,.alerta-entrega-topo{cursor:pointer}
+  .alerta-cerca b,.alerta-entrega-topo b{padding-right:8px}
   .alerta-hoje.alerta b,.alerta-atraso.alerta b,.alerta-hoje.alerta .ldata,.alerta-atraso.alerta .ldata{color:#fff}
   .alerta-programar.alerta .ldata{color:#6a5300}
+  .alerta-entrega.alerta b,.alerta-entrega.alerta .ldata{color:#8a3d10}
+  .alerta-vencida.alerta b,.alerta-vencida.alerta .ldata{color:#fff}
   .destaque-ficha{background:#f7f9fc;border:1px solid #d5dce5;border-radius:6px;padding:10px 12px;margin:0 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
   .destaque-ficha .rot{margin-bottom:1px}
   .destaque-ficha .val2{font-size:15px;font-weight:700;color:#1e3a5f}
@@ -131,6 +139,11 @@
   .lista-atraso .dias{font-size:13px;font-weight:700;margin-top:2px}
   .lista-atraso .obra.atraso .dias{color:#5c1210}
   .lista-atraso .obra.hoje .dias{color:#c0392b}
+  .lista-atraso .obra.entrega{background:#fff0e4;border-color:#E87731}
+  .lista-atraso .obra.entrega .dias{color:#c86220}
+  .lista-atraso .sec{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin:12px 0 6px;color:#5c1210}
+  .lista-atraso .sec:first-child{margin-top:0}
+  .lista-atraso .sec.entrega{color:#c86220}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -300,6 +313,8 @@
   function entrouProducao(o){if(etapaNum(o)>=3)return true;if(o&&o.entrouProducao)return true;var c=cod(o);return c==="pronto"||c==="andamento"}
   function estadoCerca(o,hoje){hoje=hoje||HOJE;if(!infoPadrao(o&&o.padrao)||!qnum(o)||!deIso(o&&o.data))return {tipo:"incompleto",cerca:null};var cerca=dataCerca(o);if(entrouProducao(o))return {tipo:"entrou",cerca:cerca};if(hoje===cerca)return {tipo:"hoje",cerca:cerca};if(hoje>cerca)return {tipo:"atraso",cerca:cerca,n:diasCorridos(cerca,hoje)};var ini=somaIso(cerca,-7);if(hoje>=ini&&hoje<cerca)return {tipo:"programar",cerca:cerca,n:diasCorridos(hoje,cerca)};return {tipo:"ok",cerca:cerca}}
   function textoAlertaCerca(st){if(!st)return null;if(st.tipo==="programar")return {tit:"Uma semana para entrar no prazo limite",sub:st.n===1?"falta 1 dia":"faltam "+st.n+" dias"};if(st.tipo==="hoje")return {tit:"Tem que entrar na produção hoje",sub:"Cerca hoje"};if(st.tipo==="atraso")return {tit:"Estamos atrasados — acelerar essa obra",sub:st.n===1?"1 dia de atraso":st.n+" dias de atraso"};return null}
+  function estadoEntrega(o,hoje){hoje=hoje||HOJE;if(!o||!deIso(o.data))return {tipo:"ok"};if(hoje===o.data)return {tipo:"dia"};if(hoje>o.data&&cod(o)!=="pronto")return {tipo:"vencida",n:diasCorridos(o.data,hoje)};return {tipo:"ok"}}
+  function textoAlertaEntrega(st){if(!st)return null;if(st.tipo==="dia")return {tit:"🚚 Hoje é dia de entrega",sub:"Entrega prevista para hoje"};if(st.tipo==="vencida")return {tit:"Entrega vencida há "+(st.n===1?"1 dia":st.n+" dias"),sub:"Após a data prevista"};return null}
   function limita(sem){return sem>ULTIMA_SEMANA?ULTIMA_SEMANA:sem}
   SEMANA=limita(SEMANA);
   function montaDias(){var ini=deIso(SEMANA);DIAS=[];
@@ -362,6 +377,8 @@
     if(st.tipo==="incompleto"){var miss=document.createElement("span");miss.className="cerca-faltando";miss.textContent="Defina padrão/qtd/data para calcular a cerca";b.appendChild(miss)}
     var al=textoAlertaCerca(st);
     if(al){b.classList.add("alerta-"+st.tipo);var ad=document.createElement("span");ad.className="alerta-mini";ad.appendChild(document.createTextNode(al.tit));if(al.sub){var sm=document.createElement("small");sm.textContent=al.sub;ad.appendChild(sm)}b.appendChild(ad)}
+    var en=estadoEntrega(o,HOJE),alE=textoAlertaEntrega(en);
+    if(alE){b.classList.add(en.tipo==="dia"?"alerta-entrega":"alerta-vencida");var ae=document.createElement("span");ae.className="alerta-mini entrega";ae.appendChild(document.createTextNode(alE.tit));if(alE.sub){var sme=document.createElement("small");sme.textContent=alE.sub;ae.appendChild(sme)}b.appendChild(ae)}
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
@@ -422,11 +439,14 @@
     var cb=document.getElementById("cerca-box");if(!cb)return;
     var st=estadoCerca(o,HOJE);
     cb.className="cerca-box"+(st.tipo==="incompleto"?" faltando":"");
-    if(st.tipo==="incompleto"){cb.textContent="Defina padrão/qtd/data para calcular a cerca";return}
+    if(st.tipo==="incompleto"){cb.textContent="Defina padrão/qtd/data para calcular a cerca";
+      var alE0=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE0){cb.className="cerca-box";cb.innerHTML=esc(cb.textContent)+"<br><b>"+esc(alE0.tit)+"</b>"+(alE0.sub?" — "+esc(alE0.sub):"")}
+      return}
     var dias=diasProducaoCerca(o);
     cb.innerHTML="Cerca mínima: <b>"+esc(rotData(st.cerca))+"</b> · "+dias+(dias===1?" dia útil":" dias úteis")+" de produção (seg–sex a partir da entrega; recesso 24–31/12 pulado).";
     var al=textoAlertaCerca(st);if(al)cb.innerHTML+="<br>"+esc(al.tit)+(al.sub?" — "+esc(al.sub):"");
     if(st.tipo==="entrou"){var motivo=etapaNum(o)>=3?rotEtapa(etapaNum(o),true):(o.entrouProducao?"marcada em "+rotDataCurto(o.entrouProducao):"status "+ROT[cod(o)]);cb.innerHTML+="<br>Já entrou na produção ("+esc(motivo)+")."}
+    var alE=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE)cb.innerHTML+="<br><b>"+esc(alE.tit)+"</b>"+(alE.sub?" — "+esc(alE.sub):"");
   }
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
@@ -603,13 +623,18 @@
   }
   function renderAlertasCerca(){
     var box=document.getElementById("alertas-cerca");if(!box)return;box.innerHTML="";
-    var itens=[],ordem={atraso:0,hoje:1,programar:2};
-    lista().forEach(function(x){var st=estadoCerca(x.o,HOJE),al=textoAlertaCerca(st);if(al)itens.push({x:x,st:st,al:al})});
-    itens.sort(function(a,b){return (ordem[a.st.tipo]-ordem[b.st.tipo])||((a.st.cerca||"")<(b.st.cerca||"")?-1:((a.st.cerca||"")>(b.st.cerca||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
+    var itens=[],ordem={atraso:0,hoje:1,dia:2,vencida:3,programar:4};
+    lista().forEach(function(x){
+      var st=estadoCerca(x.o,HOJE),al=textoAlertaCerca(st);if(al)itens.push({x:x,st:st,al:al,kind:"cerca"});
+      var en=estadoEntrega(x.o,HOJE),alE=textoAlertaEntrega(en);if(alE)itens.push({x:x,st:en,al:alE,kind:"entrega"});
+    });
+    itens.sort(function(a,b){return (ordem[a.st.tipo]-ordem[b.st.tipo])||((a.x.o.data||"")<(b.x.o.data||"")?-1:((a.x.o.data||"")>(b.x.o.data||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
     itens.forEach(function(it){
-      var d=document.createElement("div");d.className="alerta alerta-cerca alerta-"+it.st.tipo;d.setAttribute("data-id",it.x.id);
+      var cls=it.kind==="entrega"?(it.st.tipo==="dia"?"alerta-entrega":"alerta-vencida"):("alerta-"+it.st.tipo);
+      var d=document.createElement("div");d.className="alerta "+(it.kind==="entrega"?"alerta-entrega-topo ":"alerta-cerca ")+cls;d.setAttribute("data-id",it.x.id);
       var t=document.createElement("b");t.textContent="⚠ "+it.al.tit;d.appendChild(t);
-      var p=document.createElement("div");p.textContent=(it.x.o.nome||it.x.id)+(it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");d.appendChild(p);
+      var extra=it.kind==="cerca"&&it.st.cerca?(" · cerca "+rotDataCurto(it.st.cerca)):(it.x.o.data?" · entrega "+rotDataCurto(it.x.o.data):"");
+      var p=document.createElement("div");p.textContent=(it.x.o.nome||it.x.id)+extra;d.appendChild(p);
       var s=document.createElement("div");s.className="ldata";s.textContent=it.al.sub;d.appendChild(s);
       d.addEventListener("click",function(){if(it.x.o.data&&deIso(it.x.o.data))irPara(iso(segunda(deIso(it.x.o.data))));abrir(it.x.id)});
       box.appendChild(d);
@@ -621,23 +646,30 @@
   setInterval(recarregaRelogio,30000);
   document.addEventListener("visibilitychange",function(){if(!document.hidden)recarregaRelogio()});
   render();
-  var POPUP_ATRASO_KEY="hgi-agenda-popup-atraso",popupAtrasoChecado=false;
+  var POPUP_ATRASO_KEY="hgi-agenda-popup-v2",popupAtrasoChecado=false;
   function fecharAtraso(){var oa=document.getElementById("ov-atraso");if(oa)oa.classList.remove("on")}
   function obrasCercaUrgente(){
-    var atrasadas=[],hojeCerca=[];
-    lista().forEach(function(x){var st=estadoCerca(x.o,HOJE);if(st.tipo==="atraso")atrasadas.push({x:x,st:st});else if(st.tipo==="hoje")hojeCerca.push({x:x,st:st})});
+    var atrasadas=[],hojeCerca=[],entregasDia=[];
+    lista().forEach(function(x){
+      var st=estadoCerca(x.o,HOJE);
+      if(st.tipo==="atraso")atrasadas.push({x:x,st:st});
+      else if(st.tipo==="hoje")hojeCerca.push({x:x,st:st});
+      if(estadoEntrega(x.o,HOJE).tipo==="dia")entregasDia.push({x:x,st:st});
+    });
     atrasadas.sort(function(a,b){return (b.st.n||0)-(a.st.n||0)});
-    return {atrasadas:atrasadas,hoje:hojeCerca};
+    return {atrasadas:atrasadas,hoje:hojeCerca,entregas:entregasDia};
   }
+  function montaSecaoPopup(titulo,cls){var h=document.createElement("div");h.className="sec"+(cls?" "+cls:"");h.textContent=titulo;return h}
   function montaItemAtraso(it,tipo){
     var o=it.x.o,d=document.createElement("div");d.className="obra "+tipo;
     var inf=document.createElement("div");
     var nm=document.createElement("div");nm.className="nome";nm.textContent=o.nome||it.x.id;inf.appendChild(nm);
     var det=document.createElement("div");det.className="det";
-    det.textContent=qtdImoveis(o)+" · "+(infoPadrao(o.padrao)?o.padrao:"Padrão a definir")+(it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");
+    var extra=tipo==="entrega"?(o.data?" · entrega "+rotDataCurto(o.data):""):(it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");
+    det.textContent=qtdImoveis(o)+" · "+(infoPadrao(o.padrao)?o.padrao:"Padrão a definir")+extra;
     inf.appendChild(det);
     var dias=document.createElement("div");dias.className="dias";
-    dias.textContent=tipo==="hoje"?"Tem que entrar na produção hoje":(it.st.n===1?"1 dia de atraso":it.st.n+" dias de atraso");
+    dias.textContent=tipo==="entrega"?"🚚 Hoje é dia de entrega":(tipo==="hoje"?"Tem que entrar na produção hoje":(it.st.n===1?"1 dia de atraso":it.st.n+" dias de atraso"));
     inf.appendChild(dias);
     d.appendChild(inf);
     var b=document.createElement("button");b.type="button";b.className="btn"+(tipo==="hoje"?" verm":"");b.textContent="Ver obra";
@@ -649,10 +681,13 @@
     popupAtrasoChecado=true;
     try{if(sessionStorage.getItem(POPUP_ATRASO_KEY))return}catch(e){}
     var u=obrasCercaUrgente();
-    if(!u.atrasadas.length&&!u.hoje.length)return;
+    if(!u.atrasadas.length&&!u.hoje.length&&!u.entregas.length)return;
     var box=document.getElementById("lista-atraso");if(!box)return;box.innerHTML="";
-    u.atrasadas.forEach(function(it){box.appendChild(montaItemAtraso(it,"atraso"))});
-    u.hoje.forEach(function(it){box.appendChild(montaItemAtraso(it,"hoje"))});
+    if(u.atrasadas.length){box.appendChild(montaSecaoPopup("Passaram da cerca sem entrar na produção"));u.atrasadas.forEach(function(it){box.appendChild(montaItemAtraso(it,"atraso"))})}
+    if(u.hoje.length){box.appendChild(montaSecaoPopup("Cerca é hoje"));u.hoje.forEach(function(it){box.appendChild(montaItemAtraso(it,"hoje"))})}
+    if(u.entregas.length){box.appendChild(montaSecaoPopup("Entregas de hoje","entrega"));u.entregas.forEach(function(it){box.appendChild(montaItemAtraso(it,"entrega"))})}
+    var tit=document.getElementById("mt-atraso");
+    if(tit)tit.textContent=(u.atrasadas.length||u.hoje.length)?"Estamos atrasados — acelerar essas obras":"🚚 Entregas de hoje";
     document.getElementById("ov-atraso").classList.add("on");
     try{sessionStorage.setItem(POPUP_ATRASO_KEY,"1")}catch(e){}
   }
