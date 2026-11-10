@@ -172,7 +172,9 @@
   .btn-relatorio:hover{background:#178a40}
   @media (max-width:600px){
     .htop-acoes{width:100%}
-    .btn-incluir,.btn-relatorio{width:100%;text-align:center}
+    .btn-incluir,.btn-relatorio{width:100%;text-align:center;white-space:normal}
+    .modal-rel .acoes{flex-direction:column;align-items:stretch}
+    .modal-rel .acoes .btn{width:100%}
   }
   .dest .dest-parc{font-weight:700;color:#1e3a5f}
   .dest .dest-parc.ok{color:#2e8b57}
@@ -260,7 +262,7 @@
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
     <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
-    </div><div class="htop-acoes"><button class="btn-incluir" id="incluir">+ Incluir lembrete</button><button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button></div></div>
+    </div><div class="htop-acoes"><button class="btn-incluir" id="incluir">+ Incluir lembrete</button><button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button><button type="button" class="btn-relatorio" id="relatorio-entregas">Gerar relatório de entregas</button></div></div>
   </header>
 
   <div class="resumo">
@@ -1465,6 +1467,41 @@
   document.getElementById("fechar-atraso-x").onclick=fecharAtraso;
   document.getElementById("ov-atraso").addEventListener("click",function(e){if(e.target===document.getElementById("ov-atraso"))fecharAtraso()});
 
+  function dataRealizadaDe(o){
+    var cands=["dataConclusao","dataConcluida","concluidoEm","entregueEm","dataEntrega","dataRealizada"],i,v,m;
+    for(i=0;i<cands.length;i++){
+      v=o&&o[cands[i]];
+      if(typeof v==="number"&&isFinite(v)&&v>0){
+        try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(v))}catch(e){var dt=new Date(v);if(!isNaN(dt))return iso(dt)}
+      }
+      if(typeof v==="string"){m=/^(\d{4}-\d{2}-\d{2})/.exec(v);if(m&&deIso(m[1]))return m[1]}
+    }
+    return (o&&o.data)||"";
+  }
+  function statusEntregue(o){
+    if(cod(o)==="pronto")return true;
+    var s=String((o&&(o.statusCodigo||o.status))||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    return s==="entregue"||s.indexOf("entregue")>=0;
+  }
+  function itensRelatorioRealizadas(ini,fim){
+    var itens=[];
+    lista().forEach(function(x){
+      var o=x.o,parcs=listaParciais(o);
+      if(parcs.length){
+        parcs.forEach(function(p){
+          if(!deIso(p.data)||p.data<ini||p.data>fim||!(p.qtd>0))return;
+          itens.push({data:p.data,nome:o.nome||x.id,qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+        });
+        return;
+      }
+      if(!statusEntregue(o))return;
+      var d=dataRealizadaDe(o);if(!deIso(d)||d<ini||d>fim)return;
+      var q=qnum(o);if(!q)return;
+      itens.push({data:d,nome:o.nome||x.id,qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+    });
+    itens.sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:(a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
+    return itens;
+  }
   function itensRelatorio(ini,fim){
     var itens=[];
     lista().forEach(function(x){
@@ -1487,23 +1524,36 @@
     itens.sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:(a.nome||"").localeCompare(b.nome||"")});
     return itens;
   }
-  function montaFolhaRelatorio(ini,fim){
-    var itens=itensRelatorio(ini,fim),hojeTxt;
+  var relModo="previsto";
+  function montaFolhaRelatorio(ini,fim,modo){
+    modo=modo||relModo||"previsto";
+    var realizadas=modo==="realizadas";
+    var itens=realizadas?itensRelatorioRealizadas(ini,fim):itensRelatorio(ini,fim),hojeTxt;
     try{hojeTxt=new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",dateStyle:"short",timeStyle:"short"}).format(new Date())+" (horário de Brasília)"}catch(e){hojeTxt=""}
-    var html='<div class="rel-topo"><img src="logo-grupo-hgi.png" alt="Grupo HGI"><div><h1>Relatório de pré-impressão de entregas</h1><p>Grupo HGI · Kits elétricos, hidráulicos e gás</p><p>Período: '+esc(rotDataCurto(ini))+' a '+esc(rotDataCurto(fim))+(hojeTxt?" · Gerado em "+esc(hojeTxt):"")+'</p></div></div>';
-    if(!itens.length){html+='<p class="rel-vazio">Nenhuma entrega prevista neste período.</p>';return html}
-    var dias=[],i,curD="",totGeral=0;
+    var titulo=realizadas?"Relatório de entregas realizadas":"Relatório de pré-impressão de entregas";
+    var html='<div class="rel-topo"><img src="logo-grupo-hgi.png" alt="Grupo HGI"><div><h1>'+esc(titulo)+'</h1><p>Grupo HGI · Kits elétricos, hidráulicos e gás</p><p>Período: '+esc(rotDataCurto(ini))+' a '+esc(rotDataCurto(fim))+(hojeTxt?" · Gerado em "+esc(hojeTxt):"")+'</p></div></div>';
+    if(!itens.length){html+='<p class="rel-vazio">'+(realizadas?"Nenhuma entrega realizada neste período.":"Nenhuma entrega prevista neste período.")+"</p>";return html}
+    var dias=[],i,curD="",totGeral=0,ncols=realizadas?5:6;
     itens.forEach(function(it){if(it.data!==curD){dias.push({data:it.data,itens:[]});curD=it.data}dias[dias.length-1].itens.push(it)});
     dias.forEach(function(dia){
       var tot=0;
-      html+='<div class="rel-dia"><h3>'+esc(rotData(dia.data))+'</h3><table><thead><tr><th>Cliente / obra</th><th>Qtd / saldo</th><th>Padrão</th><th>Estágio</th><th>Status</th><th>Observação</th></tr></thead><tbody>';
+      html+='<div class="rel-dia"><h3>'+esc(rotData(dia.data))+'</h3><table><thead><tr>';
+      if(realizadas)html+="<th>Cliente / obra</th><th>Qtd entregue</th><th>Lote</th><th>Padrão</th><th>Observação</th>";
+      else html+="<th>Cliente / obra</th><th>Qtd / saldo</th><th>Padrão</th><th>Estágio</th><th>Status</th><th>Observação</th>";
+      html+="</tr></thead><tbody>";
       dia.itens.forEach(function(it){
         tot+=it.qtd||0;
-        var qtxt=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis")+(it.lote?" · Lote "+it.lote:"");
-        html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(qtxt)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
+        if(realizadas){
+          var qtxt=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis");
+          var lot=it.lote?"Lote "+it.lote:"—";
+          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(qtxt)+"</td><td>"+esc(lot)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.obs)+"</td></tr>";
+        }else{
+          var qtxt2=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis")+(it.lote?" · Lote "+it.lote:"");
+          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(qtxt2)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
+        }
       });
       totGeral+=tot;
-      html+='</tbody><tfoot><tr><td colspan="6" class="tot-dia">Total do dia: '+tot+(tot===1?" imóvel":" imóveis")+"</td></tr></tfoot></table></div>";
+      html+='</tbody><tfoot><tr><td colspan="'+ncols+'" class="tot-dia">Total do dia: '+tot+(tot===1?" imóvel":" imóveis")+"</td></tr></tfoot></table></div>";
     });
     var porCliente={},clientes=[],ck;
     itens.forEach(function(it){
@@ -1523,10 +1573,15 @@
     return html;
   }
   function fecharRel(){var ov=document.getElementById("ov-rel");if(ov)ov.classList.remove("on")}
-  function abrirRel(){
-    var ov=document.getElementById("ov-rel"),ini=document.getElementById("rel-ini"),fim=document.getElementById("rel-fim");
-    if(ini&&!ini.value)ini.value=SEMANA||HOJE;
-    if(fim&&!fim.value){var d=deIso(ini.value||HOJE);if(d){d.setDate(d.getDate()+11);fim.value=iso(d)}else fim.value=HOJE}
+  function abrirRel(modo){
+    relModo=(modo==="realizadas")?"realizadas":"previsto";
+    var tit=document.getElementById("mt-rel");
+    if(tit)tit.textContent=relModo==="realizadas"?"Relatório de entregas realizadas":"Relatório de pré-impressão";
+    var ov=document.getElementById("ov-rel"),ini=document.getElementById("rel-ini"),fim=document.getElementById("rel-fim"),folha=document.getElementById("relatorio-print");
+    if(ini)ini.value="";if(fim)fim.value="";
+    if(ini)ini.value=SEMANA||HOJE;
+    if(fim){var d=deIso(ini.value||HOJE);if(d){d.setDate(d.getDate()+11);fim.value=iso(d)}else fim.value=HOJE}
+    if(folha){folha.hidden=true;folha.innerHTML=""}
     var dica=document.getElementById("rel-dica");if(dica)dica.hidden=true;
     if(ov)ov.classList.add("on");
   }
@@ -1535,7 +1590,7 @@
     if(!ini||!fim||!folha)return;
     if(!deIso(ini.value)||!deIso(fim.value)){folha.hidden=false;folha.innerHTML='<p class="rel-vazio">Informe a data inicial e a data final.</p>';return}
     var a=ini.value,b=fim.value;if(a>b){var x=a;a=b;b=x;ini.value=a;fim.value=b}
-    folha.hidden=false;folha.innerHTML=montaFolhaRelatorio(a,b);
+    folha.hidden=false;folha.innerHTML=montaFolhaRelatorio(a,b,relModo);
   }
   function imprimirRel(pdf){
     var folha=document.getElementById("relatorio-print"),dica=document.getElementById("rel-dica");
@@ -1544,7 +1599,8 @@
     if(document.getElementById("ov-rel"))document.getElementById("ov-rel").classList.add("on");
     setTimeout(function(){window.print()},50);
   }
-  document.getElementById("relatorio").onclick=abrirRel;
+  document.getElementById("relatorio").onclick=function(){abrirRel("previsto")};
+  document.getElementById("relatorio-entregas").onclick=function(){abrirRel("realizadas")};
   document.getElementById("fechar-rel").onclick=fecharRel;
   document.getElementById("cancelar-rel").onclick=fecharRel;
   document.getElementById("ov-rel").addEventListener("click",function(e){if(e.target===document.getElementById("ov-rel"))fecharRel()});
