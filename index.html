@@ -39,8 +39,8 @@
   .s-critico{background:#fbe3e1;border-color:#c0392b;color:#7b1f16}
   .ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
   .ov.on{display:flex}
-  .modal{background:#fff;border-radius:10px;max-width:620px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
-  .modal h2{margin:0;background:#1e3a5f;color:#fff;font-size:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .modal{background:#fff;border-radius:10px;max-width:620px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:visible}
+  .modal h2{margin:0;background:#1e3a5f;color:#fff;font-size:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:10px 10px 0 0}
   .modal h2 button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;line-height:1}
   .mb{padding:16px 18px}
   .meta{font-size:13px;color:#3d4d5f;margin-bottom:12px}
@@ -78,7 +78,24 @@
   .campos.tres{grid-template-columns:1fr 1fr 1fr;gap:10px 10px}
   .campos .full{grid-column:1/-1}
   .campos label{display:block}
-  .campos input,.campos select{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #b8c4d2;border-radius:6px;margin-top:4px;background:#fff}
+  .campos input,.campos select,.sel-etapa{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #b8c4d2;border-radius:6px;margin-top:4px;background:#fff}
+  .sel-etapa{display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer;text-align:left;color:#1f2a37;line-height:1.3}
+  .sel-etapa-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sel-etapa-seta{color:#5b6b7d;font-size:11px;line-height:1}
+  .sel-etapa[aria-expanded="true"]{border-color:#2f5d8a;box-shadow:0 0 0 2px rgba(47,93,138,.2)}
+  .dd-etapa{display:none;position:fixed;z-index:50;background:#fff;border:1px solid #b8c4d2;border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,.2);padding:4px;max-height:min(320px,calc(100vh - 16px));overflow:auto;min-width:200px}
+  .dd-etapa.on{display:block}
+  .dd-etapa button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;border-radius:4px;padding:7px 8px;font:inherit;font-size:13px;text-align:left;cursor:pointer;color:#1f2a37}
+  .dd-etapa button:hover{background:#eef3f9}
+  .dd-etapa button.feita{color:#1f2a37}
+  .dd-etapa button.atual{background:#E87731;color:#fff;font-weight:700}
+  .dd-etapa button.atual:hover{background:#d46828}
+  .dd-etapa .ck{width:16px;flex:0 0 16px;text-align:center;font-weight:700;color:#2e8b57}
+  .dd-etapa button.atual .ck{color:#fff}
+  .marcadores-etapa{display:flex;gap:4px;margin:2px 0 8px}
+  .marcadores-etapa span{flex:1;min-width:0;height:22px;border-radius:4px;border:1px solid #d5dce5;background:#f5f7fa;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#94a1b2}
+  .marcadores-etapa span.feita{background:#e6f4ea;border-color:#2e8b57;color:#2e8b57}
+  .marcadores-etapa span.atual{background:#E87731;border-color:#c86220;color:#fff}
   .req{color:#c0392b}
   .btn.del{background:#fbe3e1;color:#7b1f16;margin-right:0}
   .outras{margin-top:10px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:10px 14px;display:none}
@@ -128,8 +145,6 @@
   .cerca-box b{color:#1e3a5f}
   .cerca-box.faltando{color:#6b7785;font-style:italic}
   .estagio-nota{font-size:11px;color:#5b6b7d;margin:0 0 10px}
-  .barra-etapa{height:6px;background:#e3e8ee;border-radius:4px;overflow:hidden;margin:2px 0 8px}
-  .barra-etapa i{display:block;height:100%;width:0;background:#E87731;border-radius:4px}
   .ov-atraso{z-index:30}
   .lista-atraso .obra{border:1px solid #d5dce5;border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
   .lista-atraso .obra.hoje{background:#fdecea;border-color:#c0392b}
@@ -199,9 +214,9 @@
       <div class="campos tres">
         <label class="rot">Status<select id="e-status"></select></label>
         <label class="rot">Padrão<select id="e-padrao"></select></label>
-        <label class="rot">Estágio<select id="e-etapa"></select></label>
+        <label class="rot">Estágio<button type="button" class="sel-etapa" id="e-etapa" aria-haspopup="listbox" aria-expanded="false" data-valor=""><span class="sel-etapa-txt">— estágio —</span><span class="sel-etapa-seta" aria-hidden="true">▾</span></button></label>
       </div>
-      <div class="barra-etapa" id="e-barra" aria-hidden="true"><i></i></div>
+      <div class="marcadores-etapa" id="e-marcadores" aria-label="Progresso do estágio"></div>
       <div class="estagio-nota" id="e-etapa-nota"></div>
       <div class="campos">
         <label class="rot">Data<input type="date" id="e-data"></label>
@@ -229,9 +244,9 @@
       <div class="campos tres">
         <label class="rot">Status<select id="n-status"></select></label>
         <label class="rot">Padrão<select id="n-padrao"></select></label>
-        <label class="rot">Estágio<select id="n-etapa"></select></label>
+        <label class="rot">Estágio<button type="button" class="sel-etapa" id="n-etapa" aria-haspopup="listbox" aria-expanded="false" data-valor=""><span class="sel-etapa-txt">— estágio —</span><span class="sel-etapa-seta" aria-hidden="true">▾</span></button></label>
       </div>
-      <div class="barra-etapa" id="n-barra" aria-hidden="true"><i></i></div>
+      <div class="marcadores-etapa" id="n-marcadores" aria-label="Progresso do estágio"></div>
       <div class="rot">Situação / observações</div>
       <textarea id="n-est" placeholder="Situação atual da entrega"></textarea>
       <div class="acoes"><span class="ok" id="ok2"></span><button class="btn sec" id="cancelar2">Cancelar</button><button class="btn" id="salvar2">Salvar</button></div>
@@ -264,6 +279,9 @@
   </div>
 </div>
 
+<div class="dd-etapa" id="e-dd-etapa" role="listbox" hidden></div>
+<div class="dd-etapa" id="n-dd-etapa" role="listbox" hidden></div>
+
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
@@ -288,7 +306,36 @@
   var ETAPAS_CURTO=["Projeto","PCP","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"];
   function etapaNum(o){var e=o&&o.etapa;e=(typeof e==="string")?parseInt(e,10):e;return (typeof e==="number"&&isFinite(e)&&e>=1&&e<=N_ETAPAS)?e:0}
   function rotEtapa(n,curto){n=+n;if(!(n>=1&&n<=N_ETAPAS))return "Estágio a definir";return n+"/"+N_ETAPAS+" "+(curto?ETAPAS_CURTO:ETAPAS)[n-1]}
-  function atualizaBarra(id,n){var el=document.getElementById(id);if(!el)return;var i=el.querySelector("i");if(!i)return;n=parseInt(n,10)||0;i.style.width=(n>=1?Math.round(n/N_ETAPAS*100):0)+"%"}
+  function rotEtapaBotao(n){n=+n;if(!(n>=1&&n<=N_ETAPAS))return "— estágio —";return n+" "+ETAPAS_CURTO[n-1]}
+  function pintaListaEtapa(dd,n){
+    if(!dd)return;n=parseInt(n,10)||0;
+    Array.prototype.forEach.call(dd.querySelectorAll("[data-etapa]"),function(b){
+      var v=parseInt(b.getAttribute("data-etapa"),10)||0;
+      b.className=(!v)?"":(v<n?"feita":(v===n?"atual":""));
+      var ck=b.querySelector(".ck");if(ck)ck.textContent=(v&&v<n)?"✓":"";
+    });
+  }
+  function pintaMarcadores(id,n){
+    var el=typeof id==="string"?document.getElementById(id):id;if(!el)return;
+    n=parseInt(n,10)||0;el.innerHTML="";
+    for(var i=1;i<=N_ETAPAS;i++){
+      var s=document.createElement("span");
+      s.title=i+" "+ETAPAS[i-1];
+      if(i<n){s.className="feita";s.textContent="✓"}
+      else if(i===n){s.className="atual";s.textContent=String(i)}
+      el.appendChild(s);
+    }
+  }
+  function setEtapaCaixa(qual,n){
+    n=parseInt(n,10)||0;
+    var btn=document.getElementById(qual+"-etapa"),dd=document.getElementById(qual+"-dd-etapa"),marc=document.getElementById(qual+"-marcadores");
+    if(btn){btn.setAttribute("data-valor",n?String(n):"");var txt=btn.querySelector(".sel-etapa-txt");if(txt)txt.textContent=rotEtapaBotao(n)}
+    pintaListaEtapa(dd,n);pintaMarcadores(marc,n);
+  }
+  function fechaDDs(){
+    ["e-dd-etapa","n-dd-etapa"].forEach(function(id){var dd=document.getElementById(id);if(dd){dd.classList.remove("on");dd.hidden=true}});
+    ["e-etapa","n-etapa"].forEach(function(id){var btn=document.getElementById(id);if(btn)btn.setAttribute("aria-expanded","false")});
+  }
   var NOMES=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"];
   var SEM_FIXA="2026-11-09"; // semana com o alerta do José e o destaque da CBA
   function pad(n){return (n<10?"0":"")+n}
@@ -454,7 +501,7 @@
     document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
     preencheDestaque(id,o);
     rotuloEtapaEls("e-etapa-nota",o);
-    atualizaBarra("e-barra",etapaNum(o));
+    setEtapaCaixa("e",etapaNum(o));
     atual.textContent=o.estagio||"";
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
   }
@@ -464,14 +511,14 @@
     if(n>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){if(p.entrouProducao===null)delete REM[id].entrouProducao;else if(p.entrouProducao)REM[id].entrouProducao=p.entrouProducao;if(p.etapa===null)delete REM[id].etapa;else REM[id].etapa=n;REM[id].atualizadoEm=p.atualizadoEm}
-      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);if(eEt)eEt.value=n?String(n):""}}
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);setEtapaCaixa("e",n)}}
     }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o estágio (sem conexão).")});
   }
   function abrir(id){var o=fonte()[id];if(!o)return;cur=id;etapaEdit=etapaNum(o);preencheTopo(id,o);
     campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";
-    eP.value=infoPadrao(o.padrao)?o.padrao:"";eEt.value=etapaEdit?String(etapaEdit):"";
+    eP.value=infoPadrao(o.padrao)?o.padrao:"";setEtapaCaixa("e",etapaEdit);
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
-  function fechar(){ov.classList.remove("on");cur=null}
+  function fechar(){fechaDDs();ov.classList.remove("on");cur=null}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
   ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
 
@@ -479,11 +526,19 @@
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
   var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),eEt=document.getElementById("e-etapa"),nEt=document.getElementById("n-etapa");
   function enchePadrao(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— padrão —";sel.appendChild(z);PADROES.forEach(function(p){var op=document.createElement("option");op.value=p.id;op.textContent=p.id;sel.appendChild(op)})}
-  function encheEtapa(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— estágio —";sel.appendChild(z);for(var i=1;i<=N_ETAPAS;i++){var op=document.createElement("option");op.value=String(i);op.textContent=i+" "+ETAPAS_CURTO[i-1];sel.appendChild(op)}}
-  enchePadrao(eP);enchePadrao(nP);encheEtapa(eEt);encheEtapa(nEt);
+  enchePadrao(eP);enchePadrao(nP);
+  (function montaListasEtapa(){
+    function monta(dd){
+      if(!dd)return;dd.innerHTML="";
+      function item(v,lab){var b=document.createElement("button");b.type="button";b.setAttribute("data-etapa",v);b.setAttribute("role","option");var ck=document.createElement("span");ck.className="ck";ck.setAttribute("aria-hidden","true");var lb=document.createElement("span");lb.textContent=lab;b.appendChild(ck);b.appendChild(lb);dd.appendChild(b)}
+      item("","— estágio —");for(var i=1;i<=N_ETAPAS;i++)item(String(i),i+" "+ETAPAS_CURTO[i-1]);
+    }
+    monta(document.getElementById("e-dd-etapa"));monta(document.getElementById("n-dd-etapa"));
+    setEtapaCaixa("e",0);setEtapaCaixa("n",0);
+  })();
   function objetoFicha(){if(!cur)return {};var o={},base=fonte()[cur]||{},k;for(k in base)if(Object.prototype.hasOwnProperty.call(base,k))o[k]=base[k];
     o.data=eD.value||"";o.qtd=parseInt(eQ.value,10)||0;var pad=valorPadrao(eP);if(pad){o.padrao=pad;o.ritmo=ritmoDe(pad)}else{delete o.padrao;delete o.ritmo}o.etapa=etapaEdit;o.statusCodigo=eS.value;o.status=LAB[eS.value];return o}
-  function atualizaFichaLive(){if(!cur)return;var o=objetoFicha();preencheDestaque(cur,o);rotuloEtapaEls("e-etapa-nota",o);atualizaBarra("e-barra",etapaEdit)}
+  function atualizaFichaLive(){if(!cur)return;var o=objetoFicha();preencheDestaque(cur,o);rotuloEtapaEls("e-etapa-nota",o);setEtapaCaixa("e",etapaEdit)}
   function salvaPadraoAgora(){
     if(!cur)return;var id=cur,pad=valorPadrao(eP),p={atualizadoEm:Date.now()};
     if(pad){p.padrao=pad;p.ritmo=ritmoDe(pad)}else{p.padrao=null;p.ritmo=null}
@@ -494,13 +549,45 @@
     }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o padrão (sem conexão).")});
   }
   eP.addEventListener("change",function(){salvaPadraoAgora();atualizaFichaLive()});
-  eEt.addEventListener("change",function(){etapaEdit=parseInt(eEt.value,10)||0;escolheEtapa(etapaEdit);atualizaBarra("e-barra",etapaEdit)});
-  nEt.addEventListener("change",function(){etapaNovo=parseInt(nEt.value,10)||0;atualizaBarra("n-barra",etapaNovo)});
+  function posicionaDD(btn,dd){
+    var r=btn.getBoundingClientRect(),larg=Math.max(r.width,240);
+    dd.style.left=Math.max(8,Math.min(r.left,window.innerWidth-larg-8))+"px";
+    dd.style.width=larg+"px";
+    dd.style.top=(r.bottom+4)+"px";
+    dd.hidden=false;dd.classList.add("on");
+    var h=dd.offsetHeight;
+    if(r.bottom+4+h>window.innerHeight-8 && r.top-4-h>8)dd.style.top=(r.top-4-h)+"px";
+  }
+  function abreDD(btn,dd,n){
+    var ja=dd.classList.contains("on");
+    fechaDDs();
+    if(ja)return;
+    pintaListaEtapa(dd,n);posicionaDD(btn,dd);btn.setAttribute("aria-expanded","true");
+  }
+  eEt.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();abreDD(eEt,document.getElementById("e-dd-etapa"),etapaEdit)});
+  nEt.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();abreDD(nEt,document.getElementById("n-dd-etapa"),etapaNovo)});
+  document.getElementById("e-dd-etapa").addEventListener("click",function(e){
+    e.stopPropagation();
+    var b=e.target.closest("[data-etapa]");if(!b)return;
+    var n=parseInt(b.getAttribute("data-etapa"),10)||0;
+    fechaDDs();
+    if(n===etapaEdit){setEtapaCaixa("e",n);return}
+    etapaEdit=n;setEtapaCaixa("e",n);escolheEtapa(n);atualizaFichaLive();
+  });
+  document.getElementById("n-dd-etapa").addEventListener("click",function(e){
+    e.stopPropagation();
+    var b=e.target.closest("[data-etapa]");if(!b)return;
+    var n=parseInt(b.getAttribute("data-etapa"),10)||0;
+    etapaNovo=n;setEtapaCaixa("n",n);fechaDDs();
+  });
+  document.addEventListener("click",fechaDDs);
+  window.addEventListener("resize",fechaDDs);
+  window.addEventListener("scroll",fechaDDs,true);
   eQ.addEventListener("input",atualizaFichaLive);
   eD.addEventListener("input",atualizaFichaLive);eS.addEventListener("change",atualizaFichaLive);
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";nEt.value="";etapaNovo=0;atualizaBarra("n-barra",0);
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";etapaNovo=0;setEtapaCaixa("n",0);
     ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
-  function fecharNovo(){ov2.classList.remove("on")}
+  function fecharNovo(){fechaDDs();ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=abrirLembrete;
   var selS=document.getElementById("semanas");
   (function(){var d=deIso("2026-11-09");while(iso(d)<=ULTIMA_SEMANA){var a=new Date(d),b=new Date(d);b.setDate(b.getDate()+6);
@@ -517,7 +604,7 @@
   window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var eDd=document.getElementById("e-dd-etapa"),nDd=document.getElementById("n-dd-etapa");if((eDd&&eDd.classList.contains("on"))||(nDd&&nDd.classList.contains("on"))){fechaDDs();e.preventDefault();return}var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
 
   // lembretes
   var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
