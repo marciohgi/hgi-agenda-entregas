@@ -1016,8 +1016,9 @@
     var body={qtd:q,data:dat,criadoEm:Date.now()};if(lt)body.lote=lt;
     req("POST","/entregas/"+id+"/entregasParciais.json",body).then(function(r){
       var key=r&&r.name;if(REM&&REM[id]){if(!REM[id].entregasParciais||typeof REM[id].entregasParciais!=="object")REM[id].entregasParciais={};if(key)REM[id].entregasParciais[key]=body}
-      var oo=fonte()[id]||o,pl=proximoLotePendente(oo);
-      if(pl&&deIso(pl.data)&&oo.proximoLoteData!==pl.data){
+      var oo=fonte()[id]||o,pl=proximoLotePendente(oo),px=oo.proximoLoteData,ainda=false;
+      if(deIso(px)){listaLotesPrevistos(oo).forEach(function(lt){if((lt.data||"")===px&&saldoLote(oo,lt)>0)ainda=true});if(!usaAlertasPorLote(oo)&&faltam(oo)>0)ainda=true}
+      if(pl&&deIso(pl.data)&&pl.data!==px&&!ainda){
         return req("PATCH","/entregas/"+id+".json",{proximoLoteData:pl.data,atualizadoEm:Date.now()}).then(function(){
           if(REM&&REM[id])REM[id].proximoLoteData=pl.data;
         });
@@ -1221,7 +1222,7 @@
       })});
     });
     alertasSobrecarga(HOJE).forEach(function(a){
-      itens.push({x:{id:a.ids&&a.ids[0],o:fonte()[(a.ids&&a.ids[0])]||{nome:"Fábrica",data:a.data}},st:{tipo:"sobrecarga",data:a.data},al:{tit:a.tit,sub:a.sub},kind:"sobre",ids:a.ids});
+      itens.push({x:{id:"",o:{nome:"Todas as obras",data:a.data}},st:{tipo:"sobrecarga",data:a.data},al:{tit:a.tit,sub:a.sub},kind:"sobre",ids:a.ids});
     });
     itens.sort(function(a,b){var oa=ordem[a.st.tipo],ob=ordem[b.st.tipo];if(oa==null)oa=9;if(ob==null)ob=9;return (oa-ob)||((a.x.o.data||"")<(b.x.o.data||"")?-1:((a.x.o.data||"")>(b.x.o.data||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
     itens.forEach(function(it){
