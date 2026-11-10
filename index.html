@@ -88,6 +88,19 @@
   .add-dia{display:block;width:100%;background:transparent;border:1.5px dashed #9fb1c6;border-radius:5px;color:#2f5d8a;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;margin-top:2px;cursor:pointer;text-align:center}
   .add-dia:hover{background:#eef3f9;border-color:#2f5d8a}
   .outras .add-dia{width:auto;min-width:120px;margin:0}
+  .badge-padrao{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.2px;border-radius:4px;padding:2px 7px;margin-top:5px;border:1px solid;line-height:1.3}
+  .btn-padrao{display:block;width:100%;font:inherit;font-size:13px;font-weight:700;text-align:left;border:1.5px solid;border-radius:6px;padding:8px 12px;margin-top:4px;cursor:pointer;background:#fff;color:#1f2a37}
+  .btn-padrao:hover{filter:brightness(.97)}
+  .p-mcmv{background:#fff;color:#E87731;border-color:#E87731}
+  .p-medio{background:#fff;color:#3a3a3a;border-color:#5a5a5a}
+  .p-alto{background:#3a3a3a;color:#fff;border-color:#3a3a3a}
+  .p-altissimo{background:#E87731;color:#fff;border-color:#E87731}
+  .p-vazio{background:#fff;color:#6b7785;border-color:#b8c4d2;border-style:dashed;font-weight:600}
+  .ov-padrao{z-index:20}
+  .padrao-ops{display:flex;flex-direction:column;gap:8px}
+  .padrao-ops button{display:block;width:100%;font:inherit;font-size:15px;font-weight:700;text-align:left;border:2px solid;border-radius:8px;padding:12px 14px;cursor:pointer}
+  .padrao-ops button:hover{filter:brightness(.97)}
+  .padrao-ops button.sel{box-shadow:0 0 0 3px rgba(232,119,49,.4)}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -144,6 +157,7 @@
         <label class="rot">Status<select id="e-status"></select></label>
         <label class="rot">Data<input type="date" id="e-data"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="e-qtd" placeholder="qtd a definir"></label>
+        <label class="rot full">Padrão<button type="button" class="btn-padrao p-vazio" id="e-padrao">Definir padrão</button></label>
       </div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
@@ -161,6 +175,7 @@
         <label class="rot">Data<input type="date" id="n-data" value="2026-11-09"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="n-qtd" placeholder="qtd a definir"></label>
         <label class="rot full">Status<select id="n-status"></select></label>
+        <label class="rot full">Padrão<button type="button" class="btn-padrao p-vazio" id="n-padrao">Definir padrão</button></label>
       </div>
       <div class="rot">Estágio</div>
       <textarea id="n-est" placeholder="Situação atual da entrega"></textarea>
@@ -184,12 +199,28 @@
   </div>
 </div>
 
+<div class="ov ov-padrao" id="ov4">
+  <div class="modal" role="dialog" aria-labelledby="mt4" aria-modal="true">
+    <h2><span id="mt4">Escolher padrão</span><button type="button" id="fechar4" aria-label="Fechar">×</button></h2>
+    <div class="mb">
+      <p class="meta" style="margin-bottom:12px">Selecione o padrão desta entrega.</p>
+      <div class="padrao-ops" id="padrao-ops"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
   var ROT={pronto:"Pronto",andamento:"Em andamento",aguardando:"Aguardando",critico:"Não pode falhar"};
   var LAB={pronto:"pronto",andamento:"em andamento",aguardando:"aguardando",critico:"não pode falhar"};
   var DE_LAB={"pronto":"pronto","em andamento":"andamento","aguardando":"aguardando","não pode falhar":"critico"};
+  var PADROES=["Minha Casa Minha Vida","Médio Padrão","Alto Padrão","Altíssimo Padrão"];
+  var PADRAO_CLS={"Minha Casa Minha Vida":"p-mcmv","Médio Padrão":"p-medio","Alto Padrão":"p-alto","Altíssimo Padrão":"p-altissimo"};
+  function rotPadrao(v){return (v&&PADRAO_CLS[v])?v:"Definir padrão"}
+  function clsPadrao(v){return PADRAO_CLS[v]||"p-vazio"}
+  function valorPadrao(btn){return (btn&&btn.getAttribute("data-valor"))||""}
+  function aplicaBtnPadrao(btn,val){val=(val&&PADRAO_CLS[val])?val:"";btn.setAttribute("data-valor",val);btn.textContent=rotPadrao(val);btn.className="btn-padrao "+clsPadrao(val)}
   var NOMES=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"];
   var SEM_FIXA="2026-11-09"; // semana com o alerta do José e o destaque da CBA
   function pad(n){return (n<10?"0":"")+n}
@@ -251,6 +282,7 @@
     var c=cod(x.o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];
     var nm=document.createElement("span");nm.textContent=x.o.nome||x.id;b.appendChild(nm);
     var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x.o);b.appendChild(qt);
+    var bd=document.createElement("span");bd.className="badge-padrao "+clsPadrao(x.o.padrao);bd.textContent=rotPadrao(x.o.padrao);b.appendChild(bd);
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
@@ -302,16 +334,25 @@
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
   }
   function abrir(id){var o=fonte()[id];if(!o)return;cur=id;preencheTopo(id,o);
-    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";
+    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";aplicaBtnPadrao(eP,o.padrao||"");
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
-  function fechar(){ov.classList.remove("on");cur=null}
+  function fechar(){ov.classList.remove("on");cur=null;fecharPadrao()}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
   ov.addEventListener("click",function(e){if(e.target===ov)fechar()});
 
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
-  function fecharNovo(){ov2.classList.remove("on")}
+  var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),ov4=document.getElementById("ov4"),opsP=document.getElementById("padrao-ops"),padraoAlvo=null;
+  PADROES.forEach(function(lab){var b=document.createElement("button");b.type="button";b.className=clsPadrao(lab);b.setAttribute("data-valor",lab);b.textContent=lab;opsP.appendChild(b)});
+  function abrirPadrao(btn){padraoAlvo=btn;var cur=valorPadrao(btn);[].forEach.call(opsP.querySelectorAll("button"),function(b){b.classList.toggle("sel",b.getAttribute("data-valor")===cur)});ov4.classList.add("on")}
+  function fecharPadrao(){ov4.classList.remove("on");padraoAlvo=null}
+  eP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(eP)});
+  nP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(nP)});
+  opsP.addEventListener("click",function(e){var b=e.target.closest("button[data-valor]");if(!b||!padraoAlvo)return;aplicaBtnPadrao(padraoAlvo,b.getAttribute("data-valor"));fecharPadrao()});
+  document.getElementById("fechar4").onclick=fecharPadrao;
+  ov4.addEventListener("click",function(e){if(e.target===ov4)fecharPadrao()});
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";aplicaBtnPadrao(nP,"");ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
+  function fecharNovo(){ov2.classList.remove("on");fecharPadrao()}
   document.getElementById("incluir").onclick=abrirLembrete;
   var selS=document.getElementById("semanas");
   (function(){var d=deIso("2026-11-09");while(iso(d)<=ULTIMA_SEMANA){var a=new Date(d),b=new Date(d);b.setDate(b.getDate()+6);
@@ -328,7 +369,7 @@
   window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"){fechar();fecharNovo();fecharLembrete()}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(ov4.classList.contains("on")){fecharPadrao();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
 
   // lembretes
   var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
@@ -376,6 +417,7 @@
     var c=nS.value,q=parseInt(nQ.value,10),agora=Date.now(),id=novoId(nome);
     var o={nome:nome,estagio:nE.value.trim(),status:LAB[c],statusCodigo:c,data:nD.value||"",criadoEm:agora};
     if(q>0)o.qtd=q;
+    if(valorPadrao(nP))o.padrao=valorPadrao(nP);
     ok2.style.color="";ok2.textContent="Salvando…";
     req("PUT","/entregas/"+id+".json",o).then(function(){
       if(REM){REM[id]=o;render()}
@@ -385,6 +427,7 @@
   document.getElementById("salvar").onclick=function(){
     if(!cur)return;var id=cur,o=fonte()[id]||{},t=campo.value.trim()||o.estagio||"",c=eS.value,q=parseInt(eQ.value,10),agora=Date.now();
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
+    if(valorPadrao(eP))p.padrao=valorPadrao(eP);
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
