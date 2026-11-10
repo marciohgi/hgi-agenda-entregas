@@ -24,7 +24,7 @@
   .legenda i{width:12px;height:12px;border-radius:3px;display:inline-block}
   table{width:100%;border-collapse:separate;border-spacing:8px;table-layout:fixed}
   th{background:#2f5d8a;color:#fff;font-size:13px;font-weight:600;padding:9px 6px;border-radius:6px}
-  td{background:#fff;border:1px solid #d5dce5;border-radius:8px;vertical-align:top;height:230px;padding:10px}
+  td{background:#fff;border:1px solid #d5dce5;border-radius:8px;vertical-align:top;min-height:230px;height:auto;padding:10px}
   td.fds{background:#f5f7fa}
   .num{font-size:26px;font-weight:700;color:#1e3a5f;line-height:1}
   .dia{font-size:12px;color:#5b6b7d;margin:4px 0 10px}
@@ -106,6 +106,47 @@
   .padrao-ops button.sel{box-shadow:0 0 0 3px rgba(232,119,49,.4)}
   .padrao-ops .lab{flex:1}
   .padrao-ops .rit{font-size:12px;font-weight:600;white-space:nowrap;text-align:right;opacity:.92}
+  .dest{display:block;margin-top:6px;font-weight:500}
+  .dest div{font-size:11px;line-height:1.35;color:#1f2a37}
+  .dest .dest-qtd{font-size:13px;font-weight:700;color:#1e3a5f}
+  .dest .dest-pad,.dest .dest-etapa{font-weight:700}
+  .dest .dest-data,.dest .dest-cerca{color:#3d4d5f}
+  .item .alerta-mini{display:block;margin-top:6px;border-radius:4px;padding:5px 7px;font-size:11px;font-weight:700;line-height:1.35;text-align:left}
+  .item .alerta-mini small{display:block;font-weight:600;margin-top:2px}
+  .item.alerta-programar{background:#fff6d0;border-color:#d4a514;box-shadow:inset 0 0 0 1px #d4a514}
+  .item.alerta-programar .alerta-mini{background:#fff3b0;color:#6a5300;border:1px solid #d4a514}
+  .item.alerta-hoje{background:#fdecea;border-color:#c0392b;box-shadow:inset 0 0 0 1px #c0392b}
+  .item.alerta-hoje .alerta-mini{background:#c0392b;color:#fff;border:1px solid #922b21;animation:pisca-cerca 1s linear infinite}
+  .item.alerta-atraso{background:#f3d6d3;border-color:#5c1210;box-shadow:inset 0 0 0 1px #5c1210}
+  .item.alerta-atraso .alerta-mini{background:#5c1210;color:#fff;border:1px solid #3d0c0a}
+  .item .cerca-faltando{display:block;margin-top:6px;font-size:10px;font-weight:600;color:#6b7785;line-height:1.3}
+  @keyframes pisca-cerca{0%,100%{opacity:1}50%{opacity:.42}}
+  @media (prefers-reduced-motion:reduce){.item.alerta-hoje .alerta-mini,.alerta-hoje{animation:none}}
+  .alerta-programar.alerta{background:#fff6d0;border-color:#d4a514;color:#6a5300}
+  .alerta-hoje.alerta{background:#c0392b;border-color:#7b1f16;color:#fff;animation:pisca-cerca 1s linear infinite}
+  .alerta-atraso.alerta{background:#5c1210;border-color:#3d0c0a;color:#fff}
+  .alerta-cerca{cursor:pointer}
+  .alerta-cerca b{padding-right:8px}
+  .alerta-hoje.alerta b,.alerta-atraso.alerta b,.alerta-hoje.alerta .ldata,.alerta-atraso.alerta .ldata{color:#fff}
+  .alerta-programar.alerta .ldata{color:#6a5300}
+  .destaque-ficha{background:#f7f9fc;border:1px solid #d5dce5;border-radius:6px;padding:10px 12px;margin:0 0 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+  .destaque-ficha .rot{margin-bottom:1px}
+  .destaque-ficha .val2{font-size:15px;font-weight:700;color:#1e3a5f}
+  .destaque-ficha .full{grid-column:1/-1}
+  .cerca-box{background:#f5f7fa;border:1px dashed #b8c4d2;border-radius:6px;padding:8px 12px;margin:0 0 12px;font-size:13px;color:#3d4d5f}
+  .cerca-box b{color:#1e3a5f}
+  .cerca-box.faltando{color:#6b7785;font-style:italic}
+  .estagio-prod{margin:0 0 14px}
+  .trilha{display:flex;gap:3px;margin-top:6px}
+  .trilha button{flex:1;min-width:0;border:1px solid #b8c4d2;background:#f5f7fa;border-radius:5px;padding:6px 2px;cursor:pointer;font:inherit;text-align:center;line-height:1.2}
+  .trilha button:hover{filter:brightness(.97)}
+  .trilha .n{display:block;font-size:12px;font-weight:700;color:#1e3a5f}
+  .trilha .l{display:block;font-size:9px;font-weight:600;color:#5b6b7d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .trilha button.feita{background:#f8d4bc;border-color:#E87731}
+  .trilha button.atual{background:#E87731;border-color:#c86220}
+  .trilha button.atual .n,.trilha button.atual .l{color:#fff}
+  .estagio-rot{font-size:13px;font-weight:700;color:#1e3a5f;margin-top:6px}
+  .estagio-nota{font-size:11px;color:#5b6b7d;margin-top:2px}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -131,6 +172,7 @@
     <div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
   </div>
 
+  <div id="alertas-cerca"></div>
   <div id="lembretes"></div>
 
   <div class="legenda">
@@ -155,7 +197,15 @@
     <h2><span id="mt"></span><button id="fechar" aria-label="Fechar">×</button></h2>
     <div class="mb">
       <div class="meta" id="meta"></div>
-      <div class="rot">Estágio atual</div>
+      <div class="destaque-ficha" id="destaque-ficha"></div>
+      <div class="cerca-box" id="cerca-box"></div>
+      <div class="estagio-prod">
+        <div class="rot">Estágio da produção</div>
+        <div class="trilha" id="e-trilha" role="list" aria-label="Estágio da produção"></div>
+        <div class="estagio-rot" id="e-etapa-rot"></div>
+        <div class="estagio-nota" id="e-etapa-nota"></div>
+      </div>
+      <div class="rot">Situação atual</div>
       <div class="atual" id="atual"></div>
       <div class="upd" id="upd"></div>
       <div class="campos">
@@ -182,7 +232,12 @@
         <label class="rot full">Status<select id="n-status"></select></label>
         <label class="rot full">Padrão<button type="button" class="btn-padrao p-vazio" id="n-padrao">Definir padrão</button></label>
       </div>
-      <div class="rot">Estágio</div>
+      <div class="estagio-prod">
+        <div class="rot">Estágio da produção</div>
+        <div class="trilha" id="n-trilha" role="list" aria-label="Estágio da produção"></div>
+        <div class="estagio-rot" id="n-etapa-rot"></div>
+      </div>
+      <div class="rot">Situação / observações</div>
       <textarea id="n-est" placeholder="Situação atual da entrega"></textarea>
       <div class="acoes"><span class="ok" id="ok2"></span><button class="btn sec" id="cancelar2">Cancelar</button><button class="btn" id="salvar2">Salvar</button></div>
     </div>
@@ -243,6 +298,10 @@
     var b=document.createElement("span");b.className="rit";var pz=prazoTxt(qtd,i);b.textContent=pz?i.ritmo+" · "+pz:i.ritmo;el.appendChild(b);
   }
   function aplicaBtnPadrao(btn,val,qtd){preenchePadraoEl(btn,val,qtd,true)}
+  var ETAPAS=["Projeto","PCP","Produção de etiqueta","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"];
+  var ETAPAS_CURTO=["Projeto","PCP","Produção de etiqueta","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"];
+  function etapaNum(o){var e=o&&o.etapa;e=(typeof e==="string")?parseInt(e,10):e;return (typeof e==="number"&&isFinite(e)&&e>=1&&e<=9)?e:0}
+  function rotEtapa(n,curto){n=+n;if(!(n>=1&&n<=9))return "Estágio a definir";return n+"/9 "+(curto?ETAPAS_CURTO:ETAPAS)[n-1]}
   var NOMES=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"];
   var SEM_FIXA="2026-11-09"; // semana com o alerta do José e o destaque da CBA
   function pad(n){return (n<10?"0":"")+n}
@@ -251,10 +310,22 @@
   function segunda(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());var w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);return x}
   function hojeIso(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}catch(e){return iso(new Date())}}
   var HOJE=hojeIso();
+  function horaSP(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",hourCycle:"h23"}).format(new Date())}catch(e){return HOJE+"T"+new Date().getHours()}}
+  var HORA=horaSP();
   function semanaDoHash(){var d=deIso((location.hash||"").replace(/^#/,""));return d?iso(segunda(d)):iso(segunda(deIso(HOJE)))}
   var SEMANA=semanaDoHash();
   var DIAS=[];
   var RECESSO_INI="2026-12-24",ULTIMA_SEMANA="2026-12-21"; // recesso da fábrica: de 24/12 até o fim da semana 21–27/12
+  var RECESSO_CERCA_INI="2026-12-24",RECESSO_CERCA_FIM="2026-12-31"; // único intervalo conhecido a pular na cerca
+  function somaIso(is,n){var d=deIso(is);if(!d)return "";d.setDate(d.getDate()+n);return iso(d)}
+  function ehDiaUtil(is){if(!is||(is>=RECESSO_CERCA_INI&&is<=RECESSO_CERCA_FIM))return false;var d=deIso(is);if(!d)return false;var w=d.getDay();return w!==0&&w!==6}
+  function recuaDiasUteis(data,n){var d=data,falta=n,guard=0;while(falta>0&&guard++<400){d=somaIso(d,-1);if(ehDiaUtil(d))falta--}return d}
+  function diasCorridos(a,b){var da=deIso(a),db=deIso(b);if(!da||!db)return 0;return Math.round((db-da)/86400000)}
+  function diasProducaoCerca(o){var i=infoPadrao(o&&o.padrao),q=qnum(o);if(!i||!q||!deIso(o.data))return 0;return Math.ceil(q/i.min)}
+  function dataCerca(o){var n=diasProducaoCerca(o);return n?recuaDiasUteis(o.data,n):null}
+  function entrouProducao(o){if(etapaNum(o)>=3)return true;if(o&&o.entrouProducao)return true;var c=cod(o);return c==="pronto"||c==="andamento"}
+  function estadoCerca(o,hoje){hoje=hoje||HOJE;if(!infoPadrao(o&&o.padrao)||!qnum(o)||!deIso(o&&o.data))return {tipo:"incompleto",cerca:null};var cerca=dataCerca(o);if(entrouProducao(o))return {tipo:"entrou",cerca:cerca};if(hoje===cerca)return {tipo:"hoje",cerca:cerca};if(hoje>cerca)return {tipo:"atraso",cerca:cerca,n:diasCorridos(cerca,hoje)};var ini=somaIso(cerca,-7);if(hoje>=ini&&hoje<cerca)return {tipo:"programar",cerca:cerca,n:diasCorridos(hoje,cerca)};return {tipo:"ok",cerca:cerca}}
+  function textoAlertaCerca(st){if(!st)return null;if(st.tipo==="programar")return {tit:"Uma semana para entrar no prazo limite",sub:st.n===1?"falta 1 dia":"faltam "+st.n+" dias"};if(st.tipo==="hoje")return {tit:"Tem que entrar na produção hoje",sub:"Cerca hoje"};if(st.tipo==="atraso")return {tit:"Estamos atrasados — acelerar essa obra",sub:st.n===1?"1 dia de atraso":st.n+" dias de atraso"};return null}
   function limita(sem){return sem>ULTIMA_SEMANA?ULTIMA_SEMANA:sem}
   SEMANA=limita(SEMANA);
   function montaDias(){var ini=deIso(SEMANA);DIAS=[];
@@ -287,6 +358,8 @@
   function cod(o){if(o&&ROT[o.statusCodigo])return o.statusCodigo;if(o&&DE_LAB[o.status])return DE_LAB[o.status];return "andamento"}
   function qnum(o){var q=o&&o.qtd;q=(typeof q==="string")?parseInt(q,10):q;return (typeof q==="number"&&isFinite(q)&&q>0)?q:0}
   function qtdTxt(o){var q=qnum(o);return q?q+" aptos":"qtd a definir"}
+  function qtdImoveis(o){var q=qnum(o);return q?q+(q===1?" imóvel":" imóveis"):"Qtd a definir"}
+  function rotDataCurto(data){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(data||"");if(!m)return "Data a definir";return m[3]+"/"+m[2]+(m[1]!=="2026"?"/"+m[1]:"")}
   function fonte(){return REM?REM:PADRAO}
   function lista(){
     var f=fonte(),ids=Object.keys(f).filter(function(k){return f[k]&&typeof f[k]==="object"});
@@ -301,10 +374,20 @@
 
   var tr=document.getElementById("semana"),outras=document.getElementById("outras"),outrasL=document.getElementById("outras-lista");
   function card(x){
-    var c=cod(x.o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];
-    var nm=document.createElement("span");nm.textContent=x.o.nome||x.id;b.appendChild(nm);
-    var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x.o);b.appendChild(qt);
-    var bd=document.createElement("span");preenchePadraoEl(bd,x.o.padrao,qnum(x.o),false);b.appendChild(bd);
+    var o=x.o,c=cod(o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];b.setAttribute("data-id",x.id);
+    var nm=document.createElement("span");nm.className="nome";nm.textContent=o.nome||x.id;b.appendChild(nm);
+    var dest=document.createElement("div");dest.className="dest";
+    function linha(cls,txt){var d=document.createElement("div");d.className=cls;d.textContent=txt;dest.appendChild(d)}
+    linha("dest-qtd",qtdImoveis(o));
+    linha("dest-pad",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
+    linha("dest-etapa",rotEtapa(etapaNum(o),true));
+    linha("dest-data",deIso(o.data)?"Entrega "+rotDataCurto(o.data):"Data a definir");
+    var st=estadoCerca(o,HOJE);
+    if(st.cerca)linha("dest-cerca","Cerca "+rotDataCurto(st.cerca));
+    b.appendChild(dest);
+    if(st.tipo==="incompleto"){var miss=document.createElement("span");miss.className="cerca-faltando";miss.textContent="Defina padrão/qtd/data para calcular a cerca";b.appendChild(miss)}
+    var al=textoAlertaCerca(st);
+    if(al){b.classList.add("alerta-"+st.tipo);var ad=document.createElement("span");ad.className="alerta-mini";ad.appendChild(document.createTextNode(al.tit));if(al.sub){var sm=document.createElement("small");sm.textContent=al.sub;ad.appendChild(sm)}b.appendChild(ad)}
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
@@ -330,7 +413,7 @@
     });
     outrasL.innerHTML="";
     fora.sort(function(a,b){return (a.o.data||"9")<(b.o.data||"9")?-1:1});
-    fora.forEach(function(x){var b=card(x);var d=document.createElement("small");d.className="qtd";d.textContent=rotData(x.o.data);b.appendChild(d);outrasL.appendChild(b)});
+    fora.forEach(function(x){outrasL.appendChild(card(x))});
     if(fora.length)outrasL.appendChild(botaoAdd(""));
     outras.classList.toggle("on",fora.length>0);
     // resumo da semana
@@ -341,6 +424,7 @@
     var sq=!sem.length?"Nenhuma entrega nesta semana":semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
     document.getElementById("r-semq").textContent=sq;
     renderLembretes();
+    renderAlertasCerca();
     if(cur){var o=fonte()[cur];if(o){preencheTopo(cur,o)}else{atual.textContent="Esta entrega foi removida.";}}
   }
 
@@ -349,14 +433,55 @@
   var eS=document.getElementById("e-status"),eD=document.getElementById("e-data"),eQ=document.getElementById("e-qtd");
   [eS,document.getElementById("n-status")].forEach(function(sel){Object.keys(ROT).forEach(function(k){var op=document.createElement("option");op.value=k;op.textContent=ROT[k];sel.appendChild(op)})});
   function fmt(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
+  var etapaEdit=0,etapaNovo=0;
+  function montaTrilha(el,atual,aoClicar){if(!el)return;el.innerHTML="";
+    for(var i=1;i<=9;i++){var b=document.createElement("button");b.type="button";
+      if(atual===i)b.className="atual";else if(atual>i)b.className="feita";
+      b.title=i+". "+ETAPAS[i-1];b.setAttribute("data-etapa",String(i));
+      var n=document.createElement("span");n.className="n";n.textContent=String(i);b.appendChild(n);
+      var l=document.createElement("span");l.className="l";l.textContent=ETAPAS_CURTO[i-1];b.appendChild(l);
+      b.addEventListener("click",(function(n){return function(e){e.preventDefault();e.stopPropagation();aoClicar(n)}})(i));
+      el.appendChild(b)}}
+  function rotuloEtapaEls(idRot,idNota,o){
+    var n=etapaNum(o),rot=document.getElementById(idRot);if(rot)rot.textContent=rotEtapa(n,false);
+    var nota=document.getElementById(idNota);if(!nota)return;
+    if(n>=3)nota.textContent="Entrou na produção a partir da etapa 3 (Produção de etiqueta).";
+    else if(cod(o)==="pronto"||cod(o)==="andamento")nota.textContent="O status "+ROT[cod(o)]+" também indica que a obra já entrou na produção.";
+    else if(o&&o.entrouProducao)nota.textContent="Entrou na produção em "+rotDataCurto(o.entrouProducao)+".";
+    else nota.textContent="A cerca e os alertas valem até a obra chegar na etapa 3."}
+  function preencheDestaque(id,o){
+    var box=document.getElementById("destaque-ficha");if(!box)return;box.innerHTML="";
+    function cel(rot,val,full){var l=document.createElement("div");if(full)l.className="full";var r=document.createElement("div");r.className="rot";r.textContent=rot;l.appendChild(r);var v=document.createElement("div");v.className="val2";v.textContent=val;l.appendChild(v);box.appendChild(l)}
+    cel("Imóveis",qtdImoveis(o));cel("Padrão",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
+    cel("Prazo de entrega",deIso(o.data)?rotData(o.data):"Data a definir");cel("Estágio da produção",rotEtapa(etapaNum(o),false),true);
+    var cb=document.getElementById("cerca-box");if(!cb)return;
+    var st=estadoCerca(o,HOJE);
+    cb.className="cerca-box"+(st.tipo==="incompleto"?" faltando":"");
+    if(st.tipo==="incompleto"){cb.textContent="Defina padrão/qtd/data para calcular a cerca";return}
+    var dias=diasProducaoCerca(o);
+    cb.innerHTML="Cerca mínima: <b>"+esc(rotData(st.cerca))+"</b> · "+dias+(dias===1?" dia útil":" dias úteis")+" de produção (seg–sex a partir da entrega; recesso 24–31/12 pulado).";
+    var al=textoAlertaCerca(st);if(al)cb.innerHTML+="<br>"+esc(al.tit)+(al.sub?" — "+esc(al.sub):"");
+    if(st.tipo==="entrou"){var motivo=etapaNum(o)>=3?rotEtapa(etapaNum(o),true):(o.entrouProducao?"marcada em "+rotDataCurto(o.entrouProducao):"status "+ROT[cod(o)]);cb.innerHTML+="<br>Já entrou na produção ("+esc(motivo)+")."}
+  }
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
     var inf=infoPadrao(o.padrao),ex="";if(inf){var pz=prazoTxt(qnum(o),inf);ex="<br>"+esc(inf.id)+" · "+esc(inf.ritmo)+(pz?" · "+esc(pz):"")}
-    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span><br>'+esc(qtdTxt(o))+(NOTA[id]?" · "+esc(NOTA[id]):"")+ex;
+    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
+    preencheDestaque(id,o);
+    montaTrilha(document.getElementById("e-trilha"),etapaNum(o),escolheEtapa);
+    rotuloEtapaEls("e-etapa-rot","e-etapa-nota",o);
     atual.textContent=o.estagio||"";
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
   }
-  function abrir(id){var o=fonte()[id];if(!o)return;cur=id;preencheTopo(id,o);
+  function escolheEtapa(n){
+    etapaEdit=n;if(!cur)return;var id=cur,o=fonte()[id]||{},p={etapa:n,atualizadoEm:Date.now()};
+    if(n>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){if(p.entrouProducao===null)delete REM[id].entrouProducao;else if(p.entrouProducao)REM[id].entrouProducao=p.entrouProducao;REM[id].etapa=n;REM[id].atualizadoEm=p.atualizadoEm}
+      render();if(cur===id){var oo=fonte()[id];if(oo)preencheTopo(id,oo)}
+    }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o estágio (sem conexão).")});
+  }
+  function abrir(id){var o=fonte()[id];if(!o)return;cur=id;etapaEdit=etapaNum(o);preencheTopo(id,o);
     campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";aplicaBtnPadrao(eP,o.padrao||"",qnum(o));
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
   function fechar(){ov.classList.remove("on");cur=null;fecharPadrao()}
@@ -374,12 +499,19 @@
   function fecharPadrao(){ov4.classList.remove("on");padraoAlvo=null}
   eP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(eP)});
   nP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(nP)});
-  opsP.addEventListener("click",function(e){var b=e.target.closest("button[data-valor]");if(!b||!padraoAlvo)return;aplicaBtnPadrao(padraoAlvo,b.getAttribute("data-valor"),qtdDoAlvo(padraoAlvo));fecharPadrao()});
-  eQ.addEventListener("input",function(){aplicaBtnPadrao(eP,valorPadrao(eP),parseInt(eQ.value,10)||0)});
+  opsP.addEventListener("click",function(e){var b=e.target.closest("button[data-valor]");if(!b||!padraoAlvo)return;aplicaBtnPadrao(padraoAlvo,b.getAttribute("data-valor"),qtdDoAlvo(padraoAlvo));fecharPadrao();atualizaFichaLive()});
+  function objetoFicha(){if(!cur)return {};var o={},base=fonte()[cur]||{},k;for(k in base)if(Object.prototype.hasOwnProperty.call(base,k))o[k]=base[k];
+    o.data=eD.value||"";o.qtd=parseInt(eQ.value,10)||0;var pad=valorPadrao(eP);if(pad){o.padrao=pad;o.ritmo=ritmoDe(pad)}o.etapa=etapaEdit;o.statusCodigo=eS.value;o.status=LAB[eS.value];return o}
+  function atualizaFichaLive(){if(!cur)return;preencheDestaque(cur,objetoFicha())}
+  eQ.addEventListener("input",function(){aplicaBtnPadrao(eP,valorPadrao(eP),parseInt(eQ.value,10)||0);atualizaFichaLive()});
   nQ.addEventListener("input",function(){aplicaBtnPadrao(nP,valorPadrao(nP),parseInt(nQ.value,10)||0)});
+  eD.addEventListener("input",atualizaFichaLive);eS.addEventListener("change",atualizaFichaLive);
   document.getElementById("fechar4").onclick=fecharPadrao;
   ov4.addEventListener("click",function(e){if(e.target===ov4)fecharPadrao()});
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";aplicaBtnPadrao(nP,"");ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
+  function clicaEtapaNovo(n){etapaNovo=n;montaTrilha(document.getElementById("n-trilha"),n,clicaEtapaNovo);document.getElementById("n-etapa-rot").textContent=rotEtapa(n,false)}
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";aplicaBtnPadrao(nP,"");etapaNovo=0;
+    montaTrilha(document.getElementById("n-trilha"),0,clicaEtapaNovo);document.getElementById("n-etapa-rot").textContent=rotEtapa(0,false);
+    ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){ov2.classList.remove("on");fecharPadrao()}
   document.getElementById("incluir").onclick=abrirLembrete;
   var selS=document.getElementById("semanas");
@@ -446,6 +578,7 @@
     var o={nome:nome,estagio:nE.value.trim(),status:LAB[c],statusCodigo:c,data:nD.value||"",criadoEm:agora};
     if(q>0)o.qtd=q;
     var padN=valorPadrao(nP);if(padN){o.padrao=padN;o.ritmo=ritmoDe(padN)}
+    if(etapaNovo>=1){o.etapa=etapaNovo;if(etapaNovo>=3)o.entrouProducao=HOJE}
     ok2.style.color="";ok2.textContent="Salvando…";
     req("PUT","/entregas/"+id+".json",o).then(function(){
       if(REM){REM[id]=o;render()}
@@ -456,6 +589,7 @@
     if(!cur)return;var id=cur,o=fonte()[id]||{},t=campo.value.trim()||o.estagio||"",c=eS.value,q=parseInt(eQ.value,10),agora=Date.now();
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
     var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}
+    if(etapaEdit>=1){p.etapa=etapaEdit;if(etapaEdit>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}}
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
@@ -499,9 +633,29 @@
     es.onopen=function(){marca(caminho,true)};
     es.onerror=function(){marca(caminho,false)};
   }
+  function renderAlertasCerca(){
+    var box=document.getElementById("alertas-cerca");if(!box)return;box.innerHTML="";
+    var itens=[],ordem={atraso:0,hoje:1,programar:2};
+    lista().forEach(function(x){var st=estadoCerca(x.o,HOJE),al=textoAlertaCerca(st);if(al)itens.push({x:x,st:st,al:al})});
+    itens.sort(function(a,b){return (ordem[a.st.tipo]-ordem[b.st.tipo])||((a.st.cerca||"")<(b.st.cerca||"")?-1:((a.st.cerca||"")>(b.st.cerca||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
+    itens.forEach(function(it){
+      var d=document.createElement("div");d.className="alerta alerta-cerca alerta-"+it.st.tipo;d.setAttribute("data-id",it.x.id);
+      var t=document.createElement("b");t.textContent="⚠ "+it.al.tit;d.appendChild(t);
+      var p=document.createElement("div");p.textContent=(it.x.o.nome||it.x.id)+(it.st.cerca?" · cerca "+rotDataCurto(it.st.cerca):"");d.appendChild(p);
+      var s=document.createElement("div");s.className="ldata";s.textContent=it.al.sub;d.appendChild(s);
+      d.addEventListener("click",function(){if(it.x.o.data&&deIso(it.x.o.data))irPara(iso(segunda(deIso(it.x.o.data))));abrir(it.x.id)});
+      box.appendChild(d);
+    });
+  }
+  function recarregaRelogio(){var h=hojeIso(),hr=horaSP();if(h!==HOJE||hr!==HORA){HOJE=h;HORA=hr;render()}}
+  function msAteProximaHora(){try{var parts=new Intl.DateTimeFormat("en-GB",{timeZone:"America/Sao_Paulo",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(new Date());function g(tp){for(var i=0;i<parts.length;i++)if(parts[i].type===tp)return +parts[i].value;return 0}return ((60-g("minute"))*60-g("second"))*1000+1000}catch(e){return 3600000}}
+  function agendaProximaHora(){setTimeout(function(){recarregaRelogio();agendaProximaHora()},Math.max(5000,msAteProximaHora()))}
+  setInterval(recarregaRelogio,30000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)recarregaRelogio()});
   render();
   ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render()});
-  ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes()});
+  ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
+  agendaProximaHora();
 })();
 </script>
 </body>
