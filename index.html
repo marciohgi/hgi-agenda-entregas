@@ -88,9 +88,12 @@
   .add-dia{display:block;width:100%;background:transparent;border:1.5px dashed #9fb1c6;border-radius:5px;color:#2f5d8a;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;margin-top:2px;cursor:pointer;text-align:center}
   .add-dia:hover{background:#eef3f9;border-color:#2f5d8a}
   .outras .add-dia{width:auto;min-width:120px;margin:0}
-  .badge-padrao{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.2px;border-radius:4px;padding:2px 7px;margin-top:5px;border:1px solid;line-height:1.3}
+  .badge-padrao{display:block;font-size:10px;font-weight:700;letter-spacing:.2px;border-radius:4px;padding:3px 7px;margin-top:5px;border:1px solid;line-height:1.3;text-align:left}
   .btn-padrao{display:block;width:100%;font:inherit;font-size:13px;font-weight:700;text-align:left;border:1.5px solid;border-radius:6px;padding:8px 12px;margin-top:4px;cursor:pointer;background:#fff;color:#1f2a37}
   .btn-padrao:hover{filter:brightness(.97)}
+  .badge-padrao .lab,.btn-padrao .lab{display:block}
+  .badge-padrao .rit,.btn-padrao .rit{display:block;font-size:10px;font-weight:600;margin-top:2px;opacity:.92}
+  .btn-padrao .rit{font-size:12px}
   .p-mcmv{background:#fff;color:#E87731;border-color:#E87731}
   .p-medio{background:#fff;color:#3a3a3a;border-color:#5a5a5a}
   .p-alto{background:#3a3a3a;color:#fff;border-color:#3a3a3a}
@@ -98,9 +101,11 @@
   .p-vazio{background:#fff;color:#6b7785;border-color:#b8c4d2;border-style:dashed;font-weight:600}
   .ov-padrao{z-index:20}
   .padrao-ops{display:flex;flex-direction:column;gap:8px}
-  .padrao-ops button{display:block;width:100%;font:inherit;font-size:15px;font-weight:700;text-align:left;border:2px solid;border-radius:8px;padding:12px 14px;cursor:pointer}
+  .padrao-ops button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;font:inherit;font-size:15px;font-weight:700;text-align:left;border:2px solid;border-radius:8px;padding:12px 14px;cursor:pointer}
   .padrao-ops button:hover{filter:brightness(.97)}
   .padrao-ops button.sel{box-shadow:0 0 0 3px rgba(232,119,49,.4)}
+  .padrao-ops .lab{flex:1}
+  .padrao-ops .rit{font-size:12px;font-weight:600;white-space:nowrap;text-align:right;opacity:.92}
   footer{margin-top:14px;background:#fff;border:1px solid #d5dce5;border-radius:8px;padding:12px 16px;font-size:14px;color:#1e3a5f;font-weight:700;text-align:center}
   @media (max-width:900px){
     table,thead,tbody,tr,th,td{display:block;width:100%}
@@ -203,7 +208,7 @@
   <div class="modal" role="dialog" aria-labelledby="mt4" aria-modal="true">
     <h2><span id="mt4">Escolher padrão</span><button type="button" id="fechar4" aria-label="Fechar">×</button></h2>
     <div class="mb">
-      <p class="meta" style="margin-bottom:12px">Selecione o padrão desta entrega.</p>
+      <p class="meta" style="margin-bottom:12px">Selecione o padrão desta entrega. Cada um tem um ritmo médio de produção.</p>
       <div class="padrao-ops" id="padrao-ops"></div>
     </div>
   </div>
@@ -215,12 +220,29 @@
   var ROT={pronto:"Pronto",andamento:"Em andamento",aguardando:"Aguardando",critico:"Não pode falhar"};
   var LAB={pronto:"pronto",andamento:"em andamento",aguardando:"aguardando",critico:"não pode falhar"};
   var DE_LAB={"pronto":"pronto","em andamento":"andamento","aguardando":"aguardando","não pode falhar":"critico"};
-  var PADROES=["Minha Casa Minha Vida","Médio Padrão","Alto Padrão","Altíssimo Padrão"];
+  var PADROES=[
+    {id:"Minha Casa Minha Vida",ritmo:"50 aptos/dia",min:50,max:50},
+    {id:"Médio Padrão",ritmo:"30 aptos/dia",min:30,max:30},
+    {id:"Alto Padrão",ritmo:"20 aptos/dia",min:20,max:20},
+    {id:"Altíssimo Padrão",ritmo:"5–10 aptos/dia",min:5,max:10}
+  ];
+  var PADRAO_MAP={};PADROES.forEach(function(p){PADRAO_MAP[p.id]=p});
   var PADRAO_CLS={"Minha Casa Minha Vida":"p-mcmv","Médio Padrão":"p-medio","Alto Padrão":"p-alto","Altíssimo Padrão":"p-altissimo"};
-  function rotPadrao(v){return (v&&PADRAO_CLS[v])?v:"Definir padrão"}
+  function infoPadrao(v){return (v&&PADRAO_MAP[v])?PADRAO_MAP[v]:null}
   function clsPadrao(v){return PADRAO_CLS[v]||"p-vazio"}
   function valorPadrao(btn){return (btn&&btn.getAttribute("data-valor"))||""}
-  function aplicaBtnPadrao(btn,val){val=(val&&PADRAO_CLS[val])?val:"";btn.setAttribute("data-valor",val);btn.textContent=rotPadrao(val);btn.className="btn-padrao "+clsPadrao(val)}
+  function ritmoDe(v){var i=infoPadrao(v);return i?i.ritmo:""}
+  function prazoTxt(qtd,info){qtd=parseInt(qtd,10);if(!info||!(qtd>0))return "";var dMin=Math.ceil(qtd/info.max),dMax=Math.ceil(qtd/info.min);return dMin===dMax?dMin+(dMin===1?" dia":" dias"):dMin+"–"+dMax+" dias"}
+  function preenchePadraoEl(el,val,qtd,isBtn){
+    var i=infoPadrao(val);
+    if(isBtn)el.setAttribute("data-valor",i?i.id:"");
+    el.className=(isBtn?"btn-padrao ":"badge-padrao ")+clsPadrao(val);
+    el.textContent="";
+    if(!i){el.textContent="Definir padrão";return}
+    var a=document.createElement("span");a.className="lab";a.textContent=i.id;el.appendChild(a);
+    var b=document.createElement("span");b.className="rit";var pz=prazoTxt(qtd,i);b.textContent=pz?i.ritmo+" · "+pz:i.ritmo;el.appendChild(b);
+  }
+  function aplicaBtnPadrao(btn,val,qtd){preenchePadraoEl(btn,val,qtd,true)}
   var NOMES=["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"];
   var SEM_FIXA="2026-11-09"; // semana com o alerta do José e o destaque da CBA
   function pad(n){return (n<10?"0":"")+n}
@@ -282,7 +304,7 @@
     var c=cod(x.o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];
     var nm=document.createElement("span");nm.textContent=x.o.nome||x.id;b.appendChild(nm);
     var qt=document.createElement("small");qt.className="qtd";qt.textContent=qtdTxt(x.o);b.appendChild(qt);
-    var bd=document.createElement("span");bd.className="badge-padrao "+clsPadrao(x.o.padrao);bd.textContent=rotPadrao(x.o.padrao);b.appendChild(bd);
+    var bd=document.createElement("span");preenchePadraoEl(bd,x.o.padrao,qnum(x.o),false);b.appendChild(bd);
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
@@ -329,12 +351,13 @@
   function fmt(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
-    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span><br>'+esc(qtdTxt(o))+(NOTA[id]?" · "+esc(NOTA[id]):"");
+    var inf=infoPadrao(o.padrao),ex="";if(inf){var pz=prazoTxt(qnum(o),inf);ex="<br>"+esc(inf.id)+" · "+esc(inf.ritmo)+(pz?" · "+esc(pz):"")}
+    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span><br>'+esc(qtdTxt(o))+(NOTA[id]?" · "+esc(NOTA[id]):"")+ex;
     atual.textContent=o.estagio||"";
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
   }
   function abrir(id){var o=fonte()[id];if(!o)return;cur=id;preencheTopo(id,o);
-    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";aplicaBtnPadrao(eP,o.padrao||"");
+    campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";aplicaBtnPadrao(eP,o.padrao||"",qnum(o));
     ok.textContent="";ok.style.color="";ov.classList.add("on");campo.focus()}
   function fechar(){ov.classList.remove("on");cur=null;fecharPadrao()}
   document.getElementById("fechar").onclick=fechar;document.getElementById("cancelar").onclick=fechar;
@@ -343,12 +366,17 @@
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
   var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),ov4=document.getElementById("ov4"),opsP=document.getElementById("padrao-ops"),padraoAlvo=null;
-  PADROES.forEach(function(lab){var b=document.createElement("button");b.type="button";b.className=clsPadrao(lab);b.setAttribute("data-valor",lab);b.textContent=lab;opsP.appendChild(b)});
-  function abrirPadrao(btn){padraoAlvo=btn;var cur=valorPadrao(btn);[].forEach.call(opsP.querySelectorAll("button"),function(b){b.classList.toggle("sel",b.getAttribute("data-valor")===cur)});ov4.classList.add("on")}
+  function qtdDoAlvo(btn){return parseInt((btn===nP?nQ:eQ).value,10)||0}
+  function montaOps(qtd){opsP.innerHTML="";PADROES.forEach(function(p){var b=document.createElement("button");b.type="button";b.className=clsPadrao(p.id);b.setAttribute("data-valor",p.id);
+    var a=document.createElement("span");a.className="lab";a.textContent=p.id;b.appendChild(a);
+    var r=document.createElement("span");r.className="rit";var pz=prazoTxt(qtd,p);r.textContent=pz?p.ritmo+" · "+pz:p.ritmo;b.appendChild(r);opsP.appendChild(b)})}
+  function abrirPadrao(btn){padraoAlvo=btn;montaOps(qtdDoAlvo(btn));var cur=valorPadrao(btn);[].forEach.call(opsP.querySelectorAll("button"),function(b){b.classList.toggle("sel",b.getAttribute("data-valor")===cur)});ov4.classList.add("on")}
   function fecharPadrao(){ov4.classList.remove("on");padraoAlvo=null}
   eP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(eP)});
   nP.addEventListener("click",function(e){e.preventDefault();abrirPadrao(nP)});
-  opsP.addEventListener("click",function(e){var b=e.target.closest("button[data-valor]");if(!b||!padraoAlvo)return;aplicaBtnPadrao(padraoAlvo,b.getAttribute("data-valor"));fecharPadrao()});
+  opsP.addEventListener("click",function(e){var b=e.target.closest("button[data-valor]");if(!b||!padraoAlvo)return;aplicaBtnPadrao(padraoAlvo,b.getAttribute("data-valor"),qtdDoAlvo(padraoAlvo));fecharPadrao()});
+  eQ.addEventListener("input",function(){aplicaBtnPadrao(eP,valorPadrao(eP),parseInt(eQ.value,10)||0)});
+  nQ.addEventListener("input",function(){aplicaBtnPadrao(nP,valorPadrao(nP),parseInt(nQ.value,10)||0)});
   document.getElementById("fechar4").onclick=fecharPadrao;
   ov4.addEventListener("click",function(e){if(e.target===ov4)fecharPadrao()});
   function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";aplicaBtnPadrao(nP,"");ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
@@ -417,7 +445,7 @@
     var c=nS.value,q=parseInt(nQ.value,10),agora=Date.now(),id=novoId(nome);
     var o={nome:nome,estagio:nE.value.trim(),status:LAB[c],statusCodigo:c,data:nD.value||"",criadoEm:agora};
     if(q>0)o.qtd=q;
-    if(valorPadrao(nP))o.padrao=valorPadrao(nP);
+    var padN=valorPadrao(nP);if(padN){o.padrao=padN;o.ritmo=ritmoDe(padN)}
     ok2.style.color="";ok2.textContent="Salvando…";
     req("PUT","/entregas/"+id+".json",o).then(function(){
       if(REM){REM[id]=o;render()}
@@ -427,7 +455,7 @@
   document.getElementById("salvar").onclick=function(){
     if(!cur)return;var id=cur,o=fonte()[id]||{},t=campo.value.trim()||o.estagio||"",c=eS.value,q=parseInt(eQ.value,10),agora=Date.now();
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
-    if(valorPadrao(eP))p.padrao=valorPadrao(eP);
+    var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
