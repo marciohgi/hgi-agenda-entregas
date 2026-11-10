@@ -167,9 +167,13 @@
     table.cal thead{display:none}
     table.cal td{height:auto;min-height:80px;margin-bottom:8px}
   }
-  .htop-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}
-  .btn-relatorio{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.7);border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
-  .btn-relatorio:hover{background:rgba(255,255,255,.14)}
+  .htop-acoes{display:flex;flex-direction:column;gap:8px;align-items:stretch;flex-wrap:nowrap}
+  .btn-relatorio{background:#1e9a4a;color:#fff;border:2px solid #d8f5e3;border-radius:8px;padding:11px 18px;font:inherit;font-size:15px;font-weight:700;line-height:1.2;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);white-space:nowrap;width:100%}
+  .btn-relatorio:hover{background:#178a40}
+  @media (max-width:600px){
+    .htop-acoes{width:100%}
+    .btn-incluir,.btn-relatorio{width:100%;text-align:center}
+  }
   .dest .dest-parc{font-weight:700;color:#1e3a5f}
   .dest .dest-parc.ok{color:#2e8b57}
   .dest .dest-lote{font-weight:700;color:#c86220}
@@ -256,7 +260,7 @@
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
     <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
-    </div><div class="htop-acoes"><button type="button" class="btn-relatorio" id="relatorio">Relatório de pré-impressão</button><button class="btn-incluir" id="incluir">+ Incluir lembrete</button></div></div>
+    </div><div class="htop-acoes"><button class="btn-incluir" id="incluir">+ Incluir lembrete</button><button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button></div></div>
   </header>
 
   <div class="resumo">
@@ -1501,6 +1505,20 @@
       totGeral+=tot;
       html+='</tbody><tfoot><tr><td colspan="6" class="tot-dia">Total do dia: '+tot+(tot===1?" imóvel":" imóveis")+"</td></tr></tfoot></table></div>";
     });
+    var porCliente={},clientes=[],ck;
+    itens.forEach(function(it){
+      ck=it.id||it.nome||"";
+      if(!porCliente[ck])porCliente[ck]={nome:it.nome||ck,entregas:0,imoveis:0};
+      porCliente[ck].entregas++;
+      porCliente[ck].imoveis+=it.qtd||0;
+    });
+    clientes=Object.keys(porCliente).map(function(k){return porCliente[k]});
+    clientes.sort(function(a,b){return (a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
+    html+='<div class="rel-dia rel-clientes"><h3>Totais por cliente</h3><table><thead><tr><th>Cliente / obra</th><th>Nº de entregas/lotes na janela</th><th>Total de imóveis</th></tr></thead><tbody>';
+    clientes.forEach(function(c){
+      html+="<tr><td>"+esc(c.nome)+"</td><td>"+c.entregas+"</td><td>"+c.imoveis+(c.imoveis===1?" imóvel":" imóveis")+"</td></tr>";
+    });
+    html+="</tbody></table></div>";
     html+='<div class="rel-geral">Total geral: '+totGeral+(totGeral===1?" imóvel":" imóveis")+" · "+itens.length+(itens.length===1?" linha":" linhas")+"</div>";
     return html;
   }
