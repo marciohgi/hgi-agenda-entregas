@@ -37,6 +37,17 @@
   .s-andamento{background:#fff8dc;border-color:#d4a514}
   .s-aguardando{background:#fdeedc;border-color:#e07b1a}
   .s-critico{background:#fbe3e1;border-color:#c0392b;color:#7b1f16}
+  .item.item-enviado{opacity:.78;background:#e6f4ea;border-color:#2e8b57}
+  .item .selo-enviado{display:block;margin-top:6px;border-radius:4px;padding:3px 7px;font-size:11px;font-weight:700;background:#2e8b57;color:#fff;letter-spacing:.3px;text-transform:uppercase}
+  .item.item-atrasada{background:#fdecea;border-color:#c0392b;box-shadow:inset 0 0 0 1px #c0392b}
+  .item .selo-atraso{display:block;margin-top:6px;border-radius:4px;padding:5px 7px;font-size:11px;font-weight:700;line-height:1.35;background:#c0392b;color:#fff;text-align:left}
+  .badge-atraso-dia{display:inline-block;margin:0 0 8px;background:#c0392b;color:#fff;border-radius:4px;padding:3px 8px;font-size:11px;font-weight:700;letter-spacing:.3px}
+  .alerta-carry{background:#fdecea;border:2px solid #c0392b;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#7b1f16}
+  .alerta-carry b{font-size:16px;display:block;margin-bottom:6px;color:#7b1f16}
+  .alerta-carry .obra-atraso{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 0;border-top:1px solid #f0c4bf;cursor:pointer}
+  .alerta-carry .obra-atraso:first-of-type{border-top:0}
+  .alerta-carry .obra-atraso .nome{font-weight:700;color:#1f2a37}
+  .alerta-carry .obra-atraso .dias{font-size:13px;font-weight:700;color:#c0392b}
   .ov{position:fixed;inset:0;background:rgba(15,25,40,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
   .ov.on{display:flex}
   .modal{background:#fff;border-radius:10px;max-width:680px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:visible;max-height:96vh}
@@ -135,6 +146,11 @@
   .alerta-vencida.alerta{background:#c86220;border-color:#8a3d10;color:#fff}
   .alerta-cerca,.alerta-entrega-topo{cursor:pointer}
   .alerta-cerca b,.alerta-entrega-topo b{padding-right:8px}
+  .alerta.dispensavel{position:relative;padding-right:40px}
+  .alerta.dispensavel b{padding-right:28px}
+  .alerta .fecha-alerta{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;background:transparent;color:inherit;font:inherit;font-size:18px;font-weight:700;line-height:1;cursor:pointer;border-radius:6px;padding:0}
+  .alerta .fecha-alerta:hover{background:rgba(0,0,0,.12)}
+  .alerta-vencida .fecha-alerta:hover,.alerta-hoje .fecha-alerta:hover,.alerta-atraso .fecha-alerta:hover{background:rgba(255,255,255,.2)}
   .alerta-hoje.alerta b,.alerta-atraso.alerta b,.alerta-hoje.alerta .ldata,.alerta-atraso.alerta .ldata{color:#fff}
   .alerta-programar.alerta .ldata{color:#6a5300}
   .alerta-entrega.alerta b,.alerta-entrega.alerta .ldata{color:#8a3d10}
@@ -272,6 +288,7 @@
   </div>
 
   <div id="alertas-cerca"></div>
+  <div id="alertas-carry"></div>
   <div id="lembretes"></div>
 
   <div class="legenda">
@@ -556,6 +573,51 @@
   function faltam(o){var q=qnum(o),e=entregueTotal(o);return q?Math.max(0,q-e):0}
   function integralEntregue(o){var q=qnum(o);return q>0&&entregueTotal(o)>=q}
   function obraPronta(o){return integralEntregue(o)||cod(o)==="pronto"}
+  function estaEnviado(o){
+    if(!o)return false;
+    if(integralEntregue(o))return true;
+    var c=cod(o);if(c==="pronto")return true;
+    var s=String(o.statusCodigo||o.status||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    return s==="entregue"||s==="enviado"||s.indexOf("entregue")>=0||s.indexOf("enviado")>=0;
+  }
+  function textoAtrasoCarry(o,hoje){
+    hoje=hoje||HOJE;
+    if(!o||!deIso(o.data)||o.data>=hoje||estaEnviado(o))return null;
+    var n=diasCorridos(o.data,hoje);
+    return "Atrasada desde "+rotDataCurto(o.data)+" · "+(n===1?"1 dia":n+" dias");
+  }
+  function listaAtrasadas(hoje){
+    hoje=hoje||HOJE;
+    return lista().filter(function(x){return deIso(x.o.data)&&x.o.data<hoje&&!estaEnviado(x.o)});
+  }
+  var ALERTA_DISP_KEY="hgi-agenda-alerta-disp-v1";
+  function leDispensasAlerta(){
+    try{var o=JSON.parse(localStorage.getItem(ALERTA_DISP_KEY)||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{}}catch(e){return {}}
+  }
+  function chaveDispensaAlerta(tipo,id,data){return String(tipo||"alerta")+":"+String(id||"")+":"+(data||HOJE)}
+  function alertaDispensado(tipo,id,data){
+    if(!id)return false;
+    return !!leDispensasAlerta()[chaveDispensaAlerta(tipo,id,data||HOJE)];
+  }
+  function dispensarAlerta(tipo,id,data){
+    if(!id)return;
+    data=data||HOJE;
+    var o=leDispensasAlerta(),k,parts;
+    for(k in o)if(Object.prototype.hasOwnProperty.call(o,k)){
+      parts=k.split(":");
+      if(parts.length>=3&&parts[parts.length-1]!==data)delete o[k];
+    }
+    o[chaveDispensaAlerta(tipo,id,data)]=1;
+    try{localStorage.setItem(ALERTA_DISP_KEY,JSON.stringify(o))}catch(e){}
+    renderAlertasCerca();
+    renderLembretesCarry();
+  }
+  function botaoFechaAlerta(tipo,id,data){
+    var b=document.createElement("button");b.type="button";b.className="fecha-alerta";
+    b.setAttribute("aria-label","Fechar alerta até amanhã");b.title="Fechar este alerta até amanhã";b.textContent="✕";
+    b.addEventListener("click",function(e){e.stopPropagation();e.preventDefault();dispensarAlerta(tipo,id,data||HOJE)});
+    return b;
+  }
   function listaLotesPrevistos(o){
     var p=o&&o.lotesPrevistos,arr=[],k,x,n,q;
     if(p&&typeof p==="object"){
@@ -687,6 +749,7 @@
       var pl=proximoLotePendente(o);
       add(o.proximoLoteData,"Lote "+(pl?pl.n:"")+" — faltam "+faltam(o));
     }
+    if(!estaEnviado(o)&&deIso(o.data)&&o.data<HOJE)add(HOJE,"");
     return map;
   }
   function rotDataCurto(data){var m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(data||"");if(!m)return "Data a definir";return m[3]+"/"+m[2]+(m[1]!=="2026"?"/"+m[1]:"")}
@@ -705,7 +768,11 @@
   var tr=document.getElementById("semana"),outras=document.getElementById("outras"),outrasL=document.getElementById("outras-lista");
   function card(x,opt){
     opt=opt||{};
-    var o=x.o,c=cod(o),b=document.createElement("button");b.className="item s-"+c;b.title=ROT[c];b.setAttribute("data-id",x.id);
+    var o=x.o,c=cod(o),enviado=estaEnviado(o),atraso=textoAtrasoCarry(o,HOJE);
+    var b=document.createElement("button");b.className="item s-"+c+(enviado?" item-enviado":"")+(atraso?" item-atrasada":"");
+    b.title=ROT[c]||"";b.setAttribute("data-id",x.id);
+    if(enviado)b.setAttribute("data-enviado","1");
+    if(atraso)b.setAttribute("data-atrasada","1");
     var nm=document.createElement("span");nm.className="nome";nm.textContent=o.nome||x.id;b.appendChild(nm);
     var dest=document.createElement("div");dest.className="dest";
     function linha(cls,txt){var d=document.createElement("div");d.className=cls;d.textContent=txt;dest.appendChild(d)}
@@ -734,6 +801,8 @@
     var datasObra=aparicoesNaSemana(x);
     var sob=alertasSobrecarga(HOJE).filter(function(a){return datasObra[a.data]||(dataRefEntrega(o)===a.data)});
     sob.forEach(function(a){mini("alerta-sobrecarga","sobrecarga",a.tit,a.sub)});
+    if(enviado){var se=document.createElement("span");se.className="selo-enviado";se.textContent="Enviado";b.appendChild(se)}
+    if(atraso){var sa=document.createElement("span");sa.className="selo-atraso";sa.textContent=atraso;b.appendChild(sa)}
     b.addEventListener("click",function(){abrir(x.id)});return b;
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
@@ -757,7 +826,14 @@
       td.innerHTML='<div class="num">'+D.n+'</div><div class="dia">'+D.d+'</div>';
       if(D.rec){td.innerHTML+='<div class="rec">Recesso</div>'}
       else if(!cols[i].length){td.innerHTML+='<div class="vazio">Sem entregas</div>'}
-      cols[i].forEach(function(it){td.appendChild(card(it.x,{rotuloLote:it.rotulo}))});
+      cols[i].sort(function(a,b){
+        function peso(it){var o=it.x.o;if(estaEnviado(o))return 2;if(deIso(o.data)&&o.data<D.iso)return 0;return 1}
+        var pa=peso(a),pb=peso(b);if(pa!==pb)return pa-pb;
+        var na=(a.x.o.nome||a.x.id||""),nb=(b.x.o.nome||b.x.id||"");return na.localeCompare(nb,"pt-BR",{sensitivity:"base"});
+      });
+      var nAtr=cols[i].filter(function(it){return !estaEnviado(it.x.o)&&deIso(it.x.o.data)&&it.x.o.data<D.iso}).length;
+      if(nAtr){var ba=document.createElement("div");ba.className="badge-atraso-dia";ba.textContent=nAtr===1?"1 atrasada":nAtr+" atrasadas";td.appendChild(ba)}
+      cols[i].forEach(function(it){td.appendChild(card(it.x,{rotuloLote:it.rotulo,carryOver:deIso(it.x.o.data)&&it.x.o.data<D.iso&&!estaEnviado(it.x.o)}))});
       td.appendChild(botaoAdd(D.iso));
       tr.appendChild(td);
     });
@@ -775,6 +851,7 @@
     document.getElementById("r-semq").textContent=sq;
     renderLembretes();
     renderAlertasCerca();
+    renderLembretesCarry();
     if(cur){var o=fonte()[cur];if(o){preencheTopo(cur,o)}else{atual.textContent="Esta entrega foi removida.";}}
   }
 
@@ -1265,6 +1342,21 @@
 
   // lembretes
   var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
+  function renderLembretesCarry(){
+    var box=document.getElementById("alertas-carry");if(!box)return;box.innerHTML="";
+    var atras=listaAtrasadas(HOJE).filter(function(x){return !alertaDispensado("carry",x.id,HOJE)});
+    atras.sort(function(a,b){return (a.o.data||"")<(b.o.data||"")?-1:(a.o.data||"")>(b.o.data||"")?1:(a.o.nome||"").localeCompare(b.o.nome||"","pt-BR",{sensitivity:"base"})});
+    atras.forEach(function(x){
+      var d=document.createElement("div");d.className="alerta alerta-carry dispensavel";d.setAttribute("data-id",x.id);d.setAttribute("data-alerta","carry");
+      d.appendChild(botaoFechaAlerta("carry",x.id,HOJE));
+      var t=document.createElement("b");t.textContent="⚠ Entrega atrasada — ainda não enviada";d.appendChild(t);
+      var p=document.createElement("div");p.className="nome";p.textContent=x.o.nome||x.id;d.appendChild(p);
+      var det=document.createElement("div");det.className="ldata";det.textContent=qtdImoveis(x.o)+(x.o.data?" · prevista "+rotDataCurto(x.o.data):"");d.appendChild(det);
+      var dias=document.createElement("div");dias.className="dias";dias.textContent=textoAtrasoCarry(x.o,HOJE)||"";d.appendChild(dias);
+      d.addEventListener("click",function(){if(deIso(HOJE))irPara(iso(segunda(deIso(HOJE))));abrir(x.id)});
+      box.appendChild(d);
+    });
+  }
   function fonteL(){return LEM?LEM:PADRAO_LEM}
   function renderLembretes(){
     var f=fonteL(),isos=DIAS.map(function(D){return D.iso});
@@ -1384,8 +1476,13 @@
     });
     itens.sort(function(a,b){var oa=ordem[a.st.tipo],ob=ordem[b.st.tipo];if(oa==null)oa=9;if(ob==null)ob=9;return (oa-ob)||((a.x.o.data||"")<(b.x.o.data||"")?-1:((a.x.o.data||"")>(b.x.o.data||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
     itens.forEach(function(it){
+      var dispensavel=(it.kind==="entrega"&&it.x.id)||(it.kind==="lote"&&it.x.id&&it.st.tipo==="dia");
+      var tipoDisp=it.kind==="entrega"?("entrega-"+(it.st.tipo||"dia")):(it.kind==="lote"?"lote-dia":"");
+      if(dispensavel&&alertaDispensado(tipoDisp,it.x.id,HOJE))return;
       var cls=it.kind==="entrega"?(it.st.tipo==="dia"?"alerta-entrega":"alerta-vencida"):it.kind==="lote"?(it.st.tipo==="chegando"?"alerta-lote-chegando":it.st.tipo==="vencido"?"alerta-lote-vencido":it.st.tipo==="div"?"alerta-lote-div":it.st.tipo==="dia"?"alerta-entrega":"alerta-lote-div"):it.kind==="sobre"?"alerta-sobrecarga":("alerta-"+it.st.tipo);
       var d=document.createElement("div");d.className="alerta "+(it.kind==="entrega"||it.kind==="lote"?"alerta-entrega-topo ":"alerta-cerca ")+cls;if(it.x.id)d.setAttribute("data-id",it.x.id);
+      if(tipoDisp)d.setAttribute("data-alerta",tipoDisp);
+      if(dispensavel){d.classList.add("dispensavel");d.appendChild(botaoFechaAlerta(tipoDisp,it.x.id,HOJE))}
       var t=document.createElement("b");t.textContent="⚠ "+it.al.tit;d.appendChild(t);
       var extra=it.kind==="cerca"&&it.st.cerca?(" · cerca "+rotDataCurto(it.st.cerca)):((it.st.data||it.x.o.data)?" · "+rotDataCurto(it.st.data||it.x.o.data):"");
       var p=document.createElement("div");p.textContent=(it.x.o.nome||it.x.id||"")+extra;d.appendChild(p);
