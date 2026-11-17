@@ -613,9 +613,11 @@
   }
   function textoAtrasoCarry(o,hoje){
     hoje=hoje||HOJE;
-    if(!o||!deIso(o.data)||o.data>=hoje||estaEnviado(o))return null;
-    var n=diasCorridos(o.data,hoje);
-    return "Atrasada desde "+rotDataCurto(o.data)+" · "+(n===1?"1 dia":n+" dias");
+    if(!o||estaEnviado(o))return null;
+    var ref=dataRefEntrega(o);if(!deIso(ref)||(deIso(o.data)&&o.data<ref))ref=deIso(o.data)?o.data:ref;
+    if(!deIso(ref)||ref>=hoje)return null;
+    var n=diasCorridos(ref,hoje);
+    return "Atrasada desde "+rotDataCurto(ref)+" · "+(n===1?"1 dia":n+" dias");
   }
   function listaAtrasadas(hoje){
     hoje=hoje||HOJE;
@@ -781,6 +783,7 @@
     var o=x.o,map={},df=dataFinalObra(o);
     if(df){map[df]={data:df,rotulo:estaConcluido(o)?"Concluída "+rotDataCurto(df):"Entregue integral "+rotDataCurto(df)};return map}
     function add(d,rotulo){if(!deIso(d))return;if(!map[d])map[d]={data:d,rotulo:rotulo||""};else if(rotulo&&!map[d].rotulo)map[d].rotulo=rotulo}
+    if(textoAtrasoCarry(o,HOJE)){map[HOJE]={data:HOJE,rotulo:""};return map}
     add(o.data,"");
     listaLotesPrevistos(o).forEach(function(lt){
       if(lt.implicito||!deIso(lt.data))return;
@@ -1026,7 +1029,7 @@
   }
   function payloadConcluido(o,agora){
     agora=agora||Date.now();
-    var dc=(o&&deIso(o.data)&&o.data<HOJE)?o.data:HOJE;var p={statusCodigo:"concluido",status:LAB.concluido,concluidoEm:agora,dataConclusao:dc,atualizadoEm:agora};
+    var dc=HOJE;var p={statusCodigo:"concluido",status:LAB.concluido,concluidoEm:agora,dataConclusao:dc,atualizadoEm:agora};
     var c=cod(o);if(o&&o.statusAntesConcluido)p.statusAntesConcluido=o.statusAntesConcluido;
     else if(c&&c!=="concluido")p.statusAntesConcluido=c;
     return p;
@@ -1557,7 +1560,7 @@
     if(!cur)return;var id=cur,o=fonte()[id]||{},t=campo.value.trim()||o.estagio||"",c=eS.value,q=parseInt(eQ.value,10),agora=Date.now();
     var p={estagio:t,statusCodigo:c,status:LAB[c],data:eD.value||"",qtd:(q>0?q:null),atualizadoEm:agora};
     if(c==="concluido"){
-      if(!o.concluidoEm){p.concluidoEm=agora;p.dataConclusao=(deIso(o.data)&&o.data<HOJE)?o.data:HOJE}else{p.concluidoEm=o.concluidoEm;if(o.dataConclusao)p.dataConclusao=o.dataConclusao}
+      if(!o.concluidoEm){p.concluidoEm=agora;p.dataConclusao=HOJE}else{p.concluidoEm=o.concluidoEm;if(o.dataConclusao)p.dataConclusao=o.dataConclusao}
       if(o.statusAntesConcluido)p.statusAntesConcluido=o.statusAntesConcluido;
       else if(cod(o)!=="concluido")p.statusAntesConcluido=cod(o);
     }else if(estaConcluido(o)){
