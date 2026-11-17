@@ -39,9 +39,10 @@
   .s-critico{background:#fbe3e1;border-color:#c0392b;color:#7b1f16}
   .item.item-enviado{opacity:.78;background:#e6f4ea;border-color:#2e8b57}
   .item .selo-enviado{display:block;margin-top:6px;border-radius:4px;padding:3px 7px;font-size:11px;font-weight:700;background:#2e8b57;color:#fff;letter-spacing:.3px;text-transform:uppercase}
-  .s-concluido{background:#e8eef6;border-color:#1e3a5f}
-  .item.item-concluido{opacity:1;background:#e8eef6;border-color:#1e3a5f;box-shadow:inset 0 0 0 1px #1e3a5f}
-  .item .selo-concluido{display:block;margin-top:6px;border-radius:4px;padding:5px 8px;font-size:12px;font-weight:800;background:#1e3a5f;color:#fff;letter-spacing:.5px;text-transform:uppercase;text-align:center}
+  .s-concluido{background:#e6f4ea;border-color:#1e9a4a}
+  .item.item-concluido{opacity:1;background:#e6f4ea;border-color:#1e9a4a;box-shadow:inset 0 0 0 1px #1e9a4a}
+  .item.item-qualidade{background:#e3eefb;border-color:#1f6fd1;box-shadow:inset 0 0 0 1px #1f6fd1}
+  .item .selo-concluido{display:block;margin-top:6px;border-radius:4px;padding:5px 8px;font-size:12px;font-weight:800;background:#1e9a4a;color:#fff;letter-spacing:.5px;text-transform:uppercase;text-align:center}
   .item .btn-card-concluir{display:block;width:100%;margin-top:6px;background:#1e9a4a;color:#fff;border:2px solid #d8f5e3;border-radius:6px;padding:5px 8px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2);text-align:center}
   .item .btn-card-concluir:hover{background:#178a40}
   .sec-concluido{background:#f3faf5;border:1px solid #b7e0c4;border-radius:8px;padding:10px 12px;margin:0 0 12px}
@@ -72,7 +73,7 @@
   .mb{padding:16px 18px;max-height:calc(96vh - 56px);overflow:auto}
   .meta{font-size:13px;color:#3d4d5f;margin-bottom:12px}
   .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:2px 9px;margin-left:6px;color:#fff}
-  .p-pronto{background:#2e8b57}.p-andamento{background:#b8900f}.p-aguardando{background:#e07b1a}.p-critico{background:#c0392b}.p-concluido{background:#1e3a5f}
+  .p-pronto{background:#2e8b57}.p-andamento{background:#b8900f}.p-aguardando{background:#e07b1a}.p-critico{background:#c0392b}.p-concluido{background:#1e9a4a}
   .atual{background:#f5f7fa;border:1px solid #d5dce5;border-radius:6px;padding:10px 12px;font-size:15px;margin:6px 0 14px;white-space:pre-wrap}
   textarea{width:100%;min-height:100px;font:inherit;font-size:14px;padding:10px;border:1px solid #b8c4d2;border-radius:6px;resize:vertical;margin-top:6px}
   .acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;align-items:center}
@@ -312,7 +313,8 @@
     <span><i style="background:#d4a514"></i>Em andamento</span>
     <span><i style="background:#e07b1a"></i>Aguardando</span>
     <span><i style="background:#c0392b"></i>Não pode falhar</span>
-    <span><i style="background:#1e3a5f"></i>Concluído</span>
+    <span><i style="background:#1f6fd1"></i>Na Qualidade (estágio 8)</span>
+    <span><i style="background:#1e9a4a"></i>Concluído</span>
   </div>
 
   <table class="cal">
@@ -766,8 +768,18 @@
     if(deIso(d)&&faltam(o)>0)t+=" · próximo lote "+rotDataCurto(d);
     return t;
   }
+  function dataFinalObra(o){
+    if(!o)return "";
+    if(estaConcluido(o)){
+      if(deIso(o.dataConclusao))return o.dataConclusao;
+      if(typeof o.concluidoEm==="number"){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(o.concluidoEm))}catch(e){}}
+    }
+    if(integralEntregue(o)){var ps=listaParciais(o).filter(function(p){return deIso(p.data)});if(ps.length)return ps[ps.length-1].data}
+    return "";
+  }
   function aparicoesNaSemana(x){
-    var o=x.o,map={};
+    var o=x.o,map={},df=dataFinalObra(o);
+    if(df){map[df]={data:df,rotulo:estaConcluido(o)?"Concluída "+rotDataCurto(df):"Entregue integral "+rotDataCurto(df)};return map}
     function add(d,rotulo){if(!deIso(d))return;if(!map[d])map[d]={data:d,rotulo:rotulo||""};else if(rotulo&&!map[d].rotulo)map[d].rotulo=rotulo}
     add(o.data,"");
     listaLotesPrevistos(o).forEach(function(lt){
@@ -822,7 +834,7 @@
   function card(x,opt){
     opt=opt||{};
     var o=x.o,c=cod(o),concluido=estaConcluido(o),enviado=estaEnviado(o),atraso=textoAtrasoCarry(o,HOJE);
-    var b=document.createElement("button");b.className="item s-"+c+(concluido?" item-concluido":(enviado?" item-enviado":""))+(atraso?" item-atrasada":"");
+    var b=document.createElement("button");b.className="item s-"+c+(concluido?" item-concluido":(enviado?" item-enviado":(etapaNum(o)>=8?" item-qualidade":"")))+(atraso?" item-atrasada":"");
     b.title=ROT[c]||"";b.setAttribute("data-id",x.id);
     if(concluido)b.setAttribute("data-concluido","1");
     if(enviado)b.setAttribute("data-enviado","1");
