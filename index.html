@@ -320,7 +320,7 @@
     <tbody><tr id="semana"></tr></tbody>
   </table>
 
-  <div class="outras" id="outras"><div class="rot">Sem data definida</div><div class="lista" id="outras-lista"></div></div>
+  <div class="outras" id="outras"><div class="rot" id="outras-rot">Sem data definida</div><div class="lista" id="outras-lista"></div></div>
 
   <footer>Meta mínima: 50 apartamentos/dia</footer>
 </div>
@@ -617,7 +617,7 @@
   }
   function listaAtrasadas(hoje){
     hoje=hoje||HOJE;
-    return lista().filter(function(x){return deIso(x.o.data)&&x.o.data<hoje&&!estaEnviado(x.o)});
+    return listaVisivel().filter(function(x){return deIso(x.o.data)&&x.o.data<hoje&&!estaEnviado(x.o)});
   }
   var ALERTA_DISP_KEY="hgi-agenda-alerta-disp-v1";
   function leDispensasAlerta(){
@@ -795,6 +795,7 @@
   function nomeCliente(o,id){return String((o&&o.nome)||id||"").trim()}
   function passaFiltro(x){return !FILTRO_CLIENTE||nomeCliente(x.o,x.id)===FILTRO_CLIENTE}
   function listaVisivel(){return lista().filter(passaFiltro)}
+  function sobreVisivel(a){if(!FILTRO_CLIENTE)return true;var f=fonte();return (a.ids||[]).some(function(id){return passaFiltro({id:id,o:f[id]})})}
   function listaClientes(){
     var map={},arr;
     lista().forEach(function(x){var n=nomeCliente(x.o,x.id);if(n)map[n]=1});
@@ -882,7 +883,7 @@
     L.forEach(function(x){
       var ap=aparicoesNaSemana(x),d,i,alguma=false;
       for(d in ap)if(Object.prototype.hasOwnProperty.call(ap,d)){i=diaDaSemana(d);if(i>=0){cols[i].push({x:x,rotulo:ap[d].rotulo});alguma=true}}
-      if(!alguma&&!deIso(x.o.data))fora.push(x);
+      if(!alguma&&(!deIso(x.o.data)||FILTRO_CLIENTE))fora.push(x);
     });
     tr.innerHTML="";
     DIAS.forEach(function(D,i){
@@ -906,6 +907,7 @@
     fora.forEach(function(x){outrasL.appendChild(card(x))});
     if(fora.length)outrasL.appendChild(botaoAdd(""));
     outras.classList.toggle("on",fora.length>0);
+    var orot=document.getElementById("outras-rot");if(orot)orot.textContent=FILTRO_CLIENTE?("Obras de "+FILTRO_CLIENTE+" fora desta semana / sem data"):"Sem data definida";
     // resumo da semana (obras únicas; um pedido em dois dias não conta duas vezes)
     var sem=[].concat.apply([],cols),tot=0,semq=[],visto={},nuniq=0;
     sem.forEach(function(it){var x=it.x||it,id=x.id;if(visto[id])return;visto[id]=1;nuniq++;var q=qnum(x.o);if(q)tot+=q;else semq.push(x.o.nome||id)});
@@ -1607,7 +1609,7 @@
         itens.push({x:x,st:{tipo:t.tipo,data:ls.data},al:{tit:t.tit,sub:t.sub},kind:"lote"});
       })});
     });
-    alertasSobrecarga(HOJE).forEach(function(a){
+    alertasSobrecarga(HOJE).filter(sobreVisivel).forEach(function(a){
       itens.push({x:{id:"",o:{nome:"Todas as obras",data:a.data}},st:{tipo:"sobrecarga",data:a.data},al:{tit:a.tit,sub:a.sub},kind:"sobre",ids:a.ids});
     });
     itens.sort(function(a,b){var oa=ordem[a.st.tipo],ob=ordem[b.st.tipo];if(oa==null)oa=9;if(ob==null)ob=9;return (oa-ob)||((a.x.o.data||"")<(b.x.o.data||"")?-1:((a.x.o.data||"")>(b.x.o.data||"")?1:0))||((a.x.o.nome||"").localeCompare(b.x.o.nome||""))});
@@ -1636,8 +1638,8 @@
   var POPUP_ATRASO_KEY="hgi-agenda-popup-v3",popupAtrasoChecado=false;
   function fecharAtraso(){var oa=document.getElementById("ov-atraso");if(oa)oa.classList.remove("on")}
   function obrasCercaUrgente(){
-    var atrasadas=[],hojeCerca=[],entregasDia=[],loteVenc=[],loteChega=[],loteDiv=[],sobre=alertasSobrecarga(HOJE);
-    lista().forEach(function(x){
+    var atrasadas=[],hojeCerca=[],entregasDia=[],loteVenc=[],loteChega=[],loteDiv=[],sobre=alertasSobrecarga(HOJE).filter(sobreVisivel);
+    listaVisivel().forEach(function(x){
       var st=estadoCerca(x.o,HOJE);
       if(st.tipo==="atraso")atrasadas.push({x:x,st:st});
       else if(st.tipo==="hoje")hojeCerca.push({x:x,st:st});
