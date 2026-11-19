@@ -102,6 +102,21 @@
   .alerta b{padding-right:110px}
   .alerta .ldata{font-size:11px;color:#a0473d;margin-top:4px}
   .btn.verm{background:#c0392b}
+  .btn.lar{background:#E87731}.btn.lar:hover{background:#c86220}
+  .item .card-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+  .item .card-topo .nome{flex:1;min-width:0}
+  .item .btn-card-editar{flex:none;background:#fff;color:#c86220;border:1px solid #E87731;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer;line-height:1.4;white-space:nowrap}
+  .item .btn-card-editar:hover,.item .btn-card-editar:focus{background:#E87731;color:#fff;outline:none}
+  .tipo-chip{display:inline-block;margin:4px 0 1px;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;vertical-align:middle}
+  .t-eletrica{background:#E87731}.t-qdc{background:#6a3fb5}.t-hidraulica{background:#1f78b4}
+  .pill.t-eletrica,.pill.t-qdc,.pill.t-hidraulica{margin-left:6px}
+  .ed-tit{margin:6px 0 6px;font-weight:700;color:#c86220}
+  .ed-nota{font-size:13px;color:#3d4d5f;background:#fff4ec;border:1px solid #f3c9a8;border-radius:6px;padding:8px 12px;margin-bottom:12px;line-height:1.4}
+  .ed-linha{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;align-items:center;margin-bottom:6px;font-size:13px}
+  .ed-linha .lab{font-weight:700;color:#1e3a5f}
+  .ed-linha input{width:100%;font:inherit;font-size:14px;padding:7px 10px;border:1px solid #b8c4d2;border-radius:6px;background:#fff}
+  .ed-grupo{margin:4px 0 10px}
+  #ov-edit [hidden]{display:none!important}
   .campos{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
   .campos.tres{grid-template-columns:1fr 1fr 1fr;gap:10px 10px}
   .campos.quatro{grid-template-columns:1fr 1fr 1fr 1fr;gap:10px 8px}
@@ -293,7 +308,7 @@
     <div class="htop"><div>
     <h1 id="titulo">Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
-    <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select><label class="filtro-cliente"><span>Cliente</span><select id="filtro-cliente" aria-label="Filtrar por cliente"><option value="">Todos</option></select></label></div>
+    <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select><label class="filtro-cliente"><span>Cliente</span><select id="filtro-cliente" aria-label="Filtrar por cliente"><option value="">Todos</option></select></label><label class="filtro-cliente"><span>Tipo</span><select id="filtro-tipo" aria-label="Filtrar por tipo de entrega"><option value="">Todos</option></select></label></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
     </div><div class="htop-acoes"><button class="btn-incluir" id="incluir">+ Incluir lembrete</button><button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button><button type="button" class="btn-relatorio" id="relatorio-entregas">Gerar relatório de entregas</button></div></div>
   </header>
@@ -389,7 +404,7 @@
       <div class="upd" id="upd"></div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
-      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
+      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn lar" id="editar-obra" type="button">✎ Editar obra</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
     </div>
   </div>
 </div>
@@ -400,8 +415,11 @@
     <div class="mb">
       <div class="campos">
         <label class="rot full">Obra / nome <span class="req">*</span><input type="text" id="n-nome" maxlength="80" placeholder="Ex.: Terral Aero"></label>
+      </div>
+      <div class="campos tres">
         <label class="rot">Data<input type="date" id="n-data" value="2026-11-09"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="n-qtd" placeholder="qtd a definir"></label>
+        <label class="rot">Tipo de entrega<select id="n-tipo"></select></label>
       </div>
       <div class="campos quatro">
         <label class="rot">Status<select id="n-status"></select></label>
@@ -462,6 +480,30 @@
   </div>
 </div>
 
+<div class="ov" id="ov-edit">
+  <div class="modal" role="dialog" aria-labelledby="mt-edit" aria-modal="true">
+    <h2 style="background:#E87731"><span id="mt-edit">Editar obra</span><button type="button" id="fechar-edit" aria-label="Fechar">×</button></h2>
+    <div class="mb">
+      <div class="ed-nota" id="ed-nota"></div>
+      <div class="campos">
+        <label class="rot full">Obra / nome <span class="req">*</span><input type="text" id="ed-nome" maxlength="80"></label>
+        <label class="rot">Tipo de entrega<select id="ed-tipo"></select></label>
+        <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="ed-qtd" placeholder="qtd a definir"></label>
+      </div>
+      <div class="rot ed-tit">Datas que definem a ordem de entregas</div>
+      <div class="campos">
+        <label class="rot">Previsão de entrega (prazo)<input type="date" id="ed-data"></label>
+        <label class="rot" id="ed-conc-wrap">Data da conclusão (embarque)<input type="date" id="ed-conc"></label>
+        <label class="rot" id="ed-prox-wrap">Previsão do próximo lote<input type="date" id="ed-prox"></label>
+      </div>
+      <div class="ed-grupo" id="ed-lotes"></div>
+      <div class="ed-grupo" id="ed-parciais"></div>
+      <div class="cerca-box" id="ed-preview"></div>
+      <div class="acoes"><span class="ok" id="ok-edit"></span><button class="btn sec" id="cancelar-edit" type="button">Cancelar</button><button class="btn lar" id="salvar-edit" type="button">Salvar alterações</button></div>
+    </div>
+  </div>
+</div>
+
 <div class="dd-etapa" id="e-dd-etapa" role="listbox" hidden></div>
 
 <div class="dd-etapa" id="n-dd-etapa" role="listbox" hidden></div>
@@ -485,6 +527,11 @@
   function valorPadrao(sel){return (sel&&infoPadrao(sel.value))?sel.value:""}
   function ritmoDe(v){var i=infoPadrao(v);return i?i.ritmo:""}
   function prazoTxt(qtd,info){qtd=parseInt(qtd,10);if(!info||!(qtd>0))return "";var dMin=Math.ceil(qtd/info.max),dMax=Math.ceil(qtd/info.min);return dMin===dMax?dMin+(dMin===1?" dia":" dias"):dMin+"–"+dMax+" dias"}
+  var TIPOS=[{id:"eletrica",rot:"Elétrica"},{id:"qdc",rot:"QDC"},{id:"hidraulica",rot:"Hidráulica"}];
+  var TIPO_MAP={};TIPOS.forEach(function(t){TIPO_MAP[t.id]=t});
+  function tipoDe(o){var t=String((o&&o.tipo)||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();if(TIPO_MAP[t])return t;if(t.indexOf("qdc")>=0)return "qdc";if(t.indexOf("hidr")>=0)return "hidraulica";return "eletrica"}
+  function rotTipo(o){return TIPO_MAP[tipoDe(o)].rot}
+  function encheTipo(sel,comTodos){if(!sel)return;sel.innerHTML="";if(comTodos){var z=document.createElement("option");z.value="";z.textContent="Todos";sel.appendChild(z)}TIPOS.forEach(function(t){var op=document.createElement("option");op.value=t.id;op.textContent=t.rot;sel.appendChild(op)})}
   var N_ETAPAS=8;
   var ETAPAS=["Projeto","PCP","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"];
   var ETAPAS_CURTO=["Projeto","PCP","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"];
@@ -808,9 +855,12 @@
   var FILTRO_KEY="hgi-agenda-filtro-cliente-v1",FILTRO_CLIENTE="";
   try{FILTRO_CLIENTE=localStorage.getItem(FILTRO_KEY)||""}catch(e){FILTRO_CLIENTE=""}
   function nomeCliente(o,id){return String((o&&o.nome)||id||"").trim()}
-  function passaFiltro(x){return !FILTRO_CLIENTE||nomeCliente(x.o,x.id)===FILTRO_CLIENTE}
+  var FILTRO_TIPO_KEY="hgi-agenda-filtro-tipo-v1",FILTRO_TIPO="";
+  try{FILTRO_TIPO=localStorage.getItem(FILTRO_TIPO_KEY)||""}catch(e){FILTRO_TIPO=""}
+  if(FILTRO_TIPO&&!TIPO_MAP[FILTRO_TIPO])FILTRO_TIPO="";
+  function passaFiltro(x){return (!FILTRO_CLIENTE||nomeCliente(x.o,x.id)===FILTRO_CLIENTE)&&(!FILTRO_TIPO||tipoDe(x.o)===FILTRO_TIPO)}
   function listaVisivel(){return lista().filter(passaFiltro)}
-  function sobreVisivel(a){if(!FILTRO_CLIENTE)return true;var f=fonte();return (a.ids||[]).some(function(id){return passaFiltro({id:id,o:f[id]})})}
+  function sobreVisivel(a){if(!FILTRO_CLIENTE&&!FILTRO_TIPO)return true;var f=fonte();return (a.ids||[]).some(function(id){return passaFiltro({id:id,o:f[id]})})}
   function listaClientes(){
     var map={},arr;
     lista().forEach(function(x){var n=nomeCliente(x.o,x.id);if(n)map[n]=1});
@@ -842,7 +892,13 @@
     if(concluido)b.setAttribute("data-concluido","1");
     if(enviado)b.setAttribute("data-enviado","1");
     if(atraso)b.setAttribute("data-atrasada","1");
-    var nm=document.createElement("span");nm.className="nome";nm.textContent=o.nome||x.id;b.appendChild(nm);
+    var topo=document.createElement("div");topo.className="card-topo";
+    var nm=document.createElement("span");nm.className="nome";nm.textContent=o.nome||x.id;topo.appendChild(nm);
+    var be=document.createElement("span");be.className="btn-card-editar";be.setAttribute("role","button");be.setAttribute("tabindex","0");be.textContent="✎ Editar";be.title="Editar obra: datas, previsão, tipo, nome e quantidade";
+    function editaCard(ev){ev.preventDefault();ev.stopPropagation();abrirEdicao(x.id)}
+    be.addEventListener("click",editaCard);be.addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" ")editaCard(ev)});
+    topo.appendChild(be);b.appendChild(topo);
+    var tc=document.createElement("span");tc.className="tipo-chip t-"+tipoDe(o);tc.textContent=rotTipo(o);b.appendChild(tc);
     var dest=document.createElement("div");dest.className="dest";
     function linha(cls,txt){var d=document.createElement("div");d.className=cls;d.textContent=txt;dest.appendChild(d)}
     linha("dest-qtd",qtdImoveis(o));
@@ -941,6 +997,12 @@
   var eS=document.getElementById("e-status"),eD=document.getElementById("e-data"),eQ=document.getElementById("e-qtd");
   [eS,document.getElementById("n-status")].forEach(function(sel){Object.keys(ROT).forEach(function(k){var op=document.createElement("option");op.value=k;op.textContent=ROT[k];sel.appendChild(op)})});
   function fmt(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
+  function quandoConclusao(o){
+    if(!o)return "";
+    if(o.concluidoEm){var dts="";try{dts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(o.concluidoEm))}catch(e){}
+      if(!deIso(o.dataConclusao)||dts===o.dataConclusao)return fmtCompleto(o.concluidoEm)}
+    return o.dataConclusao?rotData(o.dataConclusao):"";
+  }
   function fmtCompleto(ts){try{return new Date(ts).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
   var etapaEdit=0,etapaNovo=0;
   function rotuloEtapaEls(idNota,o){
@@ -952,13 +1014,13 @@
   function preencheDestaque(id,o){
     var box=document.getElementById("destaque-ficha");if(!box)return;box.innerHTML="";
     function cel(rot,val,full){var l=document.createElement("div");if(full)l.className="full";var r=document.createElement("div");r.className="rot";r.textContent=rot;l.appendChild(r);var v=document.createElement("div");v.className="val2";v.textContent=val;l.appendChild(v);box.appendChild(l)}
-    cel("Imóveis",qtdImoveis(o));cel("Padrão",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
+    cel("Tipo de entrega",rotTipo(o));cel("Imóveis",qtdImoveis(o));cel("Padrão",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
     cel("Prazo de entrega",deIso(o.data)?rotData(o.data):"Data a definir");cel("Estágio da produção",rotEtapa(etapaNum(o),false),true);
     if(numLotes(o))cel("Lote",rotLotes(numLotes(o)));
     var parc=txtParcialCard(o);if(parc)cel("Entregas",parc,true);
     if(estaConcluido(o)){
-      var when=o.concluidoEm?fmtCompleto(o.concluidoEm):(o.dataConclusao?rotData(o.dataConclusao):"");
-      cel("Conclusão",when?("Embarcada em "+when+" (horário de Brasília)"):"Obra concluída (já embarcada)",true);
+      var when=quandoConclusao(o);
+      cel("Conclusão",when?("Embarcada em "+when+(/:/.test(when)?" (horário de Brasília)":"")):"Obra concluída (já embarcada)",true);
     }
     var cb=document.getElementById("cerca-box");if(!cb)return;
     var st=estadoCerca(o,HOJE);
@@ -984,7 +1046,7 @@
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
     var inf=infoPadrao(o.padrao),ex="";if(inf){var pz=prazoTxt(qnum(o),inf);ex="<br>"+esc(inf.id)+" · "+esc(inf.ritmo)+(pz?" · "+esc(pz):"")}
-    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
+    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span> <span class="pill t-'+tipoDe(o)+'">'+esc(rotTipo(o))+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
     preencheDestaque(id,o);
     rotuloEtapaEls("e-etapa-nota",o);
     setEtapaCaixa("e",etapaNum(o));
@@ -1017,8 +1079,8 @@
     btn.classList.remove("desfazer");
     if(estaConcluido(o)){
       btn.disabled=false;btn.classList.add("desfazer");btn.textContent="Desfazer conclusão";
-      var when=o.concluidoEm?fmtCompleto(o.concluidoEm):(o.dataConclusao?rotData(o.dataConclusao):"");
-      if(nota)nota.textContent=when?("Concluída e embarcada em "+when+" (horário de Brasília). As entregas parciais já lançadas são mantidas."):"Obra marcada como concluída (já passou pela Qualidade e foi embarcada).";
+      var when=quandoConclusao(o);
+      if(nota)nota.textContent=when?("Concluída e embarcada em "+when+(/:/.test(when)?" (horário de Brasília)":"")+". As entregas parciais já lançadas são mantidas."):"Obra marcada como concluída (já passou pela Qualidade e foi embarcada).";
     }else if((etapaNum(o)>=8)||(etapaEdit>=8)){
       btn.disabled=false;btn.textContent="Concluído";
       if(nota)nota.textContent="Marca a obra como concluída: já passou pela Qualidade e já foi embarcada. A data e a hora ficam registradas.";
@@ -1066,7 +1128,8 @@
   // formulário "Incluir agenda"
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
   var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),eEt=document.getElementById("e-etapa"),nEt=document.getElementById("n-etapa");
-  var eLote=document.getElementById("e-lote"),nLote=document.getElementById("n-lote");
+  var eLote=document.getElementById("e-lote"),nLote=document.getElementById("n-lote"),nT=document.getElementById("n-tipo");
+  encheTipo(nT,false);encheTipo(document.getElementById("ed-tipo"),false);encheTipo(document.getElementById("filtro-tipo"),true);
   function enchePadrao(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— padrão —";sel.appendChild(z);PADROES.forEach(function(p){var op=document.createElement("option");op.value=p.id;op.textContent=p.id;sel.appendChild(op)})}
   function encheLote(sel){if(!sel)return;sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— lote —";sel.appendChild(z);var op=document.createElement("option");op.value="1";op.textContent="Integral";sel.appendChild(op);for(var i=2;i<=6;i++){op=document.createElement("option");op.value=String(i);op.textContent=i+" lotes";sel.appendChild(op)}}
   function garanteOpcaoLote(sel,n){
@@ -1458,7 +1521,7 @@
   window.addEventListener("scroll",fechaDDs,true);
   eQ.addEventListener("input",atualizaFichaLive);
   eD.addEventListener("input",atualizaFichaLive);eS.addEventListener("change",atualizaFichaLive);
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";if(nLote)nLote.value="";etapaNovo=0;setEtapaCaixa("n",0);
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";if(nT)nT.value="eletrica";if(nLote)nLote.value="";etapaNovo=0;setEtapaCaixa("n",0);
     ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){fechaDDs();ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=abrirLembrete;
@@ -1475,6 +1538,12 @@
     try{localStorage.setItem(FILTRO_KEY,FILTRO_CLIENTE)}catch(e){}
     render();
   });
+  var selTipo=document.getElementById("filtro-tipo");
+  if(selTipo){selTipo.value=FILTRO_TIPO;selTipo.addEventListener("change",function(){
+    FILTRO_TIPO=TIPO_MAP[selTipo.value]?selTipo.value:"";
+    try{localStorage.setItem(FILTRO_TIPO_KEY,FILTRO_TIPO)}catch(e){}
+    render();
+  })}
   function irPara(ini){ini=limita(ini);SEMANA=ini;if(history.replaceState)history.replaceState(null,"","#"+ini);else location.hash=ini;render()}
   function desloca(n){var d=deIso(SEMANA);d.setDate(d.getDate()+7*n);irPara(iso(d))}
   document.getElementById("ant").onclick=function(){desloca(-1)};
@@ -1483,7 +1552,7 @@
   window.addEventListener("hashchange",function(){var s=limita(semanaDoHash());if(s!==SEMANA){SEMANA=s;render()}});
   document.getElementById("fechar2").onclick=fecharNovo;document.getElementById("cancelar2").onclick=fecharNovo;
   ov2.addEventListener("click",function(e){if(e.target===ov2)fecharNovo()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var eDd=document.getElementById("e-dd-etapa"),nDd=document.getElementById("n-dd-etapa");if((eDd&&eDd.classList.contains("on"))||(nDd&&nDd.classList.contains("on"))){fechaDDs();e.preventDefault();return}var orl=document.getElementById("ov-rel");if(orl&&orl.classList.contains("on")){fecharRel();e.preventDefault();return}var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){var eDd=document.getElementById("e-dd-etapa"),nDd=document.getElementById("n-dd-etapa");if((eDd&&eDd.classList.contains("on"))||(nDd&&nDd.classList.contains("on"))){fechaDDs();e.preventDefault();return}var oed=document.getElementById("ov-edit");if(oed&&oed.classList.contains("on")){fecharEdicao();e.preventDefault();return}var orl=document.getElementById("ov-rel");if(orl&&orl.classList.contains("on")){fecharRel();e.preventDefault();return}var oa=document.getElementById("ov-atraso");if(oa&&oa.classList.contains("on")){fecharAtraso();e.preventDefault();return}fechar();fecharNovo();fecharLembrete()}});
 
   // lembretes
   var boxL=document.getElementById("lembretes"),ov3=document.getElementById("ov3"),ok3=document.getElementById("ok3"),lT=document.getElementById("l-tit"),lI=document.getElementById("l-itens"),lD=document.getElementById("l-data");
@@ -1547,6 +1616,7 @@
     var o={nome:nome,estagio:nE.value.trim(),status:LAB[c],statusCodigo:c,data:nD.value||"",criadoEm:agora};
     if(c==="concluido"){o.concluidoEm=agora;o.dataConclusao=HOJE}
     if(q>0)o.qtd=q;
+    o.tipo=(nT&&TIPO_MAP[nT.value])?nT.value:"eletrica";
     var padN=valorPadrao(nP);if(padN){o.padrao=padN;o.ritmo=ritmoDe(padN)}
     if(etapaNovo>=1){o.etapa=etapaNovo;if(etapaNovo>=3)o.entrouProducao=HOJE}
     var nLt=nLote?parseInt(nLote.value,10)||0:0;if(nLt>=1)o.lotes=nLt;
@@ -1740,14 +1810,14 @@
       if(parcs.length){
         parcs.forEach(function(p){
           if(!deIso(p.data)||p.data<ini||p.data>fim||!(p.qtd>0))return;
-          itens.push({data:p.data,nome:o.nome||x.id,qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+          itens.push({data:p.data,nome:o.nome||x.id,tipo:rotTipo(o),qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
         });
         return;
       }
       if(!statusEntregue(o))return;
       var d=dataRealizadaDe(o);if(!deIso(d)||d<ini||d>fim)return;
       var q=qnum(o);if(!q)return;
-      itens.push({data:d,nome:o.nome||x.id,qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+      itens.push({data:d,nome:o.nome||x.id,tipo:rotTipo(o),qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
     });
     itens.sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:(a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
     return itens;
@@ -1760,7 +1830,7 @@
         if(!deIso(data)||data<ini||data>fim)return;
         var key=data+"|"+(lote||0);
         if(usados[key])return;usados[key]=1;
-        itens.push({data:data,nome:o.nome||x.id,qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapa(etapaNum(o),true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
+        itens.push({data:data,nome:o.nome||x.id,tipo:rotTipo(o),qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapa(etapaNum(o),true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
       }
       if(expl){
         lots.forEach(function(lt){if(deIso(lt.data))add(lt.data,saldoLote(o,lt)||lt.qtd,lt.n)});
@@ -1781,26 +1851,26 @@
     var itens=realizadas?itensRelatorioRealizadas(ini,fim):itensRelatorio(ini,fim),hojeTxt;
     try{hojeTxt=new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",dateStyle:"short",timeStyle:"short"}).format(new Date())+" (horário de Brasília)"}catch(e){hojeTxt=""}
     var titulo=realizadas?"Relatório de entregas realizadas":"Relatório de pré-impressão de entregas";
-    var filtroTxt=FILTRO_CLIENTE?(" · Cliente: "+FILTRO_CLIENTE):"";
+    var filtroTxt=(FILTRO_CLIENTE?(" · Cliente: "+FILTRO_CLIENTE):"")+(FILTRO_TIPO?(" · Tipo: "+TIPO_MAP[FILTRO_TIPO].rot):"");
     var html='<div class="rel-topo"><img src="logo-grupo-hgi.png" alt="Grupo HGI"><div><h1>'+esc(titulo)+'</h1><p>Grupo HGI · Kits elétricos, hidráulicos e gás</p><p>Período: '+esc(rotDataCurto(ini))+' a '+esc(rotDataCurto(fim))+esc(filtroTxt)+(hojeTxt?" · Gerado em "+esc(hojeTxt):"")+'</p></div></div>';
     if(!itens.length){html+='<p class="rel-vazio">'+(realizadas?"Nenhuma entrega realizada neste período.":"Nenhuma entrega prevista neste período.")+"</p>";return html}
-    var dias=[],i,curD="",totGeral=0,ncols=realizadas?5:6;
+    var dias=[],i,curD="",totGeral=0,ncols=realizadas?6:7;
     itens.forEach(function(it){if(it.data!==curD){dias.push({data:it.data,itens:[]});curD=it.data}dias[dias.length-1].itens.push(it)});
     dias.forEach(function(dia){
       var tot=0;
       html+='<div class="rel-dia"><h3>'+esc(rotData(dia.data))+'</h3><table><thead><tr>';
-      if(realizadas)html+="<th>Cliente / obra</th><th>Qtd entregue</th><th>Lote</th><th>Padrão</th><th>Observação</th>";
-      else html+="<th>Cliente / obra</th><th>Qtd / saldo</th><th>Padrão</th><th>Estágio</th><th>Status</th><th>Observação</th>";
+      if(realizadas)html+="<th>Cliente / obra</th><th>Tipo</th><th>Qtd entregue</th><th>Lote</th><th>Padrão</th><th>Observação</th>";
+      else html+="<th>Cliente / obra</th><th>Tipo</th><th>Qtd / saldo</th><th>Padrão</th><th>Estágio</th><th>Status</th><th>Observação</th>";
       html+="</tr></thead><tbody>";
       dia.itens.forEach(function(it){
         tot+=it.qtd||0;
         if(realizadas){
           var qtxt=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis");
           var lot=it.lote?"Lote "+it.lote:"—";
-          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(qtxt)+"</td><td>"+esc(lot)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.obs)+"</td></tr>";
+          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrica")+"</td><td>"+esc(qtxt)+"</td><td>"+esc(lot)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.obs)+"</td></tr>";
         }else{
           var qtxt2=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis")+(it.lote?" · Lote "+it.lote:"");
-          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(qtxt2)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
+          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrica")+"</td><td>"+esc(qtxt2)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
         }
       });
       totGeral+=tot;
@@ -1858,6 +1928,89 @@
   document.getElementById("rel-gerar").onclick=gerarRel;
   document.getElementById("rel-print").onclick=function(){imprimirRel(false)};
   document.getElementById("rel-pdf").onclick=function(){imprimirRel(true)};
+
+  // edição da obra (datas / previsão / tipo)
+  var ovE=document.getElementById("ov-edit"),okE=document.getElementById("ok-edit"),edId=null;
+  var edNome=document.getElementById("ed-nome"),edTipo=document.getElementById("ed-tipo"),edQtd=document.getElementById("ed-qtd"),edData=document.getElementById("ed-data"),edConc=document.getElementById("ed-conc"),edProx=document.getElementById("ed-prox");
+  function linhaData(box,rot,valor,attrs){
+    var l=document.createElement("label");l.className="ed-linha";
+    var a=document.createElement("span");a.className="lab";a.textContent=rot;l.appendChild(a);
+    var i=document.createElement("input");i.type="date";i.value=valor||"";Object.keys(attrs).forEach(function(k){i.setAttribute(k,attrs[k])});i.addEventListener("input",previewEdicao);l.appendChild(i);
+    box.appendChild(l);
+  }
+  function abrirEdicao(id){
+    var o=fonte()[id];if(!o)return;edId=id;
+    document.getElementById("mt-edit").textContent="Editar obra — "+(o.nome||id);
+    edNome.value=o.nome||"";edTipo.value=tipoDe(o);edQtd.value=qnum(o)||"";edData.value=deIso(o.data)?o.data:"";
+    var conc=estaConcluido(o);
+    document.getElementById("ed-conc-wrap").hidden=!conc;edConc.value=conc?(dataFinalObra(o)||""):"";
+    var lotsExpl=listaLotesPrevistos(o).filter(function(lt){return !lt.implicito});
+    var mostraProx=!conc&&(numLotes(o)>=2||lotsExpl.length>0||listaParciais(o).length>0||deIso(o.proximoLoteData));
+    document.getElementById("ed-prox-wrap").hidden=!mostraProx;edProx.value=deIso(o.proximoLoteData)?o.proximoLoteData:"";
+    var bl=document.getElementById("ed-lotes");bl.innerHTML="";
+    if(lotsExpl.length){var t=document.createElement("div");t.className="rot";t.style.marginBottom="6px";t.textContent="Previsão de cada lote";bl.appendChild(t);
+      lotsExpl.forEach(function(lt){linhaData(bl,"Lote "+lt.n+(lt.qtd?" ("+lt.qtd+")":""),lt.data,{"data-ed-lote":lt.n})})}
+    var bp=document.getElementById("ed-parciais");bp.innerHTML="";
+    var ps=listaParciais(o);
+    if(ps.length){var t2=document.createElement("div");t2.className="rot";t2.style.marginBottom="6px";t2.textContent="Datas das entregas parciais já lançadas";bp.appendChild(t2);
+      ps.forEach(function(p){linhaData(bp,p.qtd+" apto"+(p.qtd===1?"":"s")+(p.lote?" · L"+p.lote:""),p.data,{"data-ed-parc":p.id})})}
+    var nota=conc?"Obra concluída: o card fica no dia da <b>data da conclusão</b>. A previsão de entrega fica registrada no card e na ficha."
+      :(integralEntregue(o)?"Obra entregue integral: o card fica no dia da última entrega parcial. Ajuste as datas das entregas parciais abaixo."
+      :"O card aparece no dia da <b>previsão de entrega</b> (e nos dias previstos de cada lote). A cerca de produção é recalculada a partir dessas datas.");
+    document.getElementById("ed-nota").innerHTML=nota;
+    okE.textContent="";okE.style.color="";previewEdicao();ovE.classList.add("on");edData.focus();
+  }
+  function fecharEdicao(){if(ovE)ovE.classList.remove("on");edId=null}
+  function objetoEdicao(){
+    var base=fonte()[edId]||{},o={},k;for(k in base)if(Object.prototype.hasOwnProperty.call(base,k))o[k]=base[k];
+    var p={atualizadoEm:Date.now()},nome=edNome.value.trim(),q=parseInt(edQtd.value,10);
+    p.nome=nome;p.tipo=TIPO_MAP[edTipo.value]?edTipo.value:"eletrica";p.qtd=q>0?q:null;p.data=edData.value||"";
+    if(estaConcluido(base)&&deIso(edConc.value))p.dataConclusao=edConc.value;
+    if(!document.getElementById("ed-prox-wrap").hidden)p.proximoLoteData=edProx.value||null;
+    var inpL=document.querySelectorAll("#ed-lotes input[data-ed-lote]");
+    if(inpL.length&&base.lotesPrevistos&&typeof base.lotesPrevistos==="object"){
+      var lp=JSON.parse(JSON.stringify(base.lotesPrevistos));
+      Array.prototype.forEach.call(inpL,function(i){var n=i.getAttribute("data-ed-lote");Object.keys(lp).forEach(function(kk){var x=lp[kk];if(x&&typeof x==="object"&&String(parseInt(x.n||kk,10))===String(n))x.data=i.value||""})});
+      p.lotesPrevistos=lp;
+    }
+    var inpP=document.querySelectorAll("#ed-parciais input[data-ed-parc]");
+    if(inpP.length&&base.entregasParciais&&typeof base.entregasParciais==="object"){
+      var ep=JSON.parse(JSON.stringify(base.entregasParciais)),mudou=false;
+      Array.prototype.forEach.call(inpP,function(i){var pid=i.getAttribute("data-ed-parc");if(ep[pid]&&typeof ep[pid]==="object"&&deIso(i.value)&&ep[pid].data!==i.value){ep[pid].data=i.value;mudou=true}});
+      if(mudou)p.entregasParciais=ep;
+    }
+    Object.keys(p).forEach(function(kk){if(p[kk]===null)delete o[kk];else o[kk]=p[kk]});
+    return {p:p,o:o};
+  }
+  function destinoCard(o){var df=dataFinalObra(o);if(df)return df;if(textoAtrasoCarry(o,HOJE))return HOJE;return deIso(o.data)?o.data:""}
+  function previewEdicao(){
+    if(!edId)return;var r=objetoEdicao(),o=r.o,box=document.getElementById("ed-preview"),h="";
+    var dest=destinoCard(o);
+    h+=dest?"Depois de salvar, o card fica em <b>"+esc(rotData(dest))+"</b>":"Sem data: o card vai para <b>Sem data definida</b>";
+    if(textoAtrasoCarry(o,HOJE))h+=" (atrasada — aparece em hoje até ser enviada)";
+    h+=".";
+    var st=estadoCerca(o,HOJE);
+    if(st.cerca)h+="<br>Cerca mínima recalculada: <b>"+esc(rotData(st.cerca))+"</b>.";
+    else if(st.tipo==="incompleto"&&!estaConcluido(o)&&!integralEntregue(o))h+="<br>Defina padrão/qtd/data para calcular a cerca.";
+    box.className="cerca-box";box.innerHTML=h;
+  }
+  [edNome,edTipo,edQtd,edData,edConc,edProx].forEach(function(el){el.addEventListener("input",previewEdicao);el.addEventListener("change",previewEdicao)});
+  document.getElementById("fechar-edit").onclick=fecharEdicao;document.getElementById("cancelar-edit").onclick=fecharEdicao;
+  ovE.addEventListener("click",function(e){if(e.target===ovE)fecharEdicao()});
+  document.getElementById("editar-obra").onclick=function(){if(cur)abrirEdicao(cur)};
+  document.getElementById("salvar-edit").onclick=function(){
+    if(!edId)return;var id=edId,r=objetoEdicao(),p=r.p;
+    if(!p.nome){erro(okE,"Informe a obra / nome.");edNome.focus();return}
+    okE.style.color="";okE.textContent="Salvando…";
+    req("PATCH","/entregas/"+id+".json",p).then(function(){
+      if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}
+      var o=fonte()[id]||r.o,dest=destinoCard(o);
+      okE.textContent="Salvo para todos."+(dest?" Card em "+rotDataCurto(dest)+".":"");
+      if(cur===id){eD.value=o.data||"";eQ.value=qnum(o)||"";preencheTopo(id,o)}
+      if(deIso(dest)){var sem=limita(iso(segunda(deIso(dest))));if(sem!==SEMANA){irPara(sem);setTimeout(fecharEdicao,900);return}}
+      render();setTimeout(fecharEdicao,900);
+    }).catch(function(){erro(okE,"Não foi possível salvar (sem conexão). Tente de novo.")});
+  };
 
   ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();tentarPopupAtraso()});
   ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
