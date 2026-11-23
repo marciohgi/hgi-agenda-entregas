@@ -46,18 +46,11 @@
   .tot-tipo.t-hidraulica-esgoto .lab{color:var(--hidr-esgoto)}
   .tot-tipo.t-gas .lab,.box.box-apto.t-gas{border-left-color:var(--gas)}
   .tot-tipo.t-gas .lab{color:var(--gas)}
-  .box.box-apto{flex:1 1 96px;min-width:80px;background:var(--charcoal);border:1px solid var(--charcoal);border-left-width:6px;border-left-style:solid;border-radius:8px;padding:14px 16px;color:var(--texto-claro)}
-  .box-apto .val{font-size:34px;font-weight:700;color:var(--texto-claro);margin:0;line-height:1.1;letter-spacing:-0.4px}
+  .box.box-apto{flex:1 1 140px;min-width:128px;background:var(--charcoal);border:1px solid var(--charcoal);border-left-width:6px;border-left-style:solid;border-radius:8px;padding:12px 14px 14px;color:var(--texto-claro)}
+  .box-apto .val{font-size:34px;font-weight:700;color:#FFFFFF;margin:0 0 4px;line-height:1.1;letter-spacing:-0.4px}
+  .box-apto .rot{font-size:13px;font-weight:600;color:#FFFFFF;opacity:1;text-transform:none;letter-spacing:0;line-height:1.25;white-space:normal;overflow:visible;word-break:normal;overflow-wrap:break-word;margin:0}
   .resumo-tipos-cab{margin:0 0 10px}
-  .resumo-sub{font-size:12px;font-weight:600;color:#3d4d5f;margin:0 0 8px}
-  .legenda-tipos{margin:0 0 2px}
-  .legenda-tipos i{width:10px;height:10px;border-radius:2px}
-  .legenda-tipos .t-eletrica{background:var(--eletrica)}
-  .legenda-tipos .t-qdc{background:var(--qdc)}
-  .legenda-tipos .t-hidraulica-fria{background:var(--hidr-fria)}
-  .legenda-tipos .t-hidraulica-quente{background:var(--hidr-quente)}
-  .legenda-tipos .t-hidraulica-esgoto{background:var(--hidr-esgoto)}
-  .legenda-tipos .t-gas{background:var(--gas)}
+  .resumo-sub{font-size:12px;font-weight:600;color:#3d4d5f;margin:0}
   .resumo-nota{margin:8px 0 12px}
   .pendencias{background:#fff8e8;border:1px solid #e0c070;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#5c4a16}
   .pendencias .rot{margin-bottom:6px;color:#7a5b10}
@@ -382,7 +375,6 @@
 
   <div class="resumo-tipos-cab">
     <div class="resumo-sub" id="resumo-sub">Aptos da semana por tipo</div>
-    <div class="legenda legenda-tipos" id="legenda-tipos" aria-label="Legenda dos tipos de entrega"></div>
   </div>
   <div class="resumo" id="resumo-totais"></div>
   <div class="resumo" id="resumo-extra"><div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div></div>
@@ -605,14 +597,14 @@
     {id:"esgoto",rot:"Esgoto",cls:"t-hidraulica-esgoto"}
   ];
   var TIPOS=[
-    {id:"eletrica",rot:"Elétrica",cls:"t-eletrica"},
+    {id:"eletrica",rot:"Elétrico",cls:"t-eletrica"},
     {id:"qdc",rot:"QDC",cls:"t-qdc"},
     {id:"hidraulica",rot:"Hidráulica",cls:"t-hidraulica",ramais:RAMAIS_HIDR},
     {id:"gas",rot:"Gás",cls:"t-gas"}
   ];
   var TIPO_MAP={};TIPOS.forEach(function(t){TIPO_MAP[t.id]=t});
   var LINHAS_TOTAL=[
-    {id:"eletrica",tipo:"eletrica",rot:"Elétrica",rotLegenda:"Elétrica",cls:"t-eletrica"},
+    {id:"eletrica",tipo:"eletrica",rot:"Elétrico",rotLegenda:"Elétrico",cls:"t-eletrica"},
     {id:"qdc",tipo:"qdc",rot:"QDC",rotLegenda:"QDC",cls:"t-qdc"},
     {id:"hidraulica-agua-fria",tipo:"hidraulica",ramal:"agua-fria",rot:"Hidráulica água fria",rotLegenda:"Água fria",cls:"t-hidraulica-fria"},
     {id:"hidraulica-agua-quente",tipo:"hidraulica",ramal:"agua-quente",rot:"Hidráulica água quente",rotLegenda:"Água quente",cls:"t-hidraulica-quente"},
@@ -1325,28 +1317,19 @@
     var orot=document.getElementById("outras-rot");if(orot)orot.textContent=FILTRO_CLIENTE?("Obras de "+FILTRO_CLIENTE+" fora desta semana / sem data"):"Sem data definida";
     // resumo da semana: seis totais separados; tipos/ramais nunca somados entre si
     var sem=[].concat.apply([],cols),res=totaisUnicosDeItens(sem),semq=res.semq,nuniq=res.nuniq;
-    var boxLeg=document.getElementById("legenda-tipos");
-    if(boxLeg){
-      boxLeg.innerHTML="";
-      linhasVisiveis().forEach(function(ln){
-        var sp=document.createElement("span");
-        var ic=document.createElement("i");ic.className=ln.cls;ic.setAttribute("aria-hidden","true");sp.appendChild(ic);
-        sp.appendChild(document.createTextNode(ln.rotLegenda||ln.rot));
-        boxLeg.appendChild(sp);
-      });
-    }
     var boxRes=document.getElementById("resumo-totais");
     if(boxRes){
       boxRes.innerHTML="";
       boxRes.setAttribute("role","list");
       linhasVisiveis().forEach(function(ln){
         var n=res.t[ln.id]||0;
-        var nome=ln.rotLegenda||ln.rot;
+        var nome=ln.rot;
         var bx=document.createElement("div");bx.className="box box-apto "+ln.cls;
         bx.setAttribute("role","listitem");
         bx.title=nome+" — "+n+(n===1?" apto":" aptos");
         bx.setAttribute("aria-label",nome+": "+n+(n===1?" apto":" aptos"));
         var vl=document.createElement("div");vl.className="val";vl.textContent=String(n);bx.appendChild(vl);
+        var rt=document.createElement("div");rt.className="rot";rt.textContent=nome;bx.appendChild(rt);
         boxRes.appendChild(bx);
       });
     }
@@ -2247,10 +2230,10 @@
         if(realizadas){
           var qtxt=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis");
           var lot=it.lote?"Lote "+it.lote:"—";
-          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrica")+"</td><td>"+esc(qtxt)+"</td><td>"+esc(lot)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.obs)+"</td></tr>";
+          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrico")+"</td><td>"+esc(qtxt)+"</td><td>"+esc(lot)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.obs)+"</td></tr>";
         }else{
           var qtxt2=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis")+(it.lote?" · Lote "+it.lote:"");
-          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrica")+"</td><td>"+esc(qtxt2)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
+          html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrico")+"</td><td>"+esc(qtxt2)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
         }
       });
       TIPOS.forEach(function(tp){totGeralT[tp.id]+=totT[tp.id]||0});
