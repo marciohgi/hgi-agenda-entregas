@@ -16,6 +16,20 @@
   .rot{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5b6b7d}
   .val{font-size:24px;font-weight:700;margin-top:4px;color:#1e3a5f}
   .sub{font-size:12px;color:#5b6b7d;margin-top:2px}
+  .box-tipos{min-width:260px}
+  .tot-tipos{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+  .tot-tipo{display:flex;align-items:baseline;justify-content:space-between;gap:10px;color:#1e3a5f}
+  .tot-tipo .lab{font-size:12px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+  .tot-tipo .n{font-size:20px;font-weight:700;line-height:1.1}
+  .tot-tipo.t-eletrica .lab{color:#E87731}
+  .tot-tipo.t-qdc .lab{color:#6a3fb5}
+  .tot-tipo.t-hidraulica .lab{color:#1f78b4}
+  .tot-kits{margin-top:6px;font-size:12px;color:#5b6b7d;line-height:1.35}
+  .dia-totais{margin:8px 0 2px;padding-top:6px;border-top:1px dashed #d5dce5;font-size:11px;color:#3d4d5f;line-height:1.45}
+  .dia-totais .t-eletrica{color:#E87731}
+  .dia-totais .t-qdc{color:#6a3fb5}
+  .dia-totais .t-hidraulica{color:#1f78b4}
+  .dia-totais b{color:#1e3a5f}
   .alerta{background:#fdecea;border:2px solid #c0392b;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#7b1f16}
   .alerta b{font-size:16px;display:block;margin-bottom:4px}
   .alerta ul{margin:4px 0 0 18px;padding:0;font-size:14px}
@@ -315,7 +329,7 @@
 
   <div class="resumo">
     <div class="box"><div class="rot">Entregas na semana</div><div class="val" id="r-total">9</div></div>
-    <div class="box"><div class="rot">Apartamentos informados</div><div class="val" id="r-aptos">59</div><div class="sub" id="r-semq">FGR, OM, Terral Serrano e CBA sem quantidade</div></div>
+    <div class="box box-tipos"><div class="rot" id="r-aptos-rot">Aptos por tipo</div><div class="tot-tipos" id="r-aptos-tipos"></div><div class="tot-kits" id="r-kits" hidden></div><div class="sub" id="r-semq"></div></div>
     <div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
   </div>
 
@@ -531,6 +545,56 @@
   var TIPO_MAP={};TIPOS.forEach(function(t){TIPO_MAP[t.id]=t});
   function tipoDe(o){var t=String((o&&o.tipo)||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();if(TIPO_MAP[t])return t;if(t.indexOf("qdc")>=0)return "qdc";if(t.indexOf("hidr")>=0)return "hidraulica";return "eletrica"}
   function rotTipo(o){return TIPO_MAP[tipoDe(o)].rot}
+  function totaisPorTipoVazio(){return {eletrica:0,qdc:0,hidraulica:0}}
+  function tiposVisiveis(){return (FILTRO_TIPO&&TIPO_MAP[FILTRO_TIPO])?TIPOS.filter(function(t){return t.id===FILTRO_TIPO}):TIPOS.slice()}
+  function idTipoDeRotulo(rot){var t=String(rot||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();if(TIPO_MAP[t])return t;if(t.indexOf("qdc")>=0)return "qdc";if(t.indexOf("hidr")>=0)return "hidraulica";return "eletrica"}
+  function somaKits(t){var s=0;tiposVisiveis().forEach(function(tp){s+=t[tp.id]||0});return s}
+  function nTiposComQtd(t){var n=0;TIPOS.forEach(function(tp){if((t[tp.id]||0)>0)n++});return n}
+  function totaisUnicosDeItens(itens){
+    var t=totaisPorTipoVazio(),semq=[],visto={},nuniq=0;
+    (itens||[]).forEach(function(it){
+      var x=it.x||it,id=x&&x.id;if(!x||visto[id])return;visto[id]=1;nuniq++;
+      var o=x.o||x,q=qnum(o);
+      if(q)t[tipoDe(o)]+=q;else semq.push((o&&o.nome)||id);
+    });
+    return {t:t,semq:semq,nuniq:nuniq};
+  }
+  function totaisDeLinhasRel(itens){
+    var t=totaisPorTipoVazio();
+    (itens||[]).forEach(function(it){t[it.tipoId||idTipoDeRotulo(it.tipo)]+=it.qtd||0});
+    return t;
+  }
+  function txtListaTipos(t,opts){
+    opts=opts||{};
+    var parts=[];
+    tiposVisiveis().forEach(function(tp){
+      var n=t[tp.id]||0;
+      if(opts.omitZero&&!n)return;
+      parts.push(tp.rot+" "+n+(n===1?" apto":" aptos"));
+    });
+    return parts.join(" · ");
+  }
+  function txtKitsSufixo(t){
+    if(FILTRO_TIPO||nTiposComQtd(t)<2)return "";
+    var k=somaKits(t);
+    return " · "+k+(k===1?" kit":" kits");
+  }
+  function htmlLinhasTipos(t){
+    var html="";
+    tiposVisiveis().forEach(function(tp){
+      html+='<div class="tot-tipo t-'+tp.id+'"><span class="lab">'+tp.rot+'</span><span class="n">'+(t[tp.id]||0)+'</span></div>';
+    });
+    return html;
+  }
+  function htmlDiaTotais(t){
+    var partes=[];
+    tiposVisiveis().forEach(function(tp){
+      var n=t[tp.id]||0;if(!n)return;
+      partes.push('<span class="t-'+tp.id+'">'+tp.rot+" <b>"+n+"</b></span>");
+    });
+    var extra=txtKitsSufixo(t);
+    return partes.length?partes.join(" · ")+(extra?extra:""):"";
+  }
   function encheTipo(sel,comTodos){if(!sel)return;sel.innerHTML="";if(comTodos){var z=document.createElement("option");z.value="";z.textContent="Todos";sel.appendChild(z)}TIPOS.forEach(function(t){var op=document.createElement("option");op.value=t.id;op.textContent=t.rot;sel.appendChild(op)})}
   var N_ETAPAS=8;
   var ETAPAS=["Projeto","PCP","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"];
@@ -762,15 +826,34 @@
         for(i=0;i<lots.length;i++){
           lt=lots[i];saldo=saldoLote(o,lt);if(saldo<=0)continue;
           data=deIso(lt.data)?lt.data:dataRefEntrega(o);if(!deIso(data))continue;
-          c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:lt.n,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado});
+          c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:lt.n,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o)});
         }
       }else{
         saldo=qnum(o)?faltam(o):0;if(saldo<=0)return;
         data=dataRefEntrega(o);if(!deIso(data))return;
-        c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:0,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado});
+        c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:0,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o)});
       }
     });
     return out;
+  }
+  function alertasSobrecargaDe(pend,hoje){
+    hoje=hoje||HOJE;
+    var itens=[];
+    TIPOS.forEach(function(tp){
+      var grupo=pend.filter(function(p){return (p.tipo||"eletrica")===tp.id});
+      if(!grupo.length)return;
+      var datas={};
+      grupo.forEach(function(p){if(p.data>=hoje)datas[p.data]=1});
+      Object.keys(datas).sort().forEach(function(D){
+        var Y=diasUteisNoIntervalo(hoje,D),X=0,est=false;
+        grupo.forEach(function(p){if(p.data<=D){X+=p.dias;if(p.estimado)est=true}});
+        if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,tipo:tp.id,
+          ids:grupo.filter(function(p){return p.data<=D}).map(function(p){return p.id}),
+          tit:"Sobrecarga ("+tp.rot+"): janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,
+          sub:est?"Ritmo 50/dia (estimado) em ao menos uma obra de "+tp.rot+" · pulando recesso 24–31/12":"Carga dos lotes pendentes de "+tp.rot+" · pulando recesso 24–31/12"});
+      });
+    });
+    return itens;
   }
   function alertasSobrecarga(hoje,extra){
     hoje=hoje||HOJE;
@@ -779,16 +862,7 @@
       pend=pend.filter(function(p){return !(extra.id&&p.id===extra.id&&((extra.lote||0)===(p.lote||0)))});
       if(extra.dias>0&&deIso(extra.data))pend.push(extra);
     }
-    var datas={},itens=[];
-    pend.forEach(function(p){if(p.data>=hoje)datas[p.data]=1});
-    Object.keys(datas).sort().forEach(function(D){
-      var Y=diasUteisNoIntervalo(hoje,D),X=0,est=false;
-      pend.forEach(function(p){if(p.data<=D){X+=p.dias;if(p.estimado)est=true}});
-      if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,ids:pend.filter(function(p){return p.data<=D}).map(function(p){return p.id}),
-        tit:"Sobrecarga: janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,
-        sub:est?"Ritmo 50/dia (estimado) em ao menos uma obra · pulando recesso 24–31/12":"Soma das cargas dos lotes pendentes · pulando recesso 24–31/12"});
-    });
-    return itens;
+    return alertasSobrecargaDe(pend,hoje);
   }
   function usaAlertasPorLote(o){var lots=listaLotesPrevistos(o);return numLotes(o)>=2||(lots.length&&!lots[0].implicito)}
   function estadosLotes(o,hoje){
@@ -924,7 +998,7 @@
       mini(cls,cm,t.tit,t.sub);
     })});
     var datasObra=aparicoesNaSemana(x);
-    var sob=alertasSobrecarga(HOJE).filter(function(a){return datasObra[a.data]||(dataRefEntrega(o)===a.data)});
+    var sob=alertasSobrecarga(HOJE).filter(function(a){return (a.tipo||"eletrica")===tipoDe(o)&&(datasObra[a.data]||dataRefEntrega(o)===a.data)});
     sob.forEach(function(a){mini("alerta-sobrecarga","sobrecarga",a.tit,a.sub)});
     if(concluido){var sc=document.createElement("span");sc.className="selo-concluido";sc.textContent="Concluído";b.appendChild(sc)}
     else if(enviado){var se=document.createElement("span");se.className="selo-enviado";se.textContent="Enviado";b.appendChild(se)}
@@ -970,6 +1044,8 @@
       var nAtr=cols[i].filter(function(it){return !estaEnviado(it.x.o)&&deIso(it.x.o.data)&&it.x.o.data<D.iso}).length;
       if(nAtr){var ba=document.createElement("div");ba.className="badge-atraso-dia";ba.textContent=nAtr===1?"1 atrasada":nAtr+" atrasadas";td.appendChild(ba)}
       cols[i].forEach(function(it){td.appendChild(card(it.x,{rotuloLote:it.rotulo,carryOver:deIso(it.x.o.data)&&it.x.o.data<D.iso&&!estaEnviado(it.x.o)}))});
+      var totDia=totaisUnicosDeItens(cols[i]),htmlDia=htmlDiaTotais(totDia.t);
+      if(htmlDia){var dt=document.createElement("div");dt.className="dia-totais";dt.innerHTML=htmlDia;td.appendChild(dt)}
       td.appendChild(botaoAdd(D.iso));
       tr.appendChild(td);
     });
@@ -979,11 +1055,18 @@
     if(fora.length)outrasL.appendChild(botaoAdd(""));
     outras.classList.toggle("on",fora.length>0);
     var orot=document.getElementById("outras-rot");if(orot)orot.textContent=FILTRO_CLIENTE?("Obras de "+FILTRO_CLIENTE+" fora desta semana / sem data"):"Sem data definida";
-    // resumo da semana (obras únicas; um pedido em dois dias não conta duas vezes)
-    var sem=[].concat.apply([],cols),tot=0,semq=[],visto={},nuniq=0;
-    sem.forEach(function(it){var x=it.x||it,id=x.id;if(visto[id])return;visto[id]=1;nuniq++;var q=qnum(x.o);if(q)tot+=q;else semq.push(x.o.nome||id)});
+    // resumo da semana (obras únicas; um pedido em dois dias não conta duas vezes; tipos nunca somados entre si)
+    var sem=[].concat.apply([],cols),res=totaisUnicosDeItens(sem),semq=res.semq,nuniq=res.nuniq;
     document.getElementById("r-total").textContent=nuniq;
-    document.getElementById("r-aptos").textContent=tot;
+    var rotApt=document.getElementById("r-aptos-rot");
+    if(rotApt)rotApt.textContent=FILTRO_TIPO?("Aptos · "+TIPO_MAP[FILTRO_TIPO].rot):"Aptos por tipo";
+    var boxTipos=document.getElementById("r-aptos-tipos");
+    if(boxTipos)boxTipos.innerHTML=htmlLinhasTipos(res.t);
+    var rKits=document.getElementById("r-kits");
+    if(rKits){
+      if(!FILTRO_TIPO&&nTiposComQtd(res.t)>1){rKits.hidden=false;rKits.textContent="Total: "+somaKits(res.t)+" kits (não some os tipos — o mesmo apto pode ter mais de um kit)"}
+      else{rKits.hidden=true;rKits.textContent=""}
+    }
     var sq=!sem.length?"Nenhuma entrega nesta semana":semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
     document.getElementById("r-semq").textContent=sq;
     renderLembretes();
@@ -1030,7 +1113,7 @@
       var alE=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE)html+="<br><b>"+esc(alE.tit)+"</b>"+(alE.sub?" — "+esc(alE.sub):"");
       estadosLotes(o,HOJE).forEach(function(ls){ls.tipos.forEach(function(t){html+="<br><b>"+esc(t.tit)+"</b>"+(t.sub?" — "+esc(t.sub):"")})});
       var ds=aparicoesNaSemana({id:id,o:o});
-      alertasSobrecarga(HOJE).filter(function(a){return ds[a.data]||dataRefEntrega(o)===a.data}).forEach(function(a){html+="<br><b>"+esc(a.tit)+"</b>"+(a.sub?" — "+esc(a.sub):"")});
+      alertasSobrecarga(HOJE).filter(function(a){return (a.tipo||"eletrica")===tipoDe(o)&&(ds[a.data]||dataRefEntrega(o)===a.data)}).forEach(function(a){html+="<br><b>"+esc(a.tit)+"</b>"+(a.sub?" — "+esc(a.sub):"")});
       return html;
     }
     if(st.tipo==="entregue"){cb.className="cerca-box";cb.innerHTML="<b>"+(estaConcluido(o)?"Concluída (embarcada)":"Entregue integral")+"</b>"+acrescentaAlertas("");return}
@@ -1178,7 +1261,7 @@
   }
   function pioraSobrecarga(antes,depois){
     return (depois||[]).filter(function(d){
-      var ant=(antes||[]).filter(function(a){return a.data===d.data})[0];
+      var ant=(antes||[]).filter(function(a){return a.data===d.data&&(a.tipo||"eletrica")===(d.tipo||"eletrica")})[0];
       if(!ant)return true;
       return (d.precisa-d.tem)>(ant.precisa-ant.tem);
     });
@@ -1187,20 +1270,13 @@
     var extras=[],i,lt,c;
     for(i=0;i<planos.length;i++){
       lt=planos[i];if(!(lt.qtd>0)||!deIso(lt.data))continue;
-      c=cargaDias(lt.qtd,o);extras.push({id:id,lote:lt.n,data:lt.data,dias:c.dias,estimado:c.estimado,saldo:lt.qtd});
+      c=cargaDias(lt.qtd,o);extras.push({id:id,lote:lt.n,data:lt.data,dias:c.dias,estimado:c.estimado,saldo:lt.qtd,tipo:tipoDe(o)});
     }
     return extras;
   }
   function sobrecargaDosPlanos(id,o,planos){
     var pend=lotesPendentesCarga().filter(function(p){return p.id!==id}),ex=extraCargaPlanos(id,o,planos);
-    var todas=pend.concat(ex),hoje=HOJE,datas={},itens=[];
-    todas.forEach(function(p){if(p.data>=hoje)datas[p.data]=1});
-    Object.keys(datas).sort().forEach(function(D){
-      var Y=diasUteisNoIntervalo(hoje,D),X=0,est=false;
-      todas.forEach(function(p){if(p.data<=D){X+=p.dias;if(p.estimado)est=true}});
-      if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,tit:"Sobrecarga: janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,sub:""});
-    });
-    return itens;
+    return alertasSobrecargaDe(pend.concat(ex),HOJE);
   }
   function preencheSelectParcLote(o){
     var sel=document.getElementById("e-parc-lote");if(!sel)return;
@@ -1320,7 +1396,7 @@
     if(!cur)return;
     var id=cur,px=document.getElementById("e-prox-lote"),val=px?px.value||null:null,p={atualizadoEm:Date.now(),proximoLoteData:val};
     if(val){
-      var o=fonte()[id]||{},c=cargaDias(faltam(o)||qnum(o),o),av=pioraSobrecarga(alertasSobrecarga(HOJE),alertasSobrecarga(HOJE,{id:id,lote:0,data:val,dias:c.dias,estimado:c.estimado}));
+      var o=fonte()[id]||{},c=cargaDias(faltam(o)||qnum(o),o),av=pioraSobrecarga(alertasSobrecarga(HOJE),alertasSobrecarga(HOJE,{id:id,lote:0,data:val,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o)}));
       if(!avisoSobrecarga(av)){preencheLotesFicha(o);return}
     }
     req("PATCH","/entregas/"+id+".json",p).then(function(){
@@ -1810,14 +1886,14 @@
       if(parcs.length){
         parcs.forEach(function(p){
           if(!deIso(p.data)||p.data<ini||p.data>fim||!(p.qtd>0))return;
-          itens.push({data:p.data,nome:o.nome||x.id,tipo:rotTipo(o),qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+          itens.push({data:p.data,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
         });
         return;
       }
       if(!statusEntregue(o))return;
       var d=dataRealizadaDe(o);if(!deIso(d)||d<ini||d>fim)return;
       var q=qnum(o);if(!q)return;
-      itens.push({data:d,nome:o.nome||x.id,tipo:rotTipo(o),qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+      itens.push({data:d,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
     });
     itens.sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:(a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
     return itens;
@@ -1830,7 +1906,7 @@
         if(!deIso(data)||data<ini||data>fim)return;
         var key=data+"|"+(lote||0);
         if(usados[key])return;usados[key]=1;
-        itens.push({data:data,nome:o.nome||x.id,tipo:rotTipo(o),qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapa(etapaNum(o),true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
+        itens.push({data:data,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapa(etapaNum(o),true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
       }
       if(expl){
         lots.forEach(function(lt){if(deIso(lt.data))add(lt.data,saldoLote(o,lt)||lt.qtd,lt.n)});
@@ -1854,16 +1930,15 @@
     var filtroTxt=(FILTRO_CLIENTE?(" · Cliente: "+FILTRO_CLIENTE):"")+(FILTRO_TIPO?(" · Tipo: "+TIPO_MAP[FILTRO_TIPO].rot):"");
     var html='<div class="rel-topo"><img src="logo-grupo-hgi.png" alt="Grupo HGI"><div><h1>'+esc(titulo)+'</h1><p>Grupo HGI · Kits elétricos, hidráulicos e gás</p><p>Período: '+esc(rotDataCurto(ini))+' a '+esc(rotDataCurto(fim))+esc(filtroTxt)+(hojeTxt?" · Gerado em "+esc(hojeTxt):"")+'</p></div></div>';
     if(!itens.length){html+='<p class="rel-vazio">'+(realizadas?"Nenhuma entrega realizada neste período.":"Nenhuma entrega prevista neste período.")+"</p>";return html}
-    var dias=[],i,curD="",totGeral=0,ncols=realizadas?6:7;
+    var dias=[],i,curD="",ncols=realizadas?6:7,totGeralT=totaisPorTipoVazio();
     itens.forEach(function(it){if(it.data!==curD){dias.push({data:it.data,itens:[]});curD=it.data}dias[dias.length-1].itens.push(it)});
     dias.forEach(function(dia){
-      var tot=0;
+      var totT=totaisDeLinhasRel(dia.itens);
       html+='<div class="rel-dia"><h3>'+esc(rotData(dia.data))+'</h3><table><thead><tr>';
       if(realizadas)html+="<th>Cliente / obra</th><th>Tipo</th><th>Qtd entregue</th><th>Lote</th><th>Padrão</th><th>Observação</th>";
       else html+="<th>Cliente / obra</th><th>Tipo</th><th>Qtd / saldo</th><th>Padrão</th><th>Estágio</th><th>Status</th><th>Observação</th>";
       html+="</tr></thead><tbody>";
       dia.itens.forEach(function(it){
-        tot+=it.qtd||0;
         if(realizadas){
           var qtxt=(it.qtd||0)+(it.qtd===1?" imóvel":" imóveis");
           var lot=it.lote?"Lote "+it.lote:"—";
@@ -1873,24 +1948,31 @@
           html+="<tr><td>"+esc(it.nome)+"</td><td>"+esc(it.tipo||"Elétrica")+"</td><td>"+esc(qtxt2)+"</td><td>"+esc(it.padrao)+"</td><td>"+esc(it.etapa)+"</td><td>"+esc(it.status)+"</td><td>"+esc(it.obs)+"</td></tr>";
         }
       });
-      totGeral+=tot;
-      html+='</tbody><tfoot><tr><td colspan="'+ncols+'" class="tot-dia">Total do dia: '+tot+(tot===1?" imóvel":" imóveis")+"</td></tr></tfoot></table></div>";
+      TIPOS.forEach(function(tp){totGeralT[tp.id]+=totT[tp.id]||0});
+      html+='</tbody><tfoot><tr><td colspan="'+ncols+'" class="tot-dia">Total do dia: '+esc(txtListaTipos(totT,{omitZero:true})+txtKitsSufixo(totT))+"</td></tr></tfoot></table></div>";
     });
+    var porTipoLinhas={eletrica:0,qdc:0,hidraulica:0};
+    itens.forEach(function(it){porTipoLinhas[it.tipoId||idTipoDeRotulo(it.tipo)]++});
+    html+='<div class="rel-dia rel-tipos"><h3>Totais por tipo</h3><table><thead><tr><th>Tipo</th><th>Linhas na janela</th><th>Aptos</th></tr></thead><tbody>';
+    tiposVisiveis().forEach(function(tp){
+      html+="<tr><td>"+esc(tp.rot)+"</td><td>"+porTipoLinhas[tp.id]+"</td><td>"+(totGeralT[tp.id]||0)+((totGeralT[tp.id]||0)===1?" apto":" aptos")+"</td></tr>";
+    });
+    html+="</tbody></table></div>";
     var porCliente={},clientes=[],ck;
     itens.forEach(function(it){
       ck=it.id||it.nome||"";
-      if(!porCliente[ck])porCliente[ck]={nome:it.nome||ck,entregas:0,imoveis:0};
+      if(!porCliente[ck])porCliente[ck]={nome:it.nome||ck,entregas:0,t:totaisPorTipoVazio()};
       porCliente[ck].entregas++;
-      porCliente[ck].imoveis+=it.qtd||0;
+      porCliente[ck].t[it.tipoId||idTipoDeRotulo(it.tipo)]+=it.qtd||0;
     });
     clientes=Object.keys(porCliente).map(function(k){return porCliente[k]});
     clientes.sort(function(a,b){return (a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
-    html+='<div class="rel-dia rel-clientes"><h3>Totais por cliente</h3><table><thead><tr><th>Cliente / obra</th><th>Nº de entregas/lotes na janela</th><th>Total de imóveis</th></tr></thead><tbody>';
+    html+='<div class="rel-dia rel-clientes"><h3>Totais por cliente</h3><table><thead><tr><th>Cliente / obra</th><th>Nº de entregas/lotes na janela</th><th>Aptos por tipo</th></tr></thead><tbody>';
     clientes.forEach(function(c){
-      html+="<tr><td>"+esc(c.nome)+"</td><td>"+c.entregas+"</td><td>"+c.imoveis+(c.imoveis===1?" imóvel":" imóveis")+"</td></tr>";
+      html+="<tr><td>"+esc(c.nome)+"</td><td>"+c.entregas+"</td><td>"+esc(txtListaTipos(c.t,{omitZero:true})+txtKitsSufixo(c.t))+"</td></tr>";
     });
     html+="</tbody></table></div>";
-    html+='<div class="rel-geral">Total geral: '+totGeral+(totGeral===1?" imóvel":" imóveis")+" · "+itens.length+(itens.length===1?" linha":" linhas")+"</div>";
+    html+='<div class="rel-geral">Total geral: '+esc(txtListaTipos(totGeralT,{omitZero:false})+txtKitsSufixo(totGeralT))+" · "+itens.length+(itens.length===1?" linha":" linhas")+"</div>";
     return html;
   }
   function fecharRel(){var ov=document.getElementById("ov-rel");if(ov)ov.classList.remove("on")}
