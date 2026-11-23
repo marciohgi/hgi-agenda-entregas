@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard de Entregas – Semana de 09 a 15/11/2026</title>
 <style>
+  :root{
+    --charcoal:#1F2937;
+    --texto-claro:#FFFFFF;
+    --cinza-azulado:#1e3a5f;
+    --eletrica:#E87731;
+    --qdc:#6a3fb5;
+    --hidr-fria:#1f78b4;
+    --hidr-quente:#DC2626;
+    --hidr-esgoto:#6b5744;
+    --hidr-sem:#7a8a99;
+    --gas:#0b7a6b;
+    --verde-escuro:#166534; /* token reservado, ainda não aplicado; alternativa #15803D se precisar de mais visibilidade sobre o cinza azulado */
+  }
   *{box-sizing:border-box}
   body{margin:0;font-family:"Segoe UI",Arial,Helvetica,sans-serif;background:#eef1f5;color:#1f2a37}
   .wrap{max-width:1280px;margin:0 auto;padding:22px}
@@ -21,32 +34,43 @@
   .tot-tipo{display:flex;align-items:baseline;justify-content:space-between;gap:10px;color:#1e3a5f}
   .tot-tipo .lab{font-size:12px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
   .tot-tipo .n{font-size:20px;font-weight:700;line-height:1.1}
-  .tot-tipo.t-eletrica .lab,.box-apto.t-eletrica{border-left-color:#E87731}
-  .tot-tipo.t-eletrica .lab{color:#E87731}
-  .tot-tipo.t-qdc .lab,.box-apto.t-qdc{border-left-color:#6a3fb5}
-  .tot-tipo.t-qdc .lab{color:#6a3fb5}
-  .tot-tipo.t-hidraulica-fria .lab,.box-apto.t-hidraulica-fria{border-left-color:#1f78b4}
-  .tot-tipo.t-hidraulica-fria .lab{color:#1f78b4}
-  .tot-tipo.t-hidraulica-quente .lab,.box-apto.t-hidraulica-quente{border-left-color:#9b2d5a}
-  .tot-tipo.t-hidraulica-quente .lab{color:#9b2d5a}
-  .tot-tipo.t-hidraulica-esgoto .lab,.box-apto.t-hidraulica-esgoto{border-left-color:#6b5744}
-  .tot-tipo.t-hidraulica-esgoto .lab{color:#6b5744}
-  .tot-tipo.t-gas .lab,.box-apto.t-gas{border-left-color:#0b7a6b}
-  .tot-tipo.t-gas .lab{color:#0b7a6b}
-  .box-apto{flex:1 1 150px;min-width:140px}
-  .resumo-nota{margin:-4px 0 12px}
+  .tot-tipo.t-eletrica .lab,.box.box-apto.t-eletrica{border-left-color:var(--eletrica)}
+  .tot-tipo.t-eletrica .lab{color:var(--eletrica)}
+  .tot-tipo.t-qdc .lab,.box.box-apto.t-qdc{border-left-color:var(--qdc)}
+  .tot-tipo.t-qdc .lab{color:var(--qdc)}
+  .tot-tipo.t-hidraulica-fria .lab,.box.box-apto.t-hidraulica-fria{border-left-color:var(--hidr-fria)}
+  .tot-tipo.t-hidraulica-fria .lab{color:var(--hidr-fria)}
+  .tot-tipo.t-hidraulica-quente .lab,.box.box-apto.t-hidraulica-quente{border-left-color:var(--hidr-quente)}
+  .tot-tipo.t-hidraulica-quente .lab{color:var(--hidr-quente)}
+  .tot-tipo.t-hidraulica-esgoto .lab,.box.box-apto.t-hidraulica-esgoto{border-left-color:var(--hidr-esgoto)}
+  .tot-tipo.t-hidraulica-esgoto .lab{color:var(--hidr-esgoto)}
+  .tot-tipo.t-gas .lab,.box.box-apto.t-gas{border-left-color:var(--gas)}
+  .tot-tipo.t-gas .lab{color:var(--gas)}
+  .box.box-apto{flex:1 1 96px;min-width:80px;background:var(--charcoal);border:1px solid var(--charcoal);border-left-width:6px;border-left-style:solid;border-radius:8px;padding:14px 16px;color:var(--texto-claro)}
+  .box-apto .val{font-size:34px;font-weight:700;color:var(--texto-claro);margin:0;line-height:1.1;letter-spacing:-0.4px}
+  .resumo-tipos-cab{margin:0 0 10px}
+  .resumo-sub{font-size:12px;font-weight:600;color:#3d4d5f;margin:0 0 8px}
+  .legenda-tipos{margin:0 0 2px}
+  .legenda-tipos i{width:10px;height:10px;border-radius:2px}
+  .legenda-tipos .t-eletrica{background:var(--eletrica)}
+  .legenda-tipos .t-qdc{background:var(--qdc)}
+  .legenda-tipos .t-hidraulica-fria{background:var(--hidr-fria)}
+  .legenda-tipos .t-hidraulica-quente{background:var(--hidr-quente)}
+  .legenda-tipos .t-hidraulica-esgoto{background:var(--hidr-esgoto)}
+  .legenda-tipos .t-gas{background:var(--gas)}
+  .resumo-nota{margin:8px 0 12px}
   .pendencias{background:#fff8e8;border:1px solid #e0c070;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#5c4a16}
   .pendencias .rot{margin-bottom:6px;color:#7a5b10}
   .pendencias .pend{font-size:13px;margin:5px 0;line-height:1.35;cursor:pointer}
   .pendencias .pend:hover{text-decoration:underline}
   .tot-kits{margin-top:6px;font-size:12px;color:#5b6b7d;line-height:1.35}
   .dia-totais{margin:8px 0 2px;padding-top:6px;border-top:1px dashed #d5dce5;font-size:11px;color:#3d4d5f;line-height:1.45}
-  .dia-totais .t-eletrica{color:#E87731}
-  .dia-totais .t-qdc{color:#6a3fb5}
-  .dia-totais .t-hidraulica-fria{color:#1f78b4}
-  .dia-totais .t-hidraulica-quente{color:#9b2d5a}
-  .dia-totais .t-hidraulica-esgoto{color:#6b5744}
-  .dia-totais .t-gas{color:#0b7a6b}
+  .dia-totais .t-eletrica{color:var(--eletrica)}
+  .dia-totais .t-qdc{color:var(--qdc)}
+  .dia-totais .t-hidraulica-fria{color:var(--hidr-fria)}
+  .dia-totais .t-hidraulica-quente{color:var(--hidr-quente)}
+  .dia-totais .t-hidraulica-esgoto{color:var(--hidr-esgoto)}
+  .dia-totais .t-gas{color:var(--gas)}
   .dia-totais b{color:#1e3a5f}
   .aviso-etapa{display:block;margin-top:6px;border-radius:4px;padding:4px 7px;font-size:11px;font-weight:700;background:#fff3b0;color:#6a5300;border:1px solid #d4a514}
   .alerta{background:#fdecea;border:2px solid #c0392b;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#7b1f16}
@@ -154,9 +178,9 @@
   .item .btn-card-editar{flex:none;background:#fff;color:#c86220;border:1px solid #E87731;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer;line-height:1.4;white-space:nowrap}
   .item .btn-card-editar:hover,.item .btn-card-editar:focus{background:#E87731;color:#fff;outline:none}
   .tipo-chip{display:inline-block;margin:4px 0 1px;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;vertical-align:middle}
-  .t-eletrica{background:#E87731}.t-qdc{background:#6a3fb5}.t-hidraulica,.t-hidraulica-fria{background:#1f78b4}
-  .t-hidraulica-quente{background:#9b2d5a}.t-hidraulica-esgoto{background:#6b5744}.t-hidraulica-sem{background:#7a8a99}
-  .t-gas{background:#0b7a6b}
+  .t-eletrica{background:var(--eletrica)}.t-qdc{background:var(--qdc)}.t-hidraulica,.t-hidraulica-fria{background:var(--hidr-fria)}
+  .t-hidraulica-quente{background:var(--hidr-quente)}.t-hidraulica-esgoto{background:var(--hidr-esgoto)}.t-hidraulica-sem{background:var(--hidr-sem)}
+  .t-gas{background:var(--gas)}
   .pill.t-eletrica,.pill.t-qdc,.pill.t-hidraulica,.pill.t-hidraulica-fria,.pill.t-hidraulica-quente,.pill.t-hidraulica-esgoto,.pill.t-hidraulica-sem,.pill.t-gas{margin-left:6px}
   .ed-tit{margin:6px 0 6px;font-weight:700;color:#c86220}
   .ed-nota{font-size:13px;color:#3d4d5f;background:#fff4ec;border:1px solid #f3c9a8;border-radius:6px;padding:8px 12px;margin-bottom:12px;line-height:1.4}
@@ -356,6 +380,10 @@
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
   </header>
 
+  <div class="resumo-tipos-cab">
+    <div class="resumo-sub" id="resumo-sub">Aptos da semana por tipo</div>
+    <div class="legenda legenda-tipos" id="legenda-tipos" aria-label="Legenda dos tipos de entrega"></div>
+  </div>
   <div class="resumo" id="resumo-totais"></div>
   <div class="resumo" id="resumo-extra"><div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div></div>
   <div class="resumo-nota"><div class="tot-kits" id="r-kits" hidden></div><div class="sub" id="r-semq"></div></div>
@@ -584,12 +612,12 @@
   ];
   var TIPO_MAP={};TIPOS.forEach(function(t){TIPO_MAP[t.id]=t});
   var LINHAS_TOTAL=[
-    {id:"eletrica",tipo:"eletrica",rot:"Elétrica",rotTopo:"Apartamentos Elétrica",cls:"t-eletrica"},
-    {id:"qdc",tipo:"qdc",rot:"QDC",rotTopo:"Apartamentos QDC",cls:"t-qdc"},
-    {id:"hidraulica-agua-fria",tipo:"hidraulica",ramal:"agua-fria",rot:"Hidr. água fria",rotTopo:"Apartamentos Hidr. água fria",cls:"t-hidraulica-fria"},
-    {id:"hidraulica-agua-quente",tipo:"hidraulica",ramal:"agua-quente",rot:"Hidr. água quente",rotTopo:"Apartamentos Hidr. água quente",cls:"t-hidraulica-quente"},
-    {id:"hidraulica-esgoto",tipo:"hidraulica",ramal:"esgoto",rot:"Hidr. esgoto",rotTopo:"Apartamentos Hidr. esgoto",cls:"t-hidraulica-esgoto"},
-    {id:"gas",tipo:"gas",rot:"Gás",rotTopo:"Apartamentos Gás",cls:"t-gas"}
+    {id:"eletrica",tipo:"eletrica",rot:"Elétrica",rotLegenda:"Elétrica",cls:"t-eletrica"},
+    {id:"qdc",tipo:"qdc",rot:"QDC",rotLegenda:"QDC",cls:"t-qdc"},
+    {id:"hidraulica-agua-fria",tipo:"hidraulica",ramal:"agua-fria",rot:"Hidráulica água fria",rotLegenda:"Água fria",cls:"t-hidraulica-fria"},
+    {id:"hidraulica-agua-quente",tipo:"hidraulica",ramal:"agua-quente",rot:"Hidráulica água quente",rotLegenda:"Água quente",cls:"t-hidraulica-quente"},
+    {id:"hidraulica-esgoto",tipo:"hidraulica",ramal:"esgoto",rot:"Hidráulica esgoto",rotLegenda:"Esgoto",cls:"t-hidraulica-esgoto"},
+    {id:"gas",tipo:"gas",rot:"Gás",rotLegenda:"Gás",cls:"t-gas"}
   ];
   var LINHA_MAP={};LINHAS_TOTAL.forEach(function(ln){LINHA_MAP[ln.id]=ln});
   function normTxt(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim()}
@@ -1297,13 +1325,28 @@
     var orot=document.getElementById("outras-rot");if(orot)orot.textContent=FILTRO_CLIENTE?("Obras de "+FILTRO_CLIENTE+" fora desta semana / sem data"):"Sem data definida";
     // resumo da semana: seis totais separados; tipos/ramais nunca somados entre si
     var sem=[].concat.apply([],cols),res=totaisUnicosDeItens(sem),semq=res.semq,nuniq=res.nuniq;
+    var boxLeg=document.getElementById("legenda-tipos");
+    if(boxLeg){
+      boxLeg.innerHTML="";
+      linhasVisiveis().forEach(function(ln){
+        var sp=document.createElement("span");
+        var ic=document.createElement("i");ic.className=ln.cls;ic.setAttribute("aria-hidden","true");sp.appendChild(ic);
+        sp.appendChild(document.createTextNode(ln.rotLegenda||ln.rot));
+        boxLeg.appendChild(sp);
+      });
+    }
     var boxRes=document.getElementById("resumo-totais");
     if(boxRes){
       boxRes.innerHTML="";
+      boxRes.setAttribute("role","list");
       linhasVisiveis().forEach(function(ln){
+        var n=res.t[ln.id]||0;
+        var nome=ln.rotLegenda||ln.rot;
         var bx=document.createElement("div");bx.className="box box-apto "+ln.cls;
-        var rt=document.createElement("div");rt.className="rot";rt.textContent=ln.rotTopo;bx.appendChild(rt);
-        var vl=document.createElement("div");vl.className="val";vl.textContent=String(res.t[ln.id]||0);bx.appendChild(vl);
+        bx.setAttribute("role","listitem");
+        bx.title=nome+" — "+n+(n===1?" apto":" aptos");
+        bx.setAttribute("aria-label",nome+": "+n+(n===1?" apto":" aptos"));
+        var vl=document.createElement("div");vl.className="val";vl.textContent=String(n);bx.appendChild(vl);
         boxRes.appendChild(bx);
       });
     }
