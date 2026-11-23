@@ -167,7 +167,7 @@
   }
   function msgAuth(e) {
     var c = e && e.code || "";
-    if (c === "auth/invalid-email" || c === "auth/user-not-found" || c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") return "Setor ou senha incorretos.";
+    if (c === "auth/invalid-email" || c === "auth/user-not-found" || c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") return "Usuário ou senha incorretos.";
     if (c === "auth/too-many-requests") return "Muitas tentativas. Espere um pouco e tente de novo.";
     if (c === "auth/invalid-api-key" || c === "auth/api-key-not-valid") return "A configuração do projeto não foi aceita. Confira js/firebase-config.js.";
     if (e && e.message === "config") return "Configuração incompleta. Veja o README.";
