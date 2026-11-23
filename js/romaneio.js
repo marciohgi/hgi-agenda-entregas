@@ -43,10 +43,10 @@
         h += '<div class="meta">' + calc.esc(calc.formatRomaneio(o.romaneioNumero).slice(0, 2) + " " + calc.formatRomaneio(o.romaneioNumero).slice(2)) + "</div>";
         if (rom) {
           h += '<div class="meta">Quantidade: ' + calc.esc(calc.formatQtd(rom.qtd)) + " · " + calc.esc(calc.formatDataBR(rom.data)) + "</div>";
-          h += '<div class="quem">Lançado por ' + calc.esc(rom.lancadoPorNome || o.lancadoPorNome || "—") + "</div>";
+          h += '<div class="quem">lançado por: ' + calc.esc(rom.lancadoPorNome || o.lancadoPorNome || "—") + "</div>";
           if (rom.observacao) h += '<div class="meta">' + calc.esc(rom.observacao) + "</div>";
         } else if (o.lancadoPorNome) {
-          h += '<div class="quem">Lançado por ' + calc.esc(o.lancadoPorNome) + "</div>";
+          h += '<div class="quem">lançado por: ' + calc.esc(o.lancadoPorNome) + "</div>";
         }
       } else if (tipo === "pronto") {
         h += '<div class="form-grid" style="grid-template-columns:1fr 1fr">';
@@ -79,7 +79,7 @@
     var fim = function (p, ok, texto) {
       p.then(function (n) {
         btn.disabled = false;
-        dizer(true, ok === "num" ? "Romaneio " + calc.formatRomaneio(n) + " gerado. Lançado por " + (HGI.sessao.nome || "") + "." : texto);
+        dizer(true, ok === "num" ? "Romaneio " + calc.formatRomaneio(n) + " gerado. lançado por: " + (HGI.sessao.setor || HGI.sessao.nome || "") + "." : texto);
       }).catch(function (e) {
         btn.disabled = false;
         dizer(false, HGIDados.falha(e));

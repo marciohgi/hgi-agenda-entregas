@@ -4,7 +4,7 @@
   var paginaNova = /(?:almoxarifado|romaneio|financeiro|painel|equipe)\.html$/i.test(location.pathname);
   var exemplo = paginaNova && /(?:\?|&)exemplo=1(?:&|$)/.test(location.search);
   var papelExemplo = /(?:\?|&)papel=almoxarife(?:&|$)/.test(location.search) ? "almoxarife" : "total";
-  var state = { pronto: false, uid: "", email: "", nome: "", papel: "", token: "" };
+  var state = { pronto: false, uid: "", email: "", nome: "", setor: "", papel: "", token: "" };
   var waiters = [];
   var avisados = false;
   var sdk = null;
@@ -55,7 +55,7 @@
     if (quem) {
       quem.innerHTML = "";
       var nome = document.createElement("span");
-      nome.textContent = (state.nome || state.email || "") + (state.papel === "almoxarife" ? " · Almoxarife" : " · Acesso total");
+      nome.textContent = (state.setor || state.nome || "") + (state.papel === "almoxarife" ? " · Almoxarifado" : " · Diretoria");
       var sair = document.createElement("button");
       sair.type = "button";
       sair.textContent = exemplo ? "Sair do exemplo" : "Sair";
@@ -74,7 +74,7 @@
     box.innerHTML = "";
     var h = document.createElement("p");
     h.className = "sub";
-    h.textContent = "Sua conta entrou, mas ainda não tem papel. Um acesso total precisa gravar /usuarios/" + (state.uid || "{uid}") + " com papel \"total\" ou \"almoxarife\". O README explica como criar o primeiro administrador no console do Firebase.";
+    h.textContent = "Este setor ainda não foi liberado. Peça ao Márcio para definir o papel em /usuarios/" + (state.uid || "{uid}") + ".";
     var sair = document.createElement("button");
     sair.type = "button";
     sair.textContent = "Sair e usar outra conta";
@@ -167,19 +167,19 @@
   }
   function msgAuth(e) {
     var c = e && e.code || "";
-    if (c === "auth/invalid-email") return "E-mail inválido.";
-    if (c === "auth/user-not-found" || c === "auth/wrong-password" || c === "auth/invalid-credential") return "E-mail ou senha não conferem.";
+    if (c === "auth/invalid-email" || c === "auth/user-not-found" || c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") return "Setor ou senha incorretos.";
     if (c === "auth/too-many-requests") return "Muitas tentativas. Espere um pouco e tente de novo.";
-    if (c === "auth/invalid-api-key" || c === "auth/api-key-not-valid") return "A apiKey em js/firebase-config.js não é a deste projeto.";
-    if (e && e.message === "config") return "Configuração incompleta. Preencha apiKey e appId em js/firebase-config.js (veja o README).";
+    if (c === "auth/invalid-api-key" || c === "auth/api-key-not-valid") return "A configuração do projeto não foi aceita. Confira js/firebase-config.js.";
+    if (e && e.message === "config") return "Configuração incompleta. Veja o README.";
     if (e && e.message === "sdk") return "Não foi possível carregar o Firebase. Verifique a conexão.";
+    if (e && e.aviso) return e.message;
     return "Não foi possível entrar. Tente de novo.";
   }
   function aplicarUsuario(user) {
     var g = ++geracao;
     if (!user) {
       fecharEscutas();
-      state = { pronto: false, uid: "", email: "", nome: "", papel: "", token: "" };
+      state = { pronto: false, uid: "", email: "", nome: "", setor: "", papel: "", token: "" };
       HGI.sessao = state;
       window.HGI_TOKEN = "";
       if (avisados) { location.reload(); return; }
@@ -194,11 +194,13 @@
     }).then(function (snap) {
       if (!snap || g !== geracao) return;
       var p = snap.val() || {};
+      var setor = (calc && calc.setorDoEmail(user.email)) || "";
       state = {
         pronto: true,
         uid: user.uid,
         email: user.email || p.email || "",
-        nome: p.nome || user.email || "",
+        nome: setor || p.nome || "",
+        setor: setor,
         papel: p.papel || "",
         token: window.HGI_TOKEN
       };
@@ -209,8 +211,11 @@
       erroGate("Entrou na conta, mas não foi possível ler o papel. Confira as regras e o nó usuarios.");
     });
   }
-  function entrar(email, senha) {
+  function entrar(setor, senha) {
     erroGate("");
+    var email = calc.emailDoSetor(setor);
+    if (!email) { erroGate("Informe o setor."); return; }
+    if (!senha) { erroGate("Informe a senha."); return; }
     carregarSdk().then(function () {
       return firebase.auth().signInWithEmailAndPassword(email, senha);
     }).catch(function (e) { erroGate(msgAuth(e)); });
@@ -220,9 +225,9 @@
     var f = ev.target;
     if (!f || f.id !== "hgi-gate-form") return;
     ev.preventDefault();
-    var email = (document.getElementById("hgi-email") || {}).value || "";
+    var setor = (document.getElementById("hgi-setor") || {}).value || "";
     var senha = (document.getElementById("hgi-senha") || {}).value || "";
-    entrar(String(email).trim(), senha);
+    entrar(setor, senha);
   });
 
   if (exemplo) {
@@ -231,6 +236,7 @@
       uid: "exemplo",
       email: "",
       nome: "Exemplo visual",
+      setor: "exemplo",
       papel: papelExemplo,
       token: ""
     };

@@ -17,6 +17,22 @@
   var CATEGORIAS = ["Elétrico", "Hidráulico", "Gás", "Fixação"];
   var UNIDADES = ["m", "un", "rolo", "cx"];
 
+  function normalizarSetor(s) {
+    return String(s || "")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/[^a-z0-9]/g, "");
+  }
+  function emailDoSetor(s) {
+    var n = normalizarSetor(s);
+    return n ? n + "@setor.grupohgi.com.br" : "";
+  }
+  function setorDoEmail(email) {
+    var m = /^([a-z0-9]+)@setor\.grupohgi\.com\.br$/i.exec(String(email || "").trim());
+    return m ? m[1].toLowerCase() : "";
+  }
+
   function numOrNull(v) {
     if (v === null || v === undefined) return null;
     if (typeof v === "number") return isFinite(v) ? v : null;
@@ -394,6 +410,9 @@
     CATALOGO_ALMOX: CATALOGO_ALMOX,
     CATEGORIAS: CATEGORIAS,
     UNIDADES: UNIDADES,
+    normalizarSetor: normalizarSetor,
+    emailDoSetor: emailDoSetor,
+    setorDoEmail: setorDoEmail,
     numOrNull: numOrNull,
     parseISO: parseISO,
     isoOf: isoOf,

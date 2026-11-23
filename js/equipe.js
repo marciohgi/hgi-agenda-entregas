@@ -6,11 +6,11 @@
 
   function render() {
     var html = '<div class="bloco"><h2>Atribuir papel</h2>';
-    html += '<p class="nota">Só o acesso total grava papéis. O primeiro administrador nasce no console do Firebase, no caminho /usuarios/{uid}, porque ainda não existe ninguém com papel para autorizar o outro. O README tem o passo a passo. Zé é quem normalmente lança valores, quantidades e entregas; o nome de quem lançou fica no registro.</p>';
+    html += '<p class="nota">Só a diretoria grava papéis. O lançado por mostra o setor que entrou. O primeiro papel nasce no console, em /usuarios/{uid}. O README explica como criar o setor.</p>';
     html += '<div class="form-grid">';
     html += '<label>UID do Authentication<input id="eq-uid" maxlength="128" placeholder="cole o User UID" autocomplete="off"></label>';
-    html += '<label>Nome<input id="eq-nome" maxlength="80" placeholder="Ex.: Zé"></label>';
-    html += '<label>E-mail<input id="eq-email" type="email" maxlength="120" placeholder="o mesmo da conta"></label>';
+    html += '<label>Setor<input id="eq-nome" maxlength="80" placeholder="Ex.: diretoria"></label>';
+    html += '<label>E-mail da conta<input id="eq-email" type="email" maxlength="120" placeholder="diretoria@setor.grupohgi.com.br"></label>';
     html += '<label>Papel<select id="eq-papel"><option value="total">Acesso total</option><option value="almoxarife">Almoxarife</option></select></label>';
     html += '</div><div class="form-acoes"><button type="button" class="btn" id="eq-salvar">Salvar papel</button><span class="hgi-okmsg" id="msg"></span><span class="hgi-erro" id="erro"></span></div></div>';
     html += '<div class="bloco"><h2>Quem deve ter acesso total</h2><p class="nota">Lista de pessoas, não é leitura do banco.</p><ul>';
@@ -34,7 +34,7 @@
     var msg = document.getElementById("msg"), erro = document.getElementById("erro");
     msg.textContent = ""; erro.textContent = "";
     if (!/^[A-Za-z0-9]{10,128}$/.test(uid)) { erro.textContent = "UID inválido. Copie o User UID do Authentication, sem espaços."; return; }
-    if (!nome) { erro.textContent = "Informe o nome que vai aparecer em lançado por."; return; }
+    if (!nome) { erro.textContent = "Informe o nome do setor, por exemplo diretoria."; return; }
     if (papel !== "total" && papel !== "almoxarife") { erro.textContent = "Papel inválido."; return; }
     ev.target.disabled = true;
     HGIDados.salvarPapel(uid, { nome: nome, email: email, papel: papel }).then(function () {

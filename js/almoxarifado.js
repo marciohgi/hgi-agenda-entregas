@@ -50,7 +50,7 @@
       html += "</tr>";
     });
     html += "</tbody></table></div>";
-    html += '<div class="bloco"><h2>Novo item</h2><p class="nota">A linha entra em branco. Quem salvar aparece como lançado por.</p>';
+    html += '<div class="bloco"><h2>Novo item</h2><p class="nota">A linha entra em branco. Quem salvar aparece como lançado por: o setor que entrou.</p>';
     html += '<div class="form-grid">';
     html += campo("Item", '<input id="novo-item" maxlength="120" placeholder="Ex.: luva">');
     html += campo("Categoria", selectHtml("novo-cat", calc.CATEGORIAS, "Elétrico"));
@@ -115,7 +115,7 @@
       btn.disabled = true;
       HGIDados.salvarItem(pacote.id, pacote.dados).then(function () {
         btn.disabled = false;
-        msg(true, "Salvo. Lançado por " + (HGI.sessao.nome || "") + ".");
+        msg(true, "Salvo. lançado por: " + (HGI.sessao.setor || HGI.sessao.nome || "") + ".");
       }).catch(function (e) { btn.disabled = false; msg(false, HGIDados.falha(e)); });
       return;
     }

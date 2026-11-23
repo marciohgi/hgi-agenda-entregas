@@ -69,7 +69,7 @@
       html += td(calc.formatBRL(l.valorProjetadoSemana));
       html += td(calc.formatQtd(l.qtdRealSemana));
       html += td(calc.formatBRL(l.valorRealSemana));
-      html += "<td class=\"quem\">" + calc.esc(l.lancadoPorNome || "—") + "</td>";
+      html += "<td class=\"quem\">lançado por: " + calc.esc(l.lancadoPorNome || "—") + "</td>";
       html += "</tr>";
     });
     html += "</tbody></table></div>";
@@ -89,7 +89,7 @@
     recentes.forEach(function (m) {
       var emp = (emps && emps[m.empreendimentoId]) || {};
       var rot = m.tipo === "entrega" ? "Entrega" : (m.tipo === "produzido" ? "Produzido" : "Projeção");
-      html += '<div class="item"><span>' + calc.esc(calc.formatDataBR(m.data)) + " · " + calc.esc(rot) + " · " + calc.esc(emp.nome || "Obra") + " · " + calc.esc(calc.formatQtd(m.qtd)) + ' <span class="quem">lançado por ' + calc.esc(m.lancadoPorNome || "—") + "</span></span>";
+      html += '<div class="item"><span>' + calc.esc(calc.formatDataBR(m.data)) + " · " + calc.esc(rot) + " · " + calc.esc(emp.nome || "Obra") + " · " + calc.esc(calc.formatQtd(m.qtd)) + ' <span class="quem">lançado por: ' + calc.esc(m.lancadoPorNome || "—") + "</span></span>";
       html += '<button type="button" class="btn verm" data-del="' + calc.esc(m.id) + '">Excluir</button></div>';
     });
     html += "</div></div>";
@@ -132,7 +132,7 @@
         qtdContratada: document.getElementById("emp-qtd").value
       }, !sel).then(function () {
         ev.target.disabled = false;
-        dizer("emp", true, "Obra salva. Lançado por " + (HGI.sessao.nome || "") + ". Ela entra na fila de romaneio sem os valores.");
+        dizer("emp", true, "Obra salva. lançado por: " + (HGI.sessao.setor || HGI.sessao.nome || "") + ". Ela entra na fila de romaneio sem os valores.");
       }).catch(function (e) { ev.target.disabled = false; dizer("emp", false, HGIDados.falha(e)); });
       return;
     }
@@ -155,7 +155,7 @@
       }).then(function () {
         movPendente = null;
         ev.target.disabled = false;
-        dizer("mov", true, "Lançado por " + (HGI.sessao.nome || "") + ".");
+        dizer("mov", true, "lançado por: " + (HGI.sessao.setor || HGI.sessao.nome || "") + ".");
       }).catch(function (e) { ev.target.disabled = false; dizer("mov", false, HGIDados.falha(e) + " Se o lançamento já apareceu na lista, não lance de novo."); });
       return;
     }
