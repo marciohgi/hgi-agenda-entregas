@@ -57,9 +57,25 @@
     };
   }
   function falha(e) {
+    if (e && e.aviso) return e.message;
     var c = e && (e.code || e.message) || "";
     if (String(c).indexOf("PERMISSION_DENIED") >= 0) return "Sem permissão para gravar isto com o seu papel.";
     return "Não foi possível gravar. Confira a conexão e as regras do banco.";
+  }
+  function aviso(msg) {
+    var e = new Error(msg);
+    e.aviso = true;
+    return e;
+  }
+  function lerNumero(rotulo, bruto, obrigatorio) {
+    if (bruto === null || bruto === undefined || String(bruto).trim() === "") {
+      if (obrigatorio) throw aviso("Informe " + rotulo + ".");
+      return null;
+    }
+    var n = calc.numOrNull(bruto);
+    if (n === null) throw aviso(rotulo + " não é um número válido. Use 1000 ou 1.000,50.");
+    if (n < 0) throw aviso(rotulo + " não pode ser negativo.");
+    return n;
   }
   function update(obj) {
     if (HGI.exemplo) {
@@ -70,58 +86,75 @@
     return firebase.database().ref().update(obj);
   }
   function salvarItem(id, dados) {
-    var body = {
-      codigo: dados.codigo || "",
-      item: dados.item,
-      categoria: dados.categoria || "",
-      unidade: dados.unidade || "",
-      observacao: dados.observacao || "",
-      lancadoPorUid: HGI.exemplo ? "exemplo" : HGI.sessao.uid,
-      lancadoPorNome: HGI.exemplo ? "Exemplo visual" : (HGI.sessao.nome || HGI.sessao.email),
-      atualizadoEm: Date.now(),
-      criadoEm: dados.criadoEm || Date.now()
-    };
-    ["estoqueMinimo", "entrada", "saida"].forEach(function (k) {
-      var n = calc.numOrNull(dados[k]);
-      if (n !== null) body[k] = n;
-    });
-    return update((function () { var o = {}; o["almoxarifado/itens/" + id] = body; return o; })());
+    var nums;
+    try {
+      nums = {
+        estoqueMinimo: lerNumero("o estoque mínimo", dados.estoqueMinimo, false),
+        entrada: lerNumero("a entrada", dados.entrada, false),
+        saida: lerNumero("a saída", dados.saida, false)
+      };
+    } catch (e) { return Promise.reject(e); }
+    var base = "almoxarifado/itens/" + id + "/";
+    var o = {};
+    o[base + "codigo"] = dados.codigo || "";
+    o[base + "item"] = dados.item;
+    o[base + "categoria"] = dados.categoria || "";
+    o[base + "unidade"] = dados.unidade || "";
+    o[base + "observacao"] = dados.observacao || "";
+    o[base + "lancadoPorUid"] = HGI.exemplo ? "exemplo" : HGI.sessao.uid;
+    o[base + "lancadoPorNome"] = HGI.exemplo ? "Exemplo visual" : (HGI.sessao.nome || HGI.sessao.email);
+    o[base + "atualizadoEm"] = Date.now();
+    if (!dados.criadoEm) o[base + "criadoEm"] = Date.now();
+    ["estoqueMinimo", "entrada", "saida"].forEach(function (k) { o[base + k] = nums[k]; });
+    return update(o);
   }
   function excluirItem(id) {
     return update((function () { var o = {}; o["almoxarifado/itens/" + id] = null; return o; })());
   }
   function salvarEmpreendimento(id, dados, novo) {
-    var body = {
-      nome: dados.nome,
-      valorKitEletrico: calc.numOrNull(dados.valorKitEletrico),
-      valorKitQdc: calc.numOrNull(dados.valorKitQdc),
-      qtdContratada: calc.numOrNull(dados.qtdContratada),
-      lancadoPorUid: HGI.exemplo ? "exemplo" : HGI.sessao.uid,
-      lancadoPorNome: HGI.exemplo ? "Exemplo visual" : (HGI.sessao.nome || HGI.sessao.email),
-      atualizadoEm: Date.now()
-    };
-    if (novo) body.criadoEm = body.atualizadoEm;
-    Object.keys(body).forEach(function (k) { if (body[k] === null) delete body[k]; });
+    var numeros;
+    try {
+      numeros = {
+        valorKitEletrico: lerNumero("o valor do kit elétrico", dados.valorKitEletrico, false),
+        valorKitQdc: lerNumero("o valor do kit QDC", dados.valorKitQdc, false),
+        qtdContratada: lerNumero("a quantidade contratada", dados.qtdContratada, false)
+      };
+    } catch (e) { return Promise.reject(e); }
+    var agora = Date.now();
+    var base = "empreendimentos/" + id + "/";
     var o = {};
-    o["empreendimentos/" + id] = body;
+    o[base + "nome"] = dados.nome;
+    o[base + "valorKitEletrico"] = numeros.valorKitEletrico;
+    o[base + "valorKitQdc"] = numeros.valorKitQdc;
+    o[base + "qtdContratada"] = numeros.qtdContratada;
+    o[base + "lancadoPorUid"] = HGI.exemplo ? "exemplo" : HGI.sessao.uid;
+    o[base + "lancadoPorNome"] = HGI.exemplo ? "Exemplo visual" : (HGI.sessao.nome || HGI.sessao.email);
+    o[base + "atualizadoEm"] = agora;
+    if (novo) o[base + "criadoEm"] = agora;
     o["filaRomaneio/" + id + "/nome"] = dados.nome;
-    var q = calc.numOrNull(dados.qtdContratada);
-    o["filaRomaneio/" + id + "/qtdContratada"] = q === null ? null : q;
-    o["filaRomaneio/" + id + "/atualizadoEm"] = body.atualizadoEm;
+    o["filaRomaneio/" + id + "/qtdContratada"] = numeros.qtdContratada;
+    o["filaRomaneio/" + id + "/atualizadoEm"] = agora;
     if (novo) o["filaRomaneio/" + id + "/pronto"] = false;
     return update(o);
   }
   function salvarMovimento(id, dados) {
-    var q = calc.numOrNull(dados.qtd);
+    var q;
+    try { q = lerNumero("a quantidade", dados.qtd, true); }
+    catch (e) { return Promise.reject(e); }
     var body = {
       tipo: dados.tipo,
       empreendimentoId: dados.empreendimentoId,
       data: dados.data,
-      qtd: q === null ? 0 : q,
+      qtd: q,
       lancadoPorUid: HGI.exemplo ? "exemplo" : HGI.sessao.uid,
       lancadoPorNome: HGI.exemplo ? "Exemplo visual" : (HGI.sessao.nome || HGI.sessao.email),
-      criadoEm: Date.now()
+      criadoEm: dados.criadoEm || Date.now()
     };
+    var unit = calc.precos(dados.emp || {});
+    if (unit.tem) {
+      body.valorUnitario = unit.soma;
+      body.valorTotal = q * unit.soma;
+    }
     var o = {};
     o["producao/" + id] = body;
     return update(o);
@@ -135,52 +168,68 @@
     if (HGI.exemplo) return "loc-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     return firebase.database().ref(caminho).push().key;
   }
+  var romaneioPendente = {};
   function emitirRomaneio(dados) {
+    var q;
+    try { q = lerNumero("a quantidade", dados.qtd, true); }
+    catch (e) { return Promise.reject(e); }
+    if (!(q > 0)) return Promise.reject(aviso("Informe a quantidade do romaneio."));
     var hoje = calc.hojeSP();
     var ano = calc.ano2deIso(hoje);
+    var obra = dados.empreendimentoId;
     function gravarNumero(n) {
       var payload = {
         numero: n,
-        empreendimentoId: dados.empreendimentoId,
+        empreendimentoId: obra,
         nome: dados.nome,
         data: dados.data || hoje,
+        qtd: q,
         observacao: dados.observacao || "",
         criadoEm: Date.now(),
         lancadoPorUid: HGI.exemplo ? "exemplo" : HGI.sessao.uid,
         lancadoPorNome: HGI.exemplo ? "Exemplo visual" : (HGI.sessao.nome || HGI.sessao.email)
       };
-      var q = calc.numOrNull(dados.qtd);
-      if (q !== null) payload.qtd = q;
       var o = {};
       o["romaneios/" + n] = payload;
-      o["filaRomaneio/" + dados.empreendimentoId + "/romaneioNumero"] = n;
-      o["filaRomaneio/" + dados.empreendimentoId + "/romaneioEm"] = payload.criadoEm;
-      o["filaRomaneio/" + dados.empreendimentoId + "/lancadoPorUid"] = payload.lancadoPorUid;
-      o["filaRomaneio/" + dados.empreendimentoId + "/lancadoPorNome"] = payload.lancadoPorNome;
-      o["filaRomaneio/" + dados.empreendimentoId + "/atualizadoEm"] = payload.criadoEm;
-      o["filaRomaneio/" + dados.empreendimentoId + "/pronto"] = true;
-      return update(o).then(function () { return n; });
+      o["filaRomaneio/" + obra + "/romaneioEm"] = payload.criadoEm;
+      o["filaRomaneio/" + obra + "/lancadoPorUid"] = payload.lancadoPorUid;
+      o["filaRomaneio/" + obra + "/lancadoPorNome"] = payload.lancadoPorNome;
+      o["filaRomaneio/" + obra + "/atualizadoEm"] = payload.criadoEm;
+      o["filaRomaneio/" + obra + "/pronto"] = true;
+      return update(o).then(function () { delete romaneioPendente[obra]; return n; });
     }
+    if (romaneioPendente[obra] === "reservando") return Promise.reject(aviso("O romaneio desta obra já está sendo gerado."));
+    if (romaneioPendente[obra]) return gravarNumero(romaneioPendente[obra]);
+    romaneioPendente[obra] = "reservando";
     if (HGI.exemplo) {
+      var fila = (mem.filaRomaneio && mem.filaRomaneio[obra]) || {};
+      if (fila.romaneioNumero) { delete romaneioPendente[obra]; return Promise.reject(aviso("Esta obra já tem romaneio.")); }
       var n = calc.proximoRomaneio(mem.contadores.romaneio, ano);
-      if (n == null) return Promise.reject(new Error("Sequência do ano esgotada."));
-      if (!calc.regraContadorAceita(mem.contadores.romaneio, n)) return Promise.reject(new Error("Número recusado."));
+      if (n == null) { delete romaneioPendente[obra]; return Promise.reject(aviso("Sequência do ano esgotada.")); }
+      if (!calc.regraContadorAceita(mem.contadores.romaneio, n)) { delete romaneioPendente[obra]; return Promise.reject(aviso("Número recusado.")); }
       mem.contadores.romaneio = n;
+      if (!mem.filaRomaneio[obra]) mem.filaRomaneio[obra] = {};
+      mem.filaRomaneio[obra].romaneioNumero = n;
+      romaneioPendente[obra] = n;
       return gravarNumero(n);
     }
     var refC = firebase.database().ref("contadores/romaneio");
     return refC.transaction(function (cur) {
       return calc.proximoRomaneio(cur, ano);
     }).then(function (res) {
-      if (!res.committed) throw new Error("Não foi possível reservar o número.");
+      if (!res.committed) { delete romaneioPendente[obra]; throw aviso("Não foi possível reservar o número."); }
       var n = res.snapshot.val();
-      return gravarNumero(n).catch(function (e) {
-        if (String(e && e.code).indexOf("PERMISSION_DENIED") >= 0 && mem) throw e;
-        return refC.transaction(function (cur) { return calc.proximoRomaneio(cur, ano); }).then(function (r2) {
-          if (!r2.committed) throw e;
-          return gravarNumero(r2.snapshot.val());
-        });
+      var filaRef = firebase.database().ref("filaRomaneio/" + obra + "/romaneioNumero");
+      return filaRef.transaction(function (cur) {
+        if (cur == null || cur === n) return n;
+      }).then(function (fr) {
+        if (!fr.committed && fr.snapshot.val() !== n) { delete romaneioPendente[obra]; throw aviso("Esta obra já tem romaneio."); }
+        romaneioPendente[obra] = n;
+        return gravarNumero(n);
       });
+    }).catch(function (e) {
+      if (romaneioPendente[obra] === "reservando") delete romaneioPendente[obra];
+      throw e;
     });
   }
   function marcarPronto(id, pronto) {

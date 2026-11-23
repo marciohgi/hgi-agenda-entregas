@@ -3,6 +3,7 @@
   var app = document.getElementById("app");
   var emps = null, movs = null;
   var semana = lerSemana();
+  var movPendente = null;
 
   function lerSemana() {
     var s = "";
@@ -141,17 +142,21 @@
       var qtd = calc.numOrNull(document.getElementById("mov-qtd").value);
       if (!emp) { dizer("mov", false, "Escolha a obra."); return; }
       if (!calc.parseISO(data)) { dizer("mov", false, "Informe a data."); return; }
-      if (qtd === null || qtd < 0) { dizer("mov", false, "Informe a quantidade."); return; }
+      if (qtd === null || qtd < 0) { dizer("mov", false, qtd === null && String(document.getElementById("mov-qtd").value).trim() ? "A quantidade não é um número válido." : "Informe a quantidade."); return; }
+      if (!movPendente) movPendente = { id: HGIDados.novoId("producao"), criadoEm: Date.now() };
       ev.target.disabled = true;
-      HGIDados.salvarMovimento(HGIDados.novoId("producao"), {
+      HGIDados.salvarMovimento(movPendente.id, {
         tipo: document.getElementById("mov-tipo").value,
         empreendimentoId: emp,
         data: data,
-        qtd: qtd
+        qtd: qtd,
+        criadoEm: movPendente.criadoEm,
+        emp: emps[emp] || {}
       }).then(function () {
+        movPendente = null;
         ev.target.disabled = false;
         dizer("mov", true, "Lançado por " + (HGI.sessao.nome || "") + ".");
-      }).catch(function (e) { ev.target.disabled = false; dizer("mov", false, HGIDados.falha(e)); });
+      }).catch(function (e) { ev.target.disabled = false; dizer("mov", false, HGIDados.falha(e) + " Se o lançamento já apareceu na lista, não lance de novo."); });
       return;
     }
     var del = ev.target.getAttribute && ev.target.getAttribute("data-del");
@@ -167,7 +172,8 @@
     HGI.montarChrome("financeiro");
     app.textContent = "Carregando…";
     var negou = function () { app.textContent = "Sem permissão para ler o financeiro."; };
-    HGIDados.escutar("empreendimentos", function (v) { emps = v || {}; if (movs !== null) render(); }, negou);
-    HGIDados.escutar("producao", function (v) { movs = v || {}; if (emps !== null) render(); }, negou);
+    var pintar = HGI.agendarRender(app, render);
+    HGIDados.escutar("empreendimentos", function (v) { emps = v || {}; if (movs !== null) pintar(); }, negou);
+    HGIDados.escutar("producao", function (v) { movs = v || {}; if (emps !== null) pintar(); }, negou);
   });
 })();

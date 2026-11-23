@@ -23,6 +23,7 @@
     var s = String(v).trim();
     if (!s) return null;
     if (s.indexOf(",") >= 0) s = s.replace(/\./g, "").replace(",", ".");
+    else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
     var n = Number(s);
     return isFinite(n) ? n : null;
   }
@@ -161,6 +162,11 @@
     if (!pr.tem) return null;
     return q * pr.soma;
   }
+  function valorMovimento(m, emp) {
+    var gravado = numOrNull(m && m.valorTotal);
+    if (gravado !== null) return gravado;
+    return valorDeQtd(m && m.qtd, emp);
+  }
 
   function proximoRomaneio(atual, ano) {
     ano = Number(ano);
@@ -186,7 +192,7 @@
      ou o primeiro número de um ano à frente. Nunca repete. */
   function regraContadorAceita(anterior, proximo) {
     if (typeof proximo !== "number" || !isFinite(proximo)) return false;
-    if (proximo < 260001 || proximo > 991000) return false;
+    if (proximo < 260001 || proximo > 999999) return false;
     if (proximo % 10000 < 1 || proximo % 10000 > 9999) return false;
     if (anterior === null || anterior === undefined || anterior === "") return proximo % 10000 === 1;
     anterior = Number(anterior);
@@ -211,7 +217,7 @@
       if (q === null) { incompleto = true; return; }
       temQtd = true;
       qtd += q;
-      var v = valorDeQtd(q, emp);
+      var v = valorMovimento(m, emp);
       if (v === null) incompleto = true;
       else { temValor = true; valor += v; }
     });
@@ -282,7 +288,7 @@
       tem = true;
       var emp = porId[m.empreendimentoId];
       var q = numOrNull(m.qtd);
-      var valor = q === null ? null : valorDeQtd(q, emp);
+      var valor = q === null ? null : valorMovimento(m, emp);
       var bucket = dias[m.data] || (dias[m.data] = vazioDia());
       var pe = porEmp[m.empreendimentoId] || (porEmp[m.empreendimentoId] = vazioEmp({ id: m.empreendimentoId, nome: m.nome || "Empreendimento removido" }));
       pe.teve = true;
@@ -411,6 +417,7 @@
     saldoEntrega: saldoEntrega,
     precos: precos,
     valorDeQtd: valorDeQtd,
+    valorMovimento: valorMovimento,
     proximoRomaneio: proximoRomaneio,
     regraContadorAceita: regraContadorAceita,
     entradas: entradas,

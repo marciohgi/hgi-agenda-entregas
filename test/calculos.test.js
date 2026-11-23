@@ -27,8 +27,17 @@ igual(c.valorDeQtd(2, { valorKitEletrico: 1000 }), 2000);
 igual(c.valorDeQtd(1, { valorKitEletrico: 500, valorKitQdc: 50 }), 550);
 igual(c.valorDeQtd(1, {}), null);
 igual(c.numOrNull("1.250,50"), 1250.5);
+igual(c.numOrNull("1.000"), 1000);
+igual(c.numOrNull("1.000.000"), 1000000);
+igual(c.numOrNull("1.5"), 1.5);
+igual(c.numOrNull("10.50"), 10.5);
 igual(c.numOrNull(0), 0);
 igual(c.numOrNull(""), null);
+igual(c.numOrNull("abc"), null);
+igual(c.somarQtdValor([{ qtd: 2, valorTotal: 10 }], { valorKitEletrico: 1000 }).valor, 10);
+igual(c.proximoRomaneio(999998, 99), 999999);
+assert.ok(c.regraContadorAceita(999998, 999999));
+igual(c.proximoRomaneio(999999, 99), null);
 
 igual(c.segundaDe("2026-11-23"), "2026-11-23");
 igual(c.segundaDe("2026-11-22"), "2026-11-16");

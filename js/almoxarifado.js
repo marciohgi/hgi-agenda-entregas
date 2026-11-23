@@ -140,7 +140,8 @@
     document.body.classList.add("hgi-ok");
     HGI.montarChrome("almoxarifado");
     app.textContent = "Carregando…";
-    HGIDados.escutar("almoxarifado/itens", function (v) { itens = v || {}; render(); }, function () {
+    var pintar = HGI.agendarRender(app, render);
+    HGIDados.escutar("almoxarifado/itens", function (v) { itens = v || {}; pintar(); }, function () {
       app.textContent = "Sem permissão para ler o almoxarifado.";
     });
   });

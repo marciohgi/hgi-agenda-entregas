@@ -8,6 +8,7 @@
   var waiters = [];
   var avisados = false;
   var sdk = null;
+  var geracao = 0;
 
   window.HGI = window.HGI || {};
   HGI.exemplo = exemplo;
@@ -74,7 +75,16 @@
     var h = document.createElement("p");
     h.className = "sub";
     h.textContent = "Sua conta entrou, mas ainda não tem papel. Um acesso total precisa gravar /usuarios/" + (state.uid || "{uid}") + " com papel \"total\" ou \"almoxarife\". O README explica como criar o primeiro administrador no console do Firebase.";
+    var sair = document.createElement("button");
+    sair.type = "button";
+    sair.textContent = "Sair e usar outra conta";
+    sair.onclick = function () {
+      var fim = function () { location.reload(); };
+      if (window.firebase && firebase.apps && firebase.apps.length) firebase.auth().signOut().then(fim, fim);
+      else fim();
+    };
     box.appendChild(h);
+    box.appendChild(sair);
   }
   function mostrarBloqueio(destino) {
     document.body.classList.add("hgi-ok");
@@ -92,6 +102,9 @@
     box.appendChild(p);
     main.appendChild(box);
   }
+  function fecharEscutas() {
+    (window.HGI_FECHAR || []).forEach(function (fn) { try { fn(); } catch (e) {} });
+  }
   function publicar() {
     HGI.sessao = state;
     window.HGI_TOKEN = state.token || "";
@@ -102,6 +115,25 @@
       window.HGI_REOUVIR.forEach(function (fn) { fn(); });
     }
   }
+  HGI.agendarRender = function (app, render) {
+    var pendente = false;
+    function editando() {
+      var a = document.activeElement;
+      return !!(a && app.contains(a) && /^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName));
+    }
+    app.addEventListener("focusout", function () {
+      setTimeout(function () {
+        if (!pendente || editando()) return;
+        pendente = false;
+        render();
+      }, 0);
+    });
+    return function () {
+      if (editando()) { pendente = true; return; }
+      pendente = false;
+      render();
+    };
+  };
   function aoEntrar(cb) {
     if (state.pronto) cb(state);
     else waiters.push(cb);
@@ -109,7 +141,7 @@
   function carregarSdk() {
     if (sdk) return sdk;
     if (!configOk()) return Promise.reject(new Error("config"));
-    sdk = new Promise(function (resolve, reject) {
+    var p = new Promise(function (resolve, reject) {
       var fontes = [
         "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js",
         "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js",
@@ -129,7 +161,9 @@
       }
       prox(0);
     });
-    return sdk;
+    sdk = p;
+    p.catch(function () { if (sdk === p) sdk = null; });
+    return p;
   }
   function msgAuth(e) {
     var c = e && e.code || "";
@@ -142,18 +176,23 @@
     return "Não foi possível entrar. Tente de novo.";
   }
   function aplicarUsuario(user) {
+    var g = ++geracao;
     if (!user) {
+      fecharEscutas();
       state = { pronto: false, uid: "", email: "", nome: "", papel: "", token: "" };
       HGI.sessao = state;
       window.HGI_TOKEN = "";
+      if (avisados) { location.reload(); return; }
       mostrarGate();
       return;
     }
     user.getIdToken().then(function (token) {
+      if (g !== geracao) return null;
       window.HGI_TOKEN = token;
       state.token = token;
       return firebase.database().ref("usuarios/" + user.uid).once("value");
     }).then(function (snap) {
+      if (!snap || g !== geracao) return;
       var p = snap.val() || {};
       state = {
         pronto: true,
@@ -166,6 +205,7 @@
       if (!state.papel) { HGI.sessao = state; mostrarSemPapel(); return; }
       publicar();
     }).catch(function () {
+      if (g !== geracao) return;
       erroGate("Entrou na conta, mas não foi possível ler o papel. Confira as regras e o nó usuarios.");
     });
   }

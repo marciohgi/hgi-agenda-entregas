@@ -51,7 +51,8 @@
     document.body.classList.add("hgi-ok");
     HGI.montarChrome("equipe");
     app.textContent = "Carregando…";
-    HGIDados.escutar("usuarios", function (v) { usuarios = v || {}; render(); }, function () {
+    var pintar = HGI.agendarRender(app, render);
+    HGIDados.escutar("usuarios", function (v) { usuarios = v || {}; pintar(); }, function () {
       app.textContent = "Sem permissão para ler a equipe.";
     });
   });

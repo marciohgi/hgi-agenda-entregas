@@ -82,7 +82,7 @@
         dizer(true, ok === "num" ? "Romaneio " + calc.formatRomaneio(n) + " gerado. Lançado por " + (HGI.sessao.nome || "") + "." : texto);
       }).catch(function (e) {
         btn.disabled = false;
-        dizer(false, e && e.message && e.message.indexOf("Sequência") >= 0 ? e.message : HGIDados.falha(e));
+        dizer(false, HGIDados.falha(e));
       });
     };
     if (acao === "pronto") fim(HGIDados.marcarPronto(id, true), "txt", "Marcado como pronto.");
@@ -97,8 +97,9 @@
       }), "num");
     }
   });
+  var pintar = HGI.agendarRender(app, render);
   function chegou() {
-    if (fila !== null && romaneios !== null && contador !== undefined) render();
+    if (fila !== null && romaneios !== null && contador !== undefined) pintar();
   }
   HGI.aoEntrar(function (s) {
     if (s.papel !== "total" && s.papel !== "almoxarife") { HGI.mostrarSemPapel(); return; }

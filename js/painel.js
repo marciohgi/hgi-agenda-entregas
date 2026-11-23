@@ -176,9 +176,10 @@
     HGI.montarChrome("painel");
     app.textContent = "Carregando…";
     var negou = function () { app.textContent = "Sem permissão para ler o painel."; };
-    function pronto() { if (emps !== null && movs !== null && roms !== null) render(); }
-    HGIDados.escutar("empreendimentos", function (v) { emps = v || {}; pronto(); }, negou);
-    HGIDados.escutar("producao", function (v) { movs = v || {}; pronto(); }, negou);
-    HGIDados.escutar("romaneios", function (v) { roms = v || {}; pronto(); }, negou);
+    var pintar = HGI.agendarRender(app, render);
+    function mostrar() { if (emps !== null && movs !== null && roms !== null) pintar(); }
+    HGIDados.escutar("empreendimentos", function (v) { emps = v || {}; mostrar(); }, negou);
+    HGIDados.escutar("producao", function (v) { movs = v || {}; mostrar(); }, negou);
+    HGIDados.escutar("romaneios", function (v) { roms = v || {}; mostrar(); }, negou);
   });
 })();

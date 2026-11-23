@@ -2073,8 +2073,11 @@
       es.onopen=function(){marca(caminho,true)};
       es.onerror=function(){marca(caminho,false)};
     }
+    function fechar(){if(es){es.close();es=null}marca(caminho,false)}
     window.HGI_REOUVIR=window.HGI_REOUVIR||[];
     window.HGI_REOUVIR.push(abrir);
+    window.HGI_FECHAR=window.HGI_FECHAR||[];
+    window.HGI_FECHAR.push(fechar);
     abrir();
   }
   function renderAlertasCerca(){

@@ -96,27 +96,34 @@ O nome é o que aparece em **lançado por**. Para o Zé, use o nome `Zé` (ou `J
 
 Pode repetir o mesmo bloco para os outros UIDs agora, ou deixar para a tela Equipe depois que o primeiro `total` entrar.
 
-## 6. Publicar as regras
+## 6. Publicar o site e, em seguida, as regras
+
+Publique os dois juntos, com o site primeiro. Se as regras fecharem o banco enquanto o Hosting ainda serve a agenda antiga, essa versão não envia login e a agenda para de abrir até o site novo entrar ou as regras serem desfeitas.
 
 Na pasta do projeto, já com `firebase login` feito:
 
 ```bash
-firebase deploy --only database --project hgi-agenda-entregas-ab559
+firebase deploy --only hosting,database --project hgi-agenda-entregas-ab559
 ```
 
-Confira no console se `database.rules.json` subiu. A partir daí:
-
-- sem login, o banco não responde
-- almoxarife não lê `empreendimentos` nem `producao`
-- o número do romaneio só anda para a frente
-
-## 7. Publicar o site
+Se precisar separar:
 
 ```bash
 firebase deploy --only hosting --project hgi-agenda-entregas-ab559
+firebase deploy --only database --project hgi-agenda-entregas-ab559
 ```
 
-O endereço fica em `https://hgi-agenda-entregas-ab559.web.app` (o CLI mostra o link no final).
+Se o Hosting falhar depois das regras, publique o Hosting de novo. Se isso não for possível na hora, no console do Realtime Database use a aba Regras e restaure a versão anterior (o histórico fica nessa aba) para a agenda antiga voltar a responder. Isso reabre o banco até o site novo estar no ar. Não apaga os dados.
+
+Com as regras novas:
+
+- sem login, o banco não responde
+- almoxarife não lê `empreendimentos` nem `producao`
+- o número do romaneio só anda para a frente, e a obra só recebe um
+
+## 7. Endereço do site
+
+O comando de Hosting mostra o link no final. O padrão é `https://hgi-agenda-entregas-ab559.web.app`.
 
 Para olhar no computador antes de publicar:
 
