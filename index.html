@@ -21,15 +21,34 @@
   .tot-tipo{display:flex;align-items:baseline;justify-content:space-between;gap:10px;color:#1e3a5f}
   .tot-tipo .lab{font-size:12px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
   .tot-tipo .n{font-size:20px;font-weight:700;line-height:1.1}
+  .tot-tipo.t-eletrica .lab,.box-apto.t-eletrica{border-left-color:#E87731}
   .tot-tipo.t-eletrica .lab{color:#E87731}
+  .tot-tipo.t-qdc .lab,.box-apto.t-qdc{border-left-color:#6a3fb5}
   .tot-tipo.t-qdc .lab{color:#6a3fb5}
-  .tot-tipo.t-hidraulica .lab{color:#1f78b4}
+  .tot-tipo.t-hidraulica-fria .lab,.box-apto.t-hidraulica-fria{border-left-color:#1f78b4}
+  .tot-tipo.t-hidraulica-fria .lab{color:#1f78b4}
+  .tot-tipo.t-hidraulica-quente .lab,.box-apto.t-hidraulica-quente{border-left-color:#9b2d5a}
+  .tot-tipo.t-hidraulica-quente .lab{color:#9b2d5a}
+  .tot-tipo.t-hidraulica-esgoto .lab,.box-apto.t-hidraulica-esgoto{border-left-color:#6b5744}
+  .tot-tipo.t-hidraulica-esgoto .lab{color:#6b5744}
+  .tot-tipo.t-gas .lab,.box-apto.t-gas{border-left-color:#0b7a6b}
+  .tot-tipo.t-gas .lab{color:#0b7a6b}
+  .box-apto{flex:1 1 150px;min-width:140px}
+  .resumo-nota{margin:-4px 0 12px}
+  .pendencias{background:#fff8e8;border:1px solid #e0c070;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#5c4a16}
+  .pendencias .rot{margin-bottom:6px;color:#7a5b10}
+  .pendencias .pend{font-size:13px;margin:5px 0;line-height:1.35;cursor:pointer}
+  .pendencias .pend:hover{text-decoration:underline}
   .tot-kits{margin-top:6px;font-size:12px;color:#5b6b7d;line-height:1.35}
   .dia-totais{margin:8px 0 2px;padding-top:6px;border-top:1px dashed #d5dce5;font-size:11px;color:#3d4d5f;line-height:1.45}
   .dia-totais .t-eletrica{color:#E87731}
   .dia-totais .t-qdc{color:#6a3fb5}
-  .dia-totais .t-hidraulica{color:#1f78b4}
+  .dia-totais .t-hidraulica-fria{color:#1f78b4}
+  .dia-totais .t-hidraulica-quente{color:#9b2d5a}
+  .dia-totais .t-hidraulica-esgoto{color:#6b5744}
+  .dia-totais .t-gas{color:#0b7a6b}
   .dia-totais b{color:#1e3a5f}
+  .aviso-etapa{display:block;margin-top:6px;border-radius:4px;padding:4px 7px;font-size:11px;font-weight:700;background:#fff3b0;color:#6a5300;border:1px solid #d4a514}
   .alerta{background:#fdecea;border:2px solid #c0392b;border-radius:8px;padding:12px 16px;margin-bottom:12px;color:#7b1f16}
   .alerta b{font-size:16px;display:block;margin-bottom:4px}
   .alerta ul{margin:4px 0 0 18px;padding:0;font-size:14px}
@@ -98,7 +117,6 @@
   .sync i{width:9px;height:9px;border-radius:50%;background:#94a1b2;display:inline-block}
   .sync.on i{background:#4cd07d}.sync.off i{background:#e74c3c}
   .upd{font-size:11px;color:#5b6b7d;margin-top:-8px;margin-bottom:12px}
-  .htop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
   .nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
   .nav button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
   .nav button:hover{background:rgba(255,255,255,.26)}
@@ -108,8 +126,22 @@
   td.recesso .num{color:#8a96a5}
   .rec{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6b7785;background:#dde2e8;border-radius:4px;padding:3px 8px;margin-bottom:8px}
   .esconde{display:none!important}
-  .btn-incluir{background:#c0392b;color:#fff;border:2px solid #fdecea;border-radius:8px;padding:11px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);white-space:nowrap}
+  .htop-acoes{display:flex;flex-wrap:wrap;gap:18px;align-items:stretch;margin:18px 0 20px}
+  .btn-incluir,.btn-relatorio{flex:0 1 auto;box-sizing:border-box;max-width:100%;padding:12px 20px;font:inherit;font-size:15px;font-weight:700;line-height:1.25;cursor:pointer;border-radius:8px;white-space:nowrap;text-align:center}
+  .btn-incluir{background:#c0392b;color:#fff;border:2px solid #fdecea;box-shadow:0 2px 6px rgba(0,0,0,.25)}
   .btn-incluir:hover{background:#a93226}
+  .btn-relatorio{background:#1e9a4a;color:#fff;border:2px solid #d8f5e3;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .btn-relatorio:hover{background:#178a40}
+  @media (max-width:768px){
+    .htop-acoes{gap:16px}
+    .btn-incluir,.btn-relatorio{flex:1 1 calc(50% - 8px);min-width:calc(50% - 8px);white-space:normal}
+  }
+  @media (max-width:600px){
+    .htop-acoes{display:grid;grid-template-columns:1fr;gap:16px;margin:16px 0 18px}
+    .btn-incluir,.btn-relatorio{width:100%;min-width:0;white-space:normal;text-align:center;padding:12px 14px}
+    .modal-rel .acoes{flex-direction:column;align-items:stretch}
+    .modal-rel .acoes .btn{width:100%}
+  }
   .alerta{position:relative}
   .alerta .concluir{position:absolute;top:8px;right:10px;background:#fff;color:#7b1f16;border:1px solid #c0392b;border-radius:6px;padding:3px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
   .alerta .concluir:hover{background:#fbe3e1}
@@ -122,8 +154,10 @@
   .item .btn-card-editar{flex:none;background:#fff;color:#c86220;border:1px solid #E87731;border-radius:5px;padding:2px 7px;font-size:11px;font-weight:700;cursor:pointer;line-height:1.4;white-space:nowrap}
   .item .btn-card-editar:hover,.item .btn-card-editar:focus{background:#E87731;color:#fff;outline:none}
   .tipo-chip{display:inline-block;margin:4px 0 1px;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;vertical-align:middle}
-  .t-eletrica{background:#E87731}.t-qdc{background:#6a3fb5}.t-hidraulica{background:#1f78b4}
-  .pill.t-eletrica,.pill.t-qdc,.pill.t-hidraulica{margin-left:6px}
+  .t-eletrica{background:#E87731}.t-qdc{background:#6a3fb5}.t-hidraulica,.t-hidraulica-fria{background:#1f78b4}
+  .t-hidraulica-quente{background:#9b2d5a}.t-hidraulica-esgoto{background:#6b5744}.t-hidraulica-sem{background:#7a8a99}
+  .t-gas{background:#0b7a6b}
+  .pill.t-eletrica,.pill.t-qdc,.pill.t-hidraulica,.pill.t-hidraulica-fria,.pill.t-hidraulica-quente,.pill.t-hidraulica-esgoto,.pill.t-hidraulica-sem,.pill.t-gas{margin-left:6px}
   .ed-tit{margin:6px 0 6px;font-weight:700;color:#c86220}
   .ed-nota{font-size:13px;color:#3d4d5f;background:#fff4ec;border:1px solid #f3c9a8;border-radius:6px;padding:8px 12px;margin-bottom:12px;line-height:1.4}
   .ed-linha{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;align-items:center;margin-bottom:6px;font-size:13px}
@@ -229,15 +263,7 @@
     table.cal thead{display:none}
     table.cal td{height:auto;min-height:80px;margin-bottom:8px}
   }
-  .htop-acoes{display:flex;flex-direction:column;gap:8px;align-items:stretch;flex-wrap:nowrap}
-  .btn-relatorio{background:#1e9a4a;color:#fff;border:2px solid #d8f5e3;border-radius:8px;padding:11px 18px;font:inherit;font-size:15px;font-weight:700;line-height:1.2;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);white-space:nowrap;width:100%}
-  .btn-relatorio:hover{background:#178a40}
-  @media (max-width:600px){
-    .htop-acoes{width:100%}
-    .btn-incluir,.btn-relatorio{width:100%;text-align:center;white-space:normal}
-    .modal-rel .acoes{flex-direction:column;align-items:stretch}
-    .modal-rel .acoes .btn{width:100%}
-  }
+
   .dest .dest-parc{font-weight:700;color:#1e3a5f}
   .dest .dest-parc.ok{color:#2e8b57}
   .dest .dest-lote{font-weight:700;color:#c86220}
@@ -319,19 +345,21 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="htop"><div>
     <h1 id="titulo">Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
+    <div class="htop-acoes">
+      <button type="button" class="btn-incluir" id="incluir">+ Incluir lembrete</button>
+      <button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button>
+      <button type="button" class="btn-relatorio" id="relatorio-entregas">Gerar relatório de entregas</button>
+    </div>
     <p>Grupo HGI · Kits elétricos, hidráulicos e gás</p>
     <div class="nav"><button type="button" id="ant">◀ Semana anterior</button><button type="button" id="hoje">Hoje / esta semana</button><button type="button" id="prox">Próxima semana ▶</button><select id="semanas" aria-label="Escolher semana"></select><label class="filtro-cliente"><span>Cliente</span><select id="filtro-cliente" aria-label="Filtrar por cliente"><option value="">Todos</option></select></label><label class="filtro-cliente"><span>Tipo</span><select id="filtro-tipo" aria-label="Filtrar por tipo de entrega"><option value="">Todos</option></select></label></div>
     <div class="sync" id="sync"><i></i><span id="synct">Conectando…</span></div>
-    </div><div class="htop-acoes"><button class="btn-incluir" id="incluir">+ Incluir lembrete</button><button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button><button type="button" class="btn-relatorio" id="relatorio-entregas">Gerar relatório de entregas</button></div></div>
   </header>
 
-  <div class="resumo">
-    <div class="box"><div class="rot">Entregas na semana</div><div class="val" id="r-total">9</div></div>
-    <div class="box box-tipos"><div class="rot" id="r-aptos-rot">Aptos por tipo</div><div class="tot-tipos" id="r-aptos-tipos"></div><div class="tot-kits" id="r-kits" hidden></div><div class="sub" id="r-semq"></div></div>
-    <div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div>
-  </div>
+  <div class="resumo" id="resumo-totais"></div>
+  <div class="resumo" id="resumo-extra"><div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div></div>
+  <div class="resumo-nota"><div class="tot-kits" id="r-kits" hidden></div><div class="sub" id="r-semq"></div></div>
+  <div id="pendencias" class="pendencias" hidden></div>
 
   <div id="alertas-cerca"></div>
   <div id="alertas-carry"></div>
@@ -342,7 +370,7 @@
     <span><i style="background:#d4a514"></i>Em andamento</span>
     <span><i style="background:#e07b1a"></i>Aguardando</span>
     <span><i style="background:#c0392b"></i>Não pode falhar</span>
-    <span><i style="background:#1f6fd1"></i>Na Qualidade (estágio 8)</span>
+    <span><i style="background:#1f6fd1"></i>Na Qualidade (último estágio)</span>
     <span><i style="background:#1e9a4a"></i>Concluído</span>
   </div>
 
@@ -366,7 +394,7 @@
       <div class="sec-concluido" id="sec-concluido">
         <div class="rot">Conclusão da obra</div>
         <button type="button" class="btn-concluido" id="e-concluir" disabled>Concluído</button>
-        <div class="concluido-nota" id="e-concluido-nota">Disponível quando a obra chegar no estágio 8 — Qualidade (liberação para entrega). Concluído significa que já passou pela Qualidade e já foi embarcada.</div>
+        <div class="concluido-nota" id="e-concluido-nota">Disponível quando a obra chegar no último estágio — Qualidade (liberação para entrega). Concluído significa que já passou pela Qualidade e já foi embarcada.</div>
       </div>
       <div class="campos quatro">
         <label class="rot">Status<select id="e-status"></select></label>
@@ -434,6 +462,7 @@
         <label class="rot">Data<input type="date" id="n-data" value="2026-11-09"></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="n-qtd" placeholder="qtd a definir"></label>
         <label class="rot">Tipo de entrega<select id="n-tipo"></select></label>
+        <label class="rot" id="n-ramal-wrap" hidden>Ramal hidráulico <span class="req">*</span><select id="n-ramal"></select></label>
       </div>
       <div class="campos quatro">
         <label class="rot">Status<select id="n-status"></select></label>
@@ -502,6 +531,7 @@
       <div class="campos">
         <label class="rot full">Obra / nome <span class="req">*</span><input type="text" id="ed-nome" maxlength="80"></label>
         <label class="rot">Tipo de entrega<select id="ed-tipo"></select></label>
+        <label class="rot" id="ed-ramal-wrap" hidden>Ramal hidráulico <span class="req">*</span><select id="ed-ramal"></select></label>
         <label class="rot">Quantidade de aptos<input type="number" min="0" step="1" id="ed-qtd" placeholder="qtd a definir"></label>
       </div>
       <div class="rot ed-tit">Datas que definem a ordem de entregas</div>
@@ -541,67 +571,222 @@
   function valorPadrao(sel){return (sel&&infoPadrao(sel.value))?sel.value:""}
   function ritmoDe(v){var i=infoPadrao(v);return i?i.ritmo:""}
   function prazoTxt(qtd,info){qtd=parseInt(qtd,10);if(!info||!(qtd>0))return "";var dMin=Math.ceil(qtd/info.max),dMax=Math.ceil(qtd/info.min);return dMin===dMax?dMin+(dMin===1?" dia":" dias"):dMin+"–"+dMax+" dias"}
-  var TIPOS=[{id:"eletrica",rot:"Elétrica"},{id:"qdc",rot:"QDC"},{id:"hidraulica",rot:"Hidráulica"}];
+  var RAMAIS_HIDR=[
+    {id:"agua-fria",rot:"Água fria",cls:"t-hidraulica-fria"},
+    {id:"agua-quente",rot:"Água quente",cls:"t-hidraulica-quente"},
+    {id:"esgoto",rot:"Esgoto",cls:"t-hidraulica-esgoto"}
+  ];
+  var TIPOS=[
+    {id:"eletrica",rot:"Elétrica",cls:"t-eletrica"},
+    {id:"qdc",rot:"QDC",cls:"t-qdc"},
+    {id:"hidraulica",rot:"Hidráulica",cls:"t-hidraulica",ramais:RAMAIS_HIDR},
+    {id:"gas",rot:"Gás",cls:"t-gas"}
+  ];
   var TIPO_MAP={};TIPOS.forEach(function(t){TIPO_MAP[t.id]=t});
-  function tipoDe(o){var t=String((o&&o.tipo)||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();if(TIPO_MAP[t])return t;if(t.indexOf("qdc")>=0)return "qdc";if(t.indexOf("hidr")>=0)return "hidraulica";return "eletrica"}
-  function rotTipo(o){return TIPO_MAP[tipoDe(o)].rot}
-  function totaisPorTipoVazio(){return {eletrica:0,qdc:0,hidraulica:0}}
-  function tiposVisiveis(){return (FILTRO_TIPO&&TIPO_MAP[FILTRO_TIPO])?TIPOS.filter(function(t){return t.id===FILTRO_TIPO}):TIPOS.slice()}
-  function idTipoDeRotulo(rot){var t=String(rot||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();if(TIPO_MAP[t])return t;if(t.indexOf("qdc")>=0)return "qdc";if(t.indexOf("hidr")>=0)return "hidraulica";return "eletrica"}
-  function somaKits(t){var s=0;tiposVisiveis().forEach(function(tp){s+=t[tp.id]||0});return s}
-  function nTiposComQtd(t){var n=0;TIPOS.forEach(function(tp){if((t[tp.id]||0)>0)n++});return n}
+  var LINHAS_TOTAL=[
+    {id:"eletrica",tipo:"eletrica",rot:"Elétrica",rotTopo:"Apartamentos Elétrica",cls:"t-eletrica"},
+    {id:"qdc",tipo:"qdc",rot:"QDC",rotTopo:"Apartamentos QDC",cls:"t-qdc"},
+    {id:"hidraulica-agua-fria",tipo:"hidraulica",ramal:"agua-fria",rot:"Hidr. água fria",rotTopo:"Apartamentos Hidr. água fria",cls:"t-hidraulica-fria"},
+    {id:"hidraulica-agua-quente",tipo:"hidraulica",ramal:"agua-quente",rot:"Hidr. água quente",rotTopo:"Apartamentos Hidr. água quente",cls:"t-hidraulica-quente"},
+    {id:"hidraulica-esgoto",tipo:"hidraulica",ramal:"esgoto",rot:"Hidr. esgoto",rotTopo:"Apartamentos Hidr. esgoto",cls:"t-hidraulica-esgoto"},
+    {id:"gas",tipo:"gas",rot:"Gás",rotTopo:"Apartamentos Gás",cls:"t-gas"}
+  ];
+  var LINHA_MAP={};LINHAS_TOTAL.forEach(function(ln){LINHA_MAP[ln.id]=ln});
+  function normTxt(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim()}
+  function tipoDe(o){
+    var t=normTxt(o&&o.tipo);
+    if(TIPO_MAP[t])return t;
+    if(t.indexOf("qdc")>=0)return "qdc";
+    if(t.indexOf("hidr")>=0)return "hidraulica";
+    if(t==="gas"||t.indexOf("gas")>=0)return "gas";
+    return "eletrica";
+  }
+  function ramalDe(o){
+    if(tipoDe(o)!=="hidraulica")return "";
+    var r=normTxt(o&&o.ramal).replace(/\s+/g,"-");
+    if(r==="agua-fria"||r==="aguafria"||r==="fria")return "agua-fria";
+    if(r==="agua-quente"||r==="aguaquente"||r==="quente")return "agua-quente";
+    if(r==="esgoto")return "esgoto";
+    return "";
+  }
+  function chaveTotal(o){
+    var t=tipoDe(o);
+    if(t==="hidraulica"){var r=ramalDe(o);return r?("hidraulica-"+r):""}
+    return t;
+  }
+  function rotTipo(o){
+    var t=tipoDe(o);
+    if(t==="hidraulica"){var r=ramalDe(o),rm=RAMAIS_HIDR.filter(function(x){return x.id===r})[0];return rm?("Hidráulica – "+rm.rot):"Hidráulica – ramal não informado"}
+    return (TIPO_MAP[t]||TIPO_MAP.eletrica).rot;
+  }
+  function clsTipo(o){
+    var ch=chaveTotal(o);if(ch&&LINHA_MAP[ch])return LINHA_MAP[ch].cls;
+    if(tipoDe(o)==="hidraulica")return "t-hidraulica t-hidraulica-sem";
+    return "t-"+tipoDe(o);
+  }
+  function totaisPorTipoVazio(){var t={};LINHAS_TOTAL.forEach(function(ln){t[ln.id]=0});return t}
+  function linhasVisiveis(){
+    if(!FILTRO_TIPO)return LINHAS_TOTAL.slice();
+    var p=FILTRO_TIPO.split(":"),t=p[0],r=p[1]||"";
+    return LINHAS_TOTAL.filter(function(ln){
+      if(ln.tipo!==t)return false;
+      if(!r||r==="__sem__")return r!=="__sem__";
+      return ln.ramal===r;
+    });
+  }
+  function somaKits(t){var s=0;linhasVisiveis().forEach(function(ln){s+=t[ln.id]||0});return s}
+  function nLinhasComQtd(t){var n=0;linhasVisiveis().forEach(function(ln){if((t[ln.id]||0)>0)n++});return n}
   function totaisUnicosDeItens(itens){
-    var t=totaisPorTipoVazio(),semq=[],visto={},nuniq=0;
+    var t=totaisPorTipoVazio(),semq=[],semRamal=0,visto={},nuniq=0;
     (itens||[]).forEach(function(it){
       var x=it.x||it,id=x&&x.id;if(!x||visto[id])return;visto[id]=1;nuniq++;
-      var o=x.o||x,q=qnum(o);
-      if(q)t[tipoDe(o)]+=q;else semq.push((o&&o.nome)||id);
+      var o=x.o||x,q=qnum(o),ch=chaveTotal(o);
+      if(!q){semq.push((o&&o.nome)||id);return}
+      if(ch&&t[ch]!=null)t[ch]+=q;
+      else if(tipoDe(o)==="hidraulica"&&!ramalDe(o))semRamal+=q;
     });
-    return {t:t,semq:semq,nuniq:nuniq};
+    return {t:t,semq:semq,semRamal:semRamal,nuniq:nuniq};
+  }
+  function chaveDeItemRel(it){
+    if(it.chaveId&&(LINHA_MAP[it.chaveId]||it.chaveId==="hidraulica-sem"))return it.chaveId;
+    if(it.tipoId==="hidraulica"||normTxt(it.tipo).indexOf("hidr")>=0){
+      var r=normTxt(it.tipo);
+      if(r.indexOf("fria")>=0)return "hidraulica-agua-fria";
+      if(r.indexOf("quente")>=0)return "hidraulica-agua-quente";
+      if(r.indexOf("esgoto")>=0)return "hidraulica-esgoto";
+      return "hidraulica-sem";
+    }
+    if(it.tipoId&&LINHA_MAP[it.tipoId])return it.tipoId;
+    var t=normTxt(it.tipo);
+    if(t.indexOf("qdc")>=0)return "qdc";
+    if(t.indexOf("gas")>=0)return "gas";
+    return "eletrica";
   }
   function totaisDeLinhasRel(itens){
-    var t=totaisPorTipoVazio();
-    (itens||[]).forEach(function(it){t[it.tipoId||idTipoDeRotulo(it.tipo)]+=it.qtd||0});
+    var t=totaisPorTipoVazio(),semRamal=0;
+    (itens||[]).forEach(function(it){
+      var ch=chaveDeItemRel(it),q=it.qtd||0;
+      if(ch==="hidraulica-sem")semRamal+=q;
+      else if(t[ch]!=null)t[ch]+=q;
+    });
+    t._semRamal=semRamal;
     return t;
   }
   function txtListaTipos(t,opts){
     opts=opts||{};
     var parts=[];
-    tiposVisiveis().forEach(function(tp){
-      var n=t[tp.id]||0;
+    linhasVisiveis().forEach(function(ln){
+      var n=t[ln.id]||0;
       if(opts.omitZero&&!n)return;
-      parts.push(tp.rot+" "+n+(n===1?" apto":" aptos"));
+      parts.push(ln.rot+" "+n+(n===1?" apto":" aptos"));
     });
     return parts.join(" · ");
   }
   function txtKitsSufixo(t){
-    if(FILTRO_TIPO||nTiposComQtd(t)<2)return "";
+    if(nLinhasComQtd(t)<2)return "";
     var k=somaKits(t);
     return " · "+k+(k===1?" kit":" kits");
   }
-  function htmlLinhasTipos(t){
-    var html="";
-    tiposVisiveis().forEach(function(tp){
-      html+='<div class="tot-tipo t-'+tp.id+'"><span class="lab">'+tp.rot+'</span><span class="n">'+(t[tp.id]||0)+'</span></div>';
-    });
-    return html;
-  }
   function htmlDiaTotais(t){
     var partes=[];
-    tiposVisiveis().forEach(function(tp){
-      var n=t[tp.id]||0;if(!n)return;
-      partes.push('<span class="t-'+tp.id+'">'+tp.rot+" <b>"+n+"</b></span>");
+    linhasVisiveis().forEach(function(ln){
+      var n=t[ln.id]||0;if(!n)return;
+      partes.push('<span class="'+ln.cls+'">'+ln.rot+" <b>"+n+"</b></span>");
     });
     var extra=txtKitsSufixo(t);
     return partes.length?partes.join(" · ")+(extra?extra:""):"";
   }
-  function encheTipo(sel,comTodos){if(!sel)return;sel.innerHTML="";if(comTodos){var z=document.createElement("option");z.value="";z.textContent="Todos";sel.appendChild(z)}TIPOS.forEach(function(t){var op=document.createElement("option");op.value=t.id;op.textContent=t.rot;sel.appendChild(op)})}
-  var N_ETAPAS=8;
-  var ETAPAS=["Projeto","PCP","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"];
-  var ETAPAS_CURTO=["Projeto","PCP","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"];
-  function etapaNum(o){var e=o&&o.etapa;e=(typeof e==="string")?parseInt(e,10):e;return (typeof e==="number"&&isFinite(e)&&e>=1&&e<=N_ETAPAS)?e:0}
-  function rotEtapa(n,curto){n=+n;if(!(n>=1&&n<=N_ETAPAS))return "Estágio a definir";return n+"/"+N_ETAPAS+" "+(curto?ETAPAS_CURTO:ETAPAS)[n-1]}
-  function rotEtapaBotao(n){n=+n;if(!(n>=1&&n<=N_ETAPAS))return "— estágio —";return n+" "+ETAPAS_CURTO[n-1]}
+  function encheTipo(sel){if(!sel)return;sel.innerHTML="";TIPOS.forEach(function(t){var op=document.createElement("option");op.value=t.id;op.textContent=t.rot;sel.appendChild(op)})}
+  function encheRamal(sel,placeholder){
+    if(!sel)return;sel.innerHTML="";
+    var z=document.createElement("option");z.value="";z.textContent=placeholder||"Escolha o ramal";sel.appendChild(z);
+    RAMAIS_HIDR.forEach(function(r){var op=document.createElement("option");op.value=r.id;op.textContent=r.rot;sel.appendChild(op)});
+  }
+  function encheFiltroTipo(sel){
+    if(!sel)return;sel.innerHTML="";
+    function op(v,lab){var o=document.createElement("option");o.value=v;o.textContent=lab;sel.appendChild(o)}
+    op("","Todos");
+    TIPOS.forEach(function(t){
+      op(t.id,t.rot);
+      if(t.ramais){
+        t.ramais.forEach(function(r){op(t.id+":"+r.id,t.rot+" – "+r.rot)});
+        op(t.id+":__sem__",t.rot+" – ramal não informado");
+      }
+    });
+  }
+  function filtroTipoValido(v){
+    if(!v)return true;
+    if(TIPO_MAP[v])return true;
+    var p=String(v).split(":"),t=p[0],r=p[1]||"";
+    if(!TIPO_MAP[t])return false;
+    if(r==="__sem__")return true;
+    return RAMAIS_HIDR.some(function(x){return x.id===r});
+  }
+  function rotuloFiltroTipo(v){
+    if(!v)return "";
+    if(TIPO_MAP[v])return TIPO_MAP[v].rot;
+    var p=String(v).split(":"),t=p[0],r=p[1]||"",tp=TIPO_MAP[t];
+    if(r==="__sem__")return (tp?tp.rot:"Hidráulica")+" – ramal não informado";
+    var rm=RAMAIS_HIDR.filter(function(x){return x.id===r})[0];
+    return (tp?tp.rot:"")+(rm?(" – "+rm.rot):"");
+  }
+
+  // Estágios por tipo — único ponto de configuração.
+  // Gás: lista provisória, igual à da Hidráulica, até o Márcio confirmar a lista própria.
+  var ETAPAS_POR_TIPO={
+    eletrica:{
+      long:["Projeto","PCP","Corte de fio","Mangueiras (conduítes e linha de comunicação)","Integração (montagem do kit)","Fechamento","Acabamento","Qualidade (liberação para entrega)"],
+      curto:["Projeto","PCP","Corte de fio","Mangueiras","Integração","Fechamento","Acabamento","Qualidade"]
+    },
+    qdc:{
+      long:["Projeto","PCP","Separação de material","Montagem","Acabamento","Embalagem","Qualidade"],
+      curto:["Projeto","PCP","Separação de material","Montagem","Acabamento","Embalagem","Qualidade"]
+    },
+    hidraulica:{
+      long:["Projeto","PCP","Separação de material","Corte de tubo","Acabamento","Embalagem","Qualidade"],
+      curto:["Projeto","PCP","Separação de material","Corte de tubo","Acabamento","Embalagem","Qualidade"]
+    }
+  };
+  ETAPAS_POR_TIPO.gas={long:ETAPAS_POR_TIPO.hidraulica.long.slice(),curto:ETAPAS_POR_TIPO.hidraulica.curto.slice(),provisorio:true};
+  function infoEtapas(oOrTipo){
+    var t=(typeof oOrTipo==="string")?oOrTipo:tipoDe(oOrTipo||{});
+    return ETAPAS_POR_TIPO[t]||ETAPAS_POR_TIPO.eletrica;
+  }
+  function nEtapas(oOrTipo){return infoEtapas(oOrTipo).long.length}
+  function etapaBruta(o){
+    var e=o&&o.etapa;
+    e=(typeof e==="string")?parseInt(e,10):e;
+    return (typeof e==="number"&&isFinite(e)&&e>=1)?Math.floor(e):0;
+  }
+  function etapaNum(o){var e=etapaBruta(o),n=nEtapas(o);return (e>=1&&e<=n)?e:0}
+  function etapaIncompativel(o){var e=etapaBruta(o);return e>=1&&e>nEtapas(o)}
+  function estaNaQualidade(o){var n=etapaNum(o);return n>0&&n>=nEtapas(o)}
+  function rotEtapaDe(o,curto){
+    if(etapaIncompativel(o)){
+      var e=etapaBruta(o);
+      return "Estágio "+e+" gravado (incompatível com "+rotTipo(o)+" — este tipo tem "+nEtapas(o)+" estágios)";
+    }
+    var n=etapaNum(o),inf=infoEtapas(o);
+    if(!n)return "Estágio a definir";
+    return n+"/"+nEtapas(o)+" "+(curto?inf.curto:inf.long)[n-1];
+  }
+  function rotEtapa(n,curto,o){return o?rotEtapaDe(o,curto):(function(){var inf=infoEtapas("eletrica"),x=+n;if(!(x>=1&&x<=inf.long.length))return "Estágio a definir";return x+"/"+inf.long.length+" "+(curto?inf.curto:inf.long)[x-1]})()}
+  function nomeEtapa3(oOrTipo){var inf=infoEtapas(oOrTipo);return inf.curto[2]||"etapa 3"}
+  function tipoDoForm(qual){
+    if(qual==="e"&&cur)return tipoDe(fonte()[cur]||{});
+    var s=document.getElementById(qual+"-tipo");
+    return (s&&TIPO_MAP[s.value])?s.value:"eletrica";
+  }
+  function montaListaEtapa(qual,tipo,raw){
+    var dd=document.getElementById(qual+"-dd-etapa");if(!dd)return;
+    var inf=infoEtapas(tipo),max=inf.long.length;
+    dd.innerHTML="";
+    function item(v,lab){var b=document.createElement("button");b.type="button";b.setAttribute("data-etapa",v);b.setAttribute("role","option");var ck=document.createElement("span");ck.className="ck";ck.setAttribute("aria-hidden","true");var lb=document.createElement("span");lb.textContent=lab;b.appendChild(ck);b.appendChild(lb);dd.appendChild(b)}
+    item("","— estágio —");
+    for(var i=1;i<=max;i++)item(String(i),i+" "+inf.curto[i-1]);
+    raw=parseInt(raw,10)||0;
+    if(raw>max)item(String(raw),raw+" (gravado — não existe neste tipo)");
+  }
   function pintaListaEtapa(dd,n){
     if(!dd)return;n=parseInt(n,10)||0;
     Array.prototype.forEach.call(dd.querySelectorAll("[data-etapa]"),function(b){
@@ -610,12 +795,14 @@
       var ck=b.querySelector(".ck");if(ck)ck.textContent=(v&&v<n)?"✓":"";
     });
   }
-  function pintaMarcadores(id,n){
+  function pintaMarcadores(id,n,tipo){
     var el=typeof id==="string"?document.getElementById(id):id;if(!el)return;
-    n=parseInt(n,10)||0;el.innerHTML="";
-    for(var i=1;i<=N_ETAPAS;i++){
+    n=parseInt(n,10)||0;
+    var inf=infoEtapas(tipo),max=inf.long.length;
+    el.innerHTML="";
+    for(var i=1;i<=max;i++){
       var s=document.createElement("span");
-      s.title=i+" "+ETAPAS[i-1];
+      s.title=i+" "+inf.long[i-1];
       if(i<n){s.className="feita";s.textContent="✓"}
       else if(i===n){s.className="atual";s.textContent=String(i)}
       el.appendChild(s);
@@ -623,9 +810,16 @@
   }
   function setEtapaCaixa(qual,n){
     n=parseInt(n,10)||0;
+    var tipo=tipoDoForm(qual);
+    var raw=n;
+    if(qual==="e"&&cur){var br=etapaBruta(fonte()[cur]||{});if(br>nEtapas(tipo))raw=br}
+    montaListaEtapa(qual,tipo,raw);
     var btn=document.getElementById(qual+"-etapa"),dd=document.getElementById(qual+"-dd-etapa"),marc=document.getElementById(qual+"-marcadores");
-    if(btn){btn.setAttribute("data-valor",n?String(n):"");var txt=btn.querySelector(".sel-etapa-txt");if(txt)txt.textContent=rotEtapaBotao(n)}
-    pintaListaEtapa(dd,n);pintaMarcadores(marc,n);
+    var inf=infoEtapas(tipo),max=inf.long.length,txtLab="— estágio —";
+    if(n>=1&&n<=max)txtLab=n+" "+inf.curto[n-1];
+    else if(n>max)txtLab=n+" (gravado — não existe neste tipo)";
+    if(btn){btn.setAttribute("data-valor",n?String(n):"");var txt=btn.querySelector(".sel-etapa-txt");if(txt)txt.textContent=txtLab}
+    pintaListaEtapa(dd,n);pintaMarcadores(marc,n,tipo);
   }
   function fechaDDs(){
     ["e-dd-etapa","n-dd-etapa"].forEach(function(id){var dd=document.getElementById(id);if(dd){dd.classList.remove("on");dd.hidden=true}});
@@ -826,31 +1020,41 @@
         for(i=0;i<lots.length;i++){
           lt=lots[i];saldo=saldoLote(o,lt);if(saldo<=0)continue;
           data=deIso(lt.data)?lt.data:dataRefEntrega(o);if(!deIso(data))continue;
-          c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:lt.n,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o)});
+          c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:lt.n,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o),ramal:ramalDe(o),chave:chaveCarga(null,o)});
         }
       }else{
         saldo=qnum(o)?faltam(o):0;if(saldo<=0)return;
         data=dataRefEntrega(o);if(!deIso(data))return;
-        c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:0,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o)});
+        c=cargaDias(saldo,o);out.push({id:x.id,nome:o.nome||x.id,lote:0,data:data,saldo:saldo,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o),ramal:ramalDe(o),chave:chaveCarga(null,o)});
       }
     });
     return out;
   }
+  function rotuloChaveCarga(ch){
+    if(LINHA_MAP[ch])return LINHA_MAP[ch].rot;
+    if(ch==="hidraulica-sem")return "Hidráulica – ramal não informado";
+    var tp=TIPO_MAP[ch];return tp?tp.rot:ch;
+  }
+  function chaveCarga(p,o){
+    if(p&&p.chave)return p.chave;
+    if(o){var ch=chaveTotal(o);return ch||(tipoDe(o)==="hidraulica"?"hidraulica-sem":tipoDe(o))}
+    if(p&&p.tipo==="hidraulica")return p.ramal?("hidraulica-"+p.ramal):"hidraulica-sem";
+    return (p&&p.tipo)||"eletrica";
+  }
   function alertasSobrecargaDe(pend,hoje){
     hoje=hoje||HOJE;
-    var itens=[];
-    TIPOS.forEach(function(tp){
-      var grupo=pend.filter(function(p){return (p.tipo||"eletrica")===tp.id});
-      if(!grupo.length)return;
-      var datas={};
+    var itens=[],grupos={};
+    pend.forEach(function(p){var ch=chaveCarga(p);if(!grupos[ch])grupos[ch]=[];grupos[ch].push(p)});
+    Object.keys(grupos).sort().forEach(function(ch){
+      var grupo=grupos[ch],rot=rotuloChaveCarga(ch),datas={};
       grupo.forEach(function(p){if(p.data>=hoje)datas[p.data]=1});
       Object.keys(datas).sort().forEach(function(D){
         var Y=diasUteisNoIntervalo(hoje,D),X=0,est=false;
         grupo.forEach(function(p){if(p.data<=D){X+=p.dias;if(p.estimado)est=true}});
-        if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,tipo:tp.id,
+        if(X>Y)itens.push({data:D,precisa:X,tem:Y,estimado:est,tipo:(LINHA_MAP[ch]?LINHA_MAP[ch].tipo:ch),chave:ch,
           ids:grupo.filter(function(p){return p.data<=D}).map(function(p){return p.id}),
-          tit:"Sobrecarga ("+tp.rot+"): janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,
-          sub:est?"Ritmo 50/dia (estimado) em ao menos uma obra de "+tp.rot+" · pulando recesso 24–31/12":"Carga dos lotes pendentes de "+tp.rot+" · pulando recesso 24–31/12"});
+          tit:"Sobrecarga ("+rot+"): janela até "+rotDataCurto(D)+" precisa de "+X+" dias de produção e tem "+Y,
+          sub:est?"Ritmo 50/dia (estimado) em ao menos uma obra de "+rot+" · pulando recesso 24–31/12":"Carga dos lotes pendentes de "+rot+" · pulando recesso 24–31/12"});
       });
     });
     return itens;
@@ -931,8 +1135,19 @@
   function nomeCliente(o,id){return String((o&&o.nome)||id||"").trim()}
   var FILTRO_TIPO_KEY="hgi-agenda-filtro-tipo-v1",FILTRO_TIPO="";
   try{FILTRO_TIPO=localStorage.getItem(FILTRO_TIPO_KEY)||""}catch(e){FILTRO_TIPO=""}
-  if(FILTRO_TIPO&&!TIPO_MAP[FILTRO_TIPO])FILTRO_TIPO="";
-  function passaFiltro(x){return (!FILTRO_CLIENTE||nomeCliente(x.o,x.id)===FILTRO_CLIENTE)&&(!FILTRO_TIPO||tipoDe(x.o)===FILTRO_TIPO)}
+  if(!filtroTipoValido(FILTRO_TIPO))FILTRO_TIPO="";
+  function passaFiltro(x){
+    if(FILTRO_CLIENTE&&nomeCliente(x.o,x.id)!==FILTRO_CLIENTE)return false;
+    if(!FILTRO_TIPO)return true;
+    var t=tipoDe(x.o),r=ramalDe(x.o);
+    if(FILTRO_TIPO.indexOf(":")>=0){
+      var p=FILTRO_TIPO.split(":"),tt=p[0],rr=p[1];
+      if(t!==tt)return false;
+      if(rr==="__sem__")return !r;
+      return r===rr;
+    }
+    return t===FILTRO_TIPO;
+  }
   function listaVisivel(){return lista().filter(passaFiltro)}
   function sobreVisivel(a){if(!FILTRO_CLIENTE&&!FILTRO_TIPO)return true;var f=fonte();return (a.ids||[]).some(function(id){return passaFiltro({id:id,o:f[id]})})}
   function listaClientes(){
@@ -961,7 +1176,7 @@
   function card(x,opt){
     opt=opt||{};
     var o=x.o,c=cod(o),concluido=estaConcluido(o),enviado=estaEnviado(o),atraso=textoAtrasoCarry(o,HOJE);
-    var b=document.createElement("button");b.className="item s-"+c+(concluido?" item-concluido":(enviado?" item-enviado":(etapaNum(o)>=8?" item-qualidade":"")))+(atraso?" item-atrasada":"");
+    var b=document.createElement("button");b.className="item s-"+c+(concluido?" item-concluido":(enviado?" item-enviado":(estaNaQualidade(o)?" item-qualidade":"")))+(atraso?" item-atrasada":"");
     b.title=ROT[c]||"";b.setAttribute("data-id",x.id);
     if(concluido)b.setAttribute("data-concluido","1");
     if(enviado)b.setAttribute("data-enviado","1");
@@ -972,13 +1187,13 @@
     function editaCard(ev){ev.preventDefault();ev.stopPropagation();abrirEdicao(x.id)}
     be.addEventListener("click",editaCard);be.addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" ")editaCard(ev)});
     topo.appendChild(be);b.appendChild(topo);
-    var tc=document.createElement("span");tc.className="tipo-chip t-"+tipoDe(o);tc.textContent=rotTipo(o);b.appendChild(tc);
+    var tc=document.createElement("span");tc.className="tipo-chip "+clsTipo(o);tc.textContent=rotTipo(o);b.appendChild(tc);
     var dest=document.createElement("div");dest.className="dest";
     function linha(cls,txt){var d=document.createElement("div");d.className=cls;d.textContent=txt;dest.appendChild(d)}
     linha("dest-qtd",qtdImoveis(o));
     if(numLotes(o))linha("dest-lote",rotLotes(numLotes(o)));
     linha("dest-pad",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
-    linha("dest-etapa",rotEtapa(etapaNum(o),true));
+    linha("dest-etapa",rotEtapaDe(o,true));
     linha("dest-data",deIso(o.data)?"Entrega "+rotDataCurto(o.data):"Data a definir");
     if(opt.rotuloLote)linha("dest-lote",opt.rotuloLote);
     var parc=txtParcialCard(o);if(parc)linha(integralEntregue(o)?"dest-parc ok":"dest-parc",parc);
@@ -998,11 +1213,14 @@
       mini(cls,cm,t.tit,t.sub);
     })});
     var datasObra=aparicoesNaSemana(x);
-    var sob=alertasSobrecarga(HOJE).filter(function(a){return (a.tipo||"eletrica")===tipoDe(o)&&(datasObra[a.data]||dataRefEntrega(o)===a.data)});
+    var chObra=chaveCarga(null,o);
+    var sob=alertasSobrecarga(HOJE).filter(function(a){return (a.chave||chaveCarga(a))===chObra&&(datasObra[a.data]||dataRefEntrega(o)===a.data)});
     sob.forEach(function(a){mini("alerta-sobrecarga","sobrecarga",a.tit,a.sub)});
+    if(etapaIncompativel(o)){var av=document.createElement("span");av.className="aviso-etapa";av.textContent=rotEtapaDe(o,true);b.appendChild(av)}
+    if(tipoDe(o)==="hidraulica"&&!ramalDe(o)){var ar=document.createElement("span");ar.className="aviso-etapa";ar.textContent="Hidráulica – ramal não informado";b.appendChild(ar)}
     if(concluido){var sc=document.createElement("span");sc.className="selo-concluido";sc.textContent="Concluído";b.appendChild(sc)}
     else if(enviado){var se=document.createElement("span");se.className="selo-enviado";se.textContent="Enviado";b.appendChild(se)}
-    else if(etapaNum(o)>=8){
+    else if(estaNaQualidade(o)){
       var bc=document.createElement("span");bc.className="btn-card-concluir";bc.setAttribute("role","button");bc.setAttribute("tabindex","0");bc.textContent="Concluído";
       bc.title="Marcar como concluída: já passou pela Qualidade e foi embarcada";
       function dispara(ev){ev.preventDefault();ev.stopPropagation();marcarConcluido(x.id)}
@@ -1015,12 +1233,34 @@
   }
   function botaoAdd(data){var b=document.createElement("button");b.className="add-dia";b.type="button";b.textContent="+ Adicionar";
     b.title=data?"Incluir agenda em "+rotData(data):"Incluir agenda";b.addEventListener("click",function(){abrirNovo(data)});return b}
+  function renderPendencias(){
+    var box=document.getElementById("pendencias");if(!box)return;
+    var itens=[];
+    listaVisivel().forEach(function(x){
+      var o=x.o;
+      if(tipoDe(o)==="hidraulica"&&!ramalDe(o)){
+        itens.push({id:x.id,tit:(o.nome||x.id)+" — Hidráulica – ramal não informado",sub:"Defina o ramal (água fria, água quente ou esgoto). Não adivinhamos o ramal."});
+      }
+      if(etapaIncompativel(o)){
+        itens.push({id:x.id,tit:(o.nome||x.id)+" — estágio "+etapaBruta(o)+" incompatível com "+rotTipo(o),sub:"Este tipo tem "+nEtapas(o)+" estágios. O valor gravado foi mantido."});
+      }
+    });
+    box.innerHTML="";
+    if(!itens.length){box.hidden=true;return}
+    box.hidden=false;
+    var rt=document.createElement("div");rt.className="rot";rt.textContent="Pendências";box.appendChild(rt);
+    itens.forEach(function(it){
+      var d=document.createElement("div");d.className="pend";d.textContent=it.tit+(it.sub?" — "+it.sub:"");
+      d.addEventListener("click",function(){if(it.id)abrir(it.id)});
+      box.appendChild(d);
+    });
+  }
   function render(){
     montaDias();
     var tit=tituloSemana();document.getElementById("titulo").textContent="Dashboard de Entregas – "+tit;document.title="Dashboard de Entregas – "+tit;
     atualizaSeletorCliente();
     var fixa=(SEMANA===SEM_FIXA),mostraCba=fixa&&(!FILTRO_CLIENTE||/cba/i.test(FILTRO_CLIENTE));
-    document.getElementById("box-cba").classList.toggle("esconde",!mostraCba);
+    document.getElementById("box-cba").classList.toggle("esconde",!mostraCba);var ex=document.getElementById("resumo-extra");if(ex)ex.classList.toggle("esconde",!mostraCba);
     document.getElementById("hoje").disabled=(SEMANA===limita(iso(segunda(deIso(HOJE)))));
     var sl=document.getElementById("semanas");if(sl&&sl.options.length){var tem=[].some.call(sl.options,function(o){return o.value===SEMANA});sl.value=tem?SEMANA:"";}
     var px=document.getElementById("prox");px.disabled=(SEMANA>=ULTIMA_SEMANA);px.title=px.disabled?"Último período: recesso a partir de 24/12":"";
@@ -1055,20 +1295,28 @@
     if(fora.length)outrasL.appendChild(botaoAdd(""));
     outras.classList.toggle("on",fora.length>0);
     var orot=document.getElementById("outras-rot");if(orot)orot.textContent=FILTRO_CLIENTE?("Obras de "+FILTRO_CLIENTE+" fora desta semana / sem data"):"Sem data definida";
-    // resumo da semana (obras únicas; um pedido em dois dias não conta duas vezes; tipos nunca somados entre si)
+    // resumo da semana: seis totais separados; tipos/ramais nunca somados entre si
     var sem=[].concat.apply([],cols),res=totaisUnicosDeItens(sem),semq=res.semq,nuniq=res.nuniq;
-    document.getElementById("r-total").textContent=nuniq;
-    var rotApt=document.getElementById("r-aptos-rot");
-    if(rotApt)rotApt.textContent=FILTRO_TIPO?("Aptos · "+TIPO_MAP[FILTRO_TIPO].rot):"Aptos por tipo";
-    var boxTipos=document.getElementById("r-aptos-tipos");
-    if(boxTipos)boxTipos.innerHTML=htmlLinhasTipos(res.t);
+    var boxRes=document.getElementById("resumo-totais");
+    if(boxRes){
+      boxRes.innerHTML="";
+      linhasVisiveis().forEach(function(ln){
+        var bx=document.createElement("div");bx.className="box box-apto "+ln.cls;
+        var rt=document.createElement("div");rt.className="rot";rt.textContent=ln.rotTopo;bx.appendChild(rt);
+        var vl=document.createElement("div");vl.className="val";vl.textContent=String(res.t[ln.id]||0);bx.appendChild(vl);
+        boxRes.appendChild(bx);
+      });
+    }
     var rKits=document.getElementById("r-kits");
     if(rKits){
-      if(!FILTRO_TIPO&&nTiposComQtd(res.t)>1){rKits.hidden=false;rKits.textContent="Total: "+somaKits(res.t)+" kits (não some os tipos — o mesmo apto pode ter mais de um kit)"}
-      else{rKits.hidden=true;rKits.textContent=""}
+      var kitTxt="";
+      if(nLinhasComQtd(res.t)>1)kitTxt="Total: "+somaKits(res.t)+" kits (não some os tipos — o mesmo apto pode ter mais de um kit)";
+      if(res.semRamal)kitTxt+=(kitTxt?" · ":"")+(res.semRamal+" aptos em hidráulica sem ramal, não somados a nenhum total");
+      if(kitTxt){rKits.hidden=false;rKits.textContent=kitTxt}else{rKits.hidden=true;rKits.textContent=""}
     }
-    var sq=!sem.length?"Nenhuma entrega nesta semana":semq.length?(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":"Todas com quantidade";
+    var sq=!sem.length?"Nenhuma entrega nesta semana":(nuniq+(nuniq===1?" entrega":" entregas")+" nesta semana")+(semq.length?". "+(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":". Todas com quantidade");
     document.getElementById("r-semq").textContent=sq;
+    renderPendencias();
     renderLembretes();
     renderAlertasCerca();
     renderLembretesCarry();
@@ -1090,15 +1338,18 @@
   var etapaEdit=0,etapaNovo=0;
   function rotuloEtapaEls(idNota,o){
     var n=etapaNum(o),nota=document.getElementById(idNota);if(!nota)return;
-    if(n>=3)nota.textContent="Entrou na produção a partir da etapa 3 (Corte de fio).";
+    if(n>=3)nota.textContent="Entrou na produção a partir da etapa 3 ("+nomeEtapa3(o)+").";
     else if(cod(o)==="pronto"||cod(o)==="andamento")nota.textContent="O status "+ROT[cod(o)]+" também indica que a obra já entrou na produção.";
     else if(o&&o.entrouProducao)nota.textContent="Entrou na produção em "+rotDataCurto(o.entrouProducao)+".";
-    else nota.textContent="A cerca e os alertas valem até a obra chegar na etapa 3 (Corte de fio)."}
+    else nota.textContent="A cerca e os alertas valem até a obra chegar na etapa 3 ("+nomeEtapa3(o)+").";
+    if(etapaIncompativel(o))nota.textContent=(nota.textContent?nota.textContent+" ":"")+rotEtapaDe(o,true);}
   function preencheDestaque(id,o){
     var box=document.getElementById("destaque-ficha");if(!box)return;box.innerHTML="";
     function cel(rot,val,full){var l=document.createElement("div");if(full)l.className="full";var r=document.createElement("div");r.className="rot";r.textContent=rot;l.appendChild(r);var v=document.createElement("div");v.className="val2";v.textContent=val;l.appendChild(v);box.appendChild(l)}
     cel("Tipo de entrega",rotTipo(o));cel("Imóveis",qtdImoveis(o));cel("Padrão",infoPadrao(o.padrao)?o.padrao:"Padrão a definir");
-    cel("Prazo de entrega",deIso(o.data)?rotData(o.data):"Data a definir");cel("Estágio da produção",rotEtapa(etapaNum(o),false),true);
+    cel("Prazo de entrega",deIso(o.data)?rotData(o.data):"Data a definir");cel("Estágio da produção",rotEtapaDe(o,false),true);
+    if(etapaIncompativel(o))cel("Atenção",rotEtapaDe(o,true),true);
+    if(tipoDe(o)==="hidraulica"&&!ramalDe(o))cel("Pendência","Hidráulica – ramal não informado. Defina o ramal na edição da obra.",true);
     if(numLotes(o))cel("Lote",rotLotes(numLotes(o)));
     var parc=txtParcialCard(o);if(parc)cel("Entregas",parc,true);
     if(estaConcluido(o)){
@@ -1113,7 +1364,7 @@
       var alE=textoAlertaEntrega(estadoEntrega(o,HOJE));if(alE)html+="<br><b>"+esc(alE.tit)+"</b>"+(alE.sub?" — "+esc(alE.sub):"");
       estadosLotes(o,HOJE).forEach(function(ls){ls.tipos.forEach(function(t){html+="<br><b>"+esc(t.tit)+"</b>"+(t.sub?" — "+esc(t.sub):"")})});
       var ds=aparicoesNaSemana({id:id,o:o});
-      alertasSobrecarga(HOJE).filter(function(a){return (a.tipo||"eletrica")===tipoDe(o)&&(ds[a.data]||dataRefEntrega(o)===a.data)}).forEach(function(a){html+="<br><b>"+esc(a.tit)+"</b>"+(a.sub?" — "+esc(a.sub):"")});
+      alertasSobrecarga(HOJE).filter(function(a){return (a.chave||chaveCarga(a))===chaveCarga(null,o)&&(ds[a.data]||dataRefEntrega(o)===a.data)}).forEach(function(a){html+="<br><b>"+esc(a.tit)+"</b>"+(a.sub?" — "+esc(a.sub):"")});
       return html;
     }
     if(st.tipo==="entregue"){cb.className="cerca-box";cb.innerHTML="<b>"+(estaConcluido(o)?"Concluída (embarcada)":"Entregue integral")+"</b>"+acrescentaAlertas("");return}
@@ -1123,31 +1374,33 @@
     var extraDt=ref&&ref!==o.data?" a partir de "+rotDataCurto(ref):"";
     cb.innerHTML="Cerca mínima: <b>"+esc(rotData(st.cerca))+"</b> · "+dias+(dias===1?" dia útil":" dias úteis")+" de produção"+extraSal+extraDt+" (seg–sex; recesso 24–31/12 pulado).";
     var al=textoAlertaCerca(st);if(al)cb.innerHTML+="<br>"+esc(al.tit)+(al.sub?" — "+esc(al.sub):"");
-    if(st.tipo==="entrou"){var motivo=etapaNum(o)>=3?rotEtapa(etapaNum(o),true):(o.entrouProducao?"marcada em "+rotDataCurto(o.entrouProducao):"status "+ROT[cod(o)]);cb.innerHTML+="<br>Já entrou na produção ("+esc(motivo)+")."}
+    if(st.tipo==="entrou"){var motivo=etapaNum(o)>=3?rotEtapaDe(o,true):(o.entrouProducao?"marcada em "+rotDataCurto(o.entrouProducao):"status "+ROT[cod(o)]);cb.innerHTML+="<br>Já entrou na produção ("+esc(motivo)+")."}
     cb.innerHTML+=acrescentaAlertas("");
   }
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
     var inf=infoPadrao(o.padrao),ex="";if(inf){var pz=prazoTxt(qnum(o),inf);ex="<br>"+esc(inf.id)+" · "+esc(inf.ritmo)+(pz?" · "+esc(pz):"")}
-    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span> <span class="pill t-'+tipoDe(o)+'">'+esc(rotTipo(o))+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
+    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span> <span class="pill '+clsTipo(o)+'">'+esc(rotTipo(o))+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
     preencheDestaque(id,o);
     rotuloEtapaEls("e-etapa-nota",o);
-    setEtapaCaixa("e",etapaNum(o));
+    setEtapaCaixa("e",etapaBruta(o)||etapaNum(o));
     if(typeof preencheLotesFicha==="function")preencheLotesFicha(o);
     atual.textContent=o.estagio||"";
     upd.textContent=o.atualizadoEm?"Atualizado em "+fmt(o.atualizadoEm)+" (horário de Brasília)":"";
     atualizaPainelConcluido(o);
   }
   function escolheEtapa(n){
-    n=parseInt(n,10)||0;etapaEdit=n;if(!cur)return;var id=cur,o=fonte()[id]||{},p={atualizadoEm:Date.now()};
-    if(n>=1&&n<=N_ETAPAS)p.etapa=n;else p.etapa=null;
-    if(n>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}
+    n=parseInt(n,10)||0;etapaEdit=n;if(!cur)return;var id=cur,o=fonte()[id]||{},p={atualizadoEm:Date.now()},max=nEtapas(o),br=etapaBruta(o);
+    if(n>=1&&n<=max)p.etapa=n;
+    else if(n===br&&etapaIncompativel(o))p.etapa=br;
+    else p.etapa=null;
+    if(etapaNum(Object.assign({},o,{etapa:p.etapa}))>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else if(!etapaIncompativel(Object.assign({},o,{etapa:p.etapa}))){p.entrouProducao=null}
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){if(p.entrouProducao===null)delete REM[id].entrouProducao;else if(p.entrouProducao)REM[id].entrouProducao=p.entrouProducao;if(p.etapa===null)delete REM[id].etapa;else REM[id].etapa=n;REM[id].atualizadoEm=p.atualizadoEm}
       render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);setEtapaCaixa("e",n)}}
     }).catch(function(){if(cur===id)erro(ok,"Não foi possível salvar o estágio (sem conexão).")});
   }
-  function abrir(id){var o=fonte()[id];if(!o)return;cur=id;etapaEdit=etapaNum(o);preencheTopo(id,o);
+  function abrir(id){var o=fonte()[id];if(!o)return;cur=id;etapaEdit=etapaBruta(o)||etapaNum(o);preencheTopo(id,o);
     campo.value=o.estagio||"";eS.value=cod(o);eD.value=o.data||"";eQ.value=qnum(o)||"";
     eP.value=infoPadrao(o.padrao)?o.padrao:"";setEtapaCaixa("e",etapaEdit);if(eLote)eLote.value=numLotes(o)?String(numLotes(o)):"";
     if(typeof preencheLotesFicha==="function")preencheLotesFicha(o);
@@ -1164,12 +1417,13 @@
       btn.disabled=false;btn.classList.add("desfazer");btn.textContent="Desfazer conclusão";
       var when=quandoConclusao(o);
       if(nota)nota.textContent=when?("Concluída e embarcada em "+when+(/:/.test(when)?" (horário de Brasília)":"")+". As entregas parciais já lançadas são mantidas."):"Obra marcada como concluída (já passou pela Qualidade e foi embarcada).";
-    }else if((etapaNum(o)>=8)||(etapaEdit>=8)){
+    }else if(estaNaQualidade(o)||(etapaEdit>=1&&etapaEdit>=nEtapas(o)&&etapaEdit<=nEtapas(o))){
       btn.disabled=false;btn.textContent="Concluído";
       if(nota)nota.textContent="Marca a obra como concluída: já passou pela Qualidade e já foi embarcada. A data e a hora ficam registradas.";
     }else{
+      var nq=nEtapas(o);
       btn.disabled=true;btn.textContent="Concluído";
-      if(nota)nota.textContent="Disponível quando a obra chegar no estágio 8 — Qualidade (liberação para entrega). Concluído significa que já passou pela Qualidade e já foi embarcada.";
+      if(nota)nota.textContent="Disponível quando a obra chegar no estágio "+nq+" — Qualidade (liberação para entrega). Concluído significa que já passou pela Qualidade e já foi embarcada.";
     }
   }
   function payloadConcluido(o,agora){
@@ -1190,7 +1444,7 @@
     id=id||cur;if(!id)return;
     var o=fonte()[id]||{};
     if(estaConcluido(o))return;
-    if(etapaNum(o)<8){if(cur===id&&ok)erro(ok,"A obra precisa estar no estágio 8 — Qualidade — para ser concluída.");return}
+    if(!estaNaQualidade(o)){if(cur===id&&ok)erro(ok,"A obra precisa estar no estágio "+nEtapas(o)+" — Qualidade — para ser concluída.");return}
     aplicarPatchObra(id,payloadConcluido(o),"Marcada como concluída.").catch(function(){if(cur===id&&ok)erro(ok,"Não foi possível marcar como concluída (sem conexão).")});
   }
   function desfazerConcluido(id){
@@ -1212,7 +1466,9 @@
   var ov2=document.getElementById("ov2"),ok2=document.getElementById("ok2"),nN=document.getElementById("n-nome"),nD=document.getElementById("n-data"),nQ=document.getElementById("n-qtd"),nS=document.getElementById("n-status"),nE=document.getElementById("n-est");
   var eP=document.getElementById("e-padrao"),nP=document.getElementById("n-padrao"),eEt=document.getElementById("e-etapa"),nEt=document.getElementById("n-etapa");
   var eLote=document.getElementById("e-lote"),nLote=document.getElementById("n-lote"),nT=document.getElementById("n-tipo");
-  encheTipo(nT,false);encheTipo(document.getElementById("ed-tipo"),false);encheTipo(document.getElementById("filtro-tipo"),true);
+  if(nT)nT.addEventListener("change",function(){aoMudarTipoForm("n")});
+  encheTipo(nT);encheTipo(document.getElementById("ed-tipo"));encheFiltroTipo(document.getElementById("filtro-tipo"));
+  encheRamal(document.getElementById("n-ramal"),"Escolha o ramal");encheRamal(document.getElementById("ed-ramal"),"Ramal não informado");
   function enchePadrao(sel){sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— padrão —";sel.appendChild(z);PADROES.forEach(function(p){var op=document.createElement("option");op.value=p.id;op.textContent=p.id;sel.appendChild(op)})}
   function encheLote(sel){if(!sel)return;sel.innerHTML="";var z=document.createElement("option");z.value="";z.textContent="— lote —";sel.appendChild(z);var op=document.createElement("option");op.value="1";op.textContent="Integral";sel.appendChild(op);for(var i=2;i<=6;i++){op=document.createElement("option");op.value=String(i);op.textContent=i+" lotes";sel.appendChild(op)}}
   function garanteOpcaoLote(sel,n){
@@ -1222,15 +1478,7 @@
     }
   }
   enchePadrao(eP);enchePadrao(nP);encheLote(eLote);encheLote(nLote);
-  (function montaListasEtapa(){
-    function monta(dd){
-      if(!dd)return;dd.innerHTML="";
-      function item(v,lab){var b=document.createElement("button");b.type="button";b.setAttribute("data-etapa",v);b.setAttribute("role","option");var ck=document.createElement("span");ck.className="ck";ck.setAttribute("aria-hidden","true");var lb=document.createElement("span");lb.textContent=lab;b.appendChild(ck);b.appendChild(lb);dd.appendChild(b)}
-      item("","— estágio —");for(var i=1;i<=N_ETAPAS;i++)item(String(i),i+" "+ETAPAS_CURTO[i-1]);
-    }
-    monta(document.getElementById("e-dd-etapa"));monta(document.getElementById("n-dd-etapa"));
-    setEtapaCaixa("e",0);setEtapaCaixa("n",0);
-  })();
+  setEtapaCaixa("e",0);setEtapaCaixa("n",0);
   function objetoFicha(){if(!cur)return {};var o={},base=fonte()[cur]||{},k;for(k in base)if(Object.prototype.hasOwnProperty.call(base,k))o[k]=base[k];
     o.data=eD.value||"";o.qtd=parseInt(eQ.value,10)||0;var pad=valorPadrao(eP);if(pad){o.padrao=pad;o.ritmo=ritmoDe(pad)}else{delete o.padrao;delete o.ritmo}o.etapa=etapaEdit;o.statusCodigo=eS.value;o.status=LAB[eS.value];return o}
   function atualizaFichaLive(){if(!cur)return;var o=objetoFicha();preencheDestaque(cur,o);rotuloEtapaEls("e-etapa-nota",o);setEtapaCaixa("e",etapaEdit);atualizaPainelConcluido(o)}
@@ -1261,7 +1509,7 @@
   }
   function pioraSobrecarga(antes,depois){
     return (depois||[]).filter(function(d){
-      var ant=(antes||[]).filter(function(a){return a.data===d.data&&(a.tipo||"eletrica")===(d.tipo||"eletrica")})[0];
+      var ant=(antes||[]).filter(function(a){return a.data===d.data&&(a.chave||a.tipo||"")===(d.chave||d.tipo||"")})[0];
       if(!ant)return true;
       return (d.precisa-d.tem)>(ant.precisa-ant.tem);
     });
@@ -1270,7 +1518,7 @@
     var extras=[],i,lt,c;
     for(i=0;i<planos.length;i++){
       lt=planos[i];if(!(lt.qtd>0)||!deIso(lt.data))continue;
-      c=cargaDias(lt.qtd,o);extras.push({id:id,lote:lt.n,data:lt.data,dias:c.dias,estimado:c.estimado,saldo:lt.qtd,tipo:tipoDe(o)});
+      c=cargaDias(lt.qtd,o);extras.push({id:id,lote:lt.n,data:lt.data,dias:c.dias,estimado:c.estimado,saldo:lt.qtd,tipo:tipoDe(o),ramal:ramalDe(o),chave:chaveCarga(null,o)});
     }
     return extras;
   }
@@ -1396,7 +1644,7 @@
     if(!cur)return;
     var id=cur,px=document.getElementById("e-prox-lote"),val=px?px.value||null:null,p={atualizadoEm:Date.now(),proximoLoteData:val};
     if(val){
-      var o=fonte()[id]||{},c=cargaDias(faltam(o)||qnum(o),o),av=pioraSobrecarga(alertasSobrecarga(HOJE),alertasSobrecarga(HOJE,{id:id,lote:0,data:val,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o)}));
+      var o=fonte()[id]||{},c=cargaDias(faltam(o)||qnum(o),o),av=pioraSobrecarga(alertasSobrecarga(HOJE),alertasSobrecarga(HOJE,{id:id,lote:0,data:val,dias:c.dias,estimado:c.estimado,tipo:tipoDe(o),ramal:ramalDe(o),chave:chaveCarga(null,o)}));
       if(!avisoSobrecarga(av)){preencheLotesFicha(o);return}
     }
     req("PATCH","/entregas/"+id+".json",p).then(function(){
@@ -1597,7 +1845,16 @@
   window.addEventListener("scroll",fechaDDs,true);
   eQ.addEventListener("input",atualizaFichaLive);
   eD.addEventListener("input",atualizaFichaLive);eS.addEventListener("change",atualizaFichaLive);
-  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";if(nT)nT.value="eletrica";if(nLote)nLote.value="";etapaNovo=0;setEtapaCaixa("n",0);
+  function mostraRamal(qual){
+    var tipoSel=document.getElementById(qual+"-tipo"),wrap=document.getElementById(qual+"-ramal-wrap");
+    if(!wrap)return;wrap.hidden=!(tipoSel&&tipoSel.value==="hidraulica");
+  }
+  function aoMudarTipoForm(qual){
+    mostraRamal(qual);
+    if(qual==="n"){setEtapaCaixa("n",etapaNovo)}
+    if(qual==="e"){setEtapaCaixa("e",etapaEdit)}
+  }
+  function abrirNovo(data){nN.value="";nD.value=(typeof data==="string")?data:SEMANA;nQ.value="";nS.value="andamento";nE.value="";nP.value="";if(nT)nT.value="eletrica";if(nLote)nLote.value="";var nR=document.getElementById("n-ramal");if(nR)nR.value="";etapaNovo=0;mostraRamal("n");setEtapaCaixa("n",0);
     ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){fechaDDs();ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=abrirLembrete;
@@ -1616,7 +1873,7 @@
   });
   var selTipo=document.getElementById("filtro-tipo");
   if(selTipo){selTipo.value=FILTRO_TIPO;selTipo.addEventListener("change",function(){
-    FILTRO_TIPO=TIPO_MAP[selTipo.value]?selTipo.value:"";
+    FILTRO_TIPO=filtroTipoValido(selTipo.value)?selTipo.value:"";
     try{localStorage.setItem(FILTRO_TIPO_KEY,FILTRO_TIPO)}catch(e){}
     render();
   })}
@@ -1693,8 +1950,13 @@
     if(c==="concluido"){o.concluidoEm=agora;o.dataConclusao=HOJE}
     if(q>0)o.qtd=q;
     o.tipo=(nT&&TIPO_MAP[nT.value])?nT.value:"eletrica";
+    if(o.tipo==="hidraulica"){
+      var nR=document.getElementById("n-ramal"),rv=nR?nR.value:"";
+      if(!rv){erro(ok2,"Escolha o ramal hidráulico (água fria, água quente ou esgoto).");if(nR)nR.focus();return}
+      o.ramal=rv;
+    }
     var padN=valorPadrao(nP);if(padN){o.padrao=padN;o.ritmo=ritmoDe(padN)}
-    if(etapaNovo>=1){o.etapa=etapaNovo;if(etapaNovo>=3)o.entrouProducao=HOJE}
+    if(etapaNovo>=1&&etapaNovo<=nEtapas(o.tipo)){o.etapa=etapaNovo;if(etapaNovo>=3)o.entrouProducao=HOJE}
     var nLt=nLote?parseInt(nLote.value,10)||0:0;if(nLt>=1)o.lotes=nLt;
     ok2.style.color="";ok2.textContent="Salvando…";
     req("PUT","/entregas/"+id+".json",o).then(function(){
@@ -1713,7 +1975,7 @@
       p.concluidoEm=null;p.dataConclusao=null;p.statusAntesConcluido=null;
     }
     var padE=valorPadrao(eP);if(padE){p.padrao=padE;p.ritmo=ritmoDe(padE)}else{p.padrao=null;p.ritmo=null}
-    if(etapaEdit>=1){p.etapa=etapaEdit;if(etapaEdit>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else{p.entrouProducao=null}}else{p.etapa=null;p.entrouProducao=null}
+    if(etapaEdit>=1&&(etapaEdit<=nEtapas(o)||etapaEdit===etapaBruta(o))){p.etapa=etapaEdit;if(etapaNum(Object.assign({},o,{etapa:etapaEdit}))>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else if(!etapaIncompativel(Object.assign({},o,{etapa:etapaEdit}))){p.entrouProducao=null}}else{p.etapa=null;p.entrouProducao=null}
     var nLt=eLote?parseInt(eLote.value,10)||0:0;if(nLt>=1)p.lotes=nLt;else p.lotes=null;
     var px=document.getElementById("e-prox-lote");if(px){p.proximoLoteData=px.value||null}
     ok.style.color="";ok.textContent="Salvando…";
@@ -1886,14 +2148,14 @@
       if(parcs.length){
         parcs.forEach(function(p){
           if(!deIso(p.data)||p.data<ini||p.data>fim||!(p.qtd>0))return;
-          itens.push({data:p.data,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+          itens.push({data:p.data,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),chaveId:chaveTotal(o)||(tipoDe(o)==="hidraulica"?"hidraulica-sem":tipoDe(o)),qtd:p.qtd,lote:p.lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
         });
         return;
       }
       if(!statusEntregue(o))return;
       var d=dataRealizadaDe(o);if(!deIso(d)||d<ini||d>fim)return;
       var q=qnum(o);if(!q)return;
-      itens.push({data:d,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
+      itens.push({data:d,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),chaveId:chaveTotal(o)||(tipoDe(o)==="hidraulica"?"hidraulica-sem":tipoDe(o)),qtd:q,lote:0,padrao:infoPadrao(o.padrao)?o.padrao:"—",obs:o.estagio||"",id:x.id});
     });
     itens.sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:(a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
     return itens;
@@ -1906,7 +2168,7 @@
         if(!deIso(data)||data<ini||data>fim)return;
         var key=data+"|"+(lote||0);
         if(usados[key])return;usados[key]=1;
-        itens.push({data:data,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapa(etapaNum(o),true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
+        itens.push({data:data,nome:o.nome||x.id,tipo:rotTipo(o),tipoId:tipoDe(o),chaveId:chaveTotal(o)||(tipoDe(o)==="hidraulica"?"hidraulica-sem":tipoDe(o)),qtd:qtd||0,lote:lote||0,padrao:infoPadrao(o.padrao)?o.padrao:"—",etapa:rotEtapaDe(o,true),status:ROT[cod(o)],obs:o.estagio||"",id:x.id});
       }
       if(expl){
         lots.forEach(function(lt){if(deIso(lt.data))add(lt.data,saldoLote(o,lt)||lt.qtd,lt.n)});
@@ -1927,7 +2189,7 @@
     var itens=realizadas?itensRelatorioRealizadas(ini,fim):itensRelatorio(ini,fim),hojeTxt;
     try{hojeTxt=new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",dateStyle:"short",timeStyle:"short"}).format(new Date())+" (horário de Brasília)"}catch(e){hojeTxt=""}
     var titulo=realizadas?"Relatório de entregas realizadas":"Relatório de pré-impressão de entregas";
-    var filtroTxt=(FILTRO_CLIENTE?(" · Cliente: "+FILTRO_CLIENTE):"")+(FILTRO_TIPO?(" · Tipo: "+TIPO_MAP[FILTRO_TIPO].rot):"");
+    var filtroTxt=(FILTRO_CLIENTE?(" · Cliente: "+FILTRO_CLIENTE):"")+(FILTRO_TIPO?(" · Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"");
     var html='<div class="rel-topo"><img src="logo-grupo-hgi.png" alt="Grupo HGI"><div><h1>'+esc(titulo)+'</h1><p>Grupo HGI · Kits elétricos, hidráulicos e gás</p><p>Período: '+esc(rotDataCurto(ini))+' a '+esc(rotDataCurto(fim))+esc(filtroTxt)+(hojeTxt?" · Gerado em "+esc(hojeTxt):"")+'</p></div></div>';
     if(!itens.length){html+='<p class="rel-vazio">'+(realizadas?"Nenhuma entrega realizada neste período.":"Nenhuma entrega prevista neste período.")+"</p>";return html}
     var dias=[],i,curD="",ncols=realizadas?6:7,totGeralT=totaisPorTipoVazio();
@@ -1951,11 +2213,11 @@
       TIPOS.forEach(function(tp){totGeralT[tp.id]+=totT[tp.id]||0});
       html+='</tbody><tfoot><tr><td colspan="'+ncols+'" class="tot-dia">Total do dia: '+esc(txtListaTipos(totT,{omitZero:true})+txtKitsSufixo(totT))+"</td></tr></tfoot></table></div>";
     });
-    var porTipoLinhas={eletrica:0,qdc:0,hidraulica:0};
-    itens.forEach(function(it){porTipoLinhas[it.tipoId||idTipoDeRotulo(it.tipo)]++});
+    var porTipoLinhas={};
+    itens.forEach(function(it){var ch=chaveDeItemRel(it);porTipoLinhas[ch]=(porTipoLinhas[ch]||0)+1});
     html+='<div class="rel-dia rel-tipos"><h3>Totais por tipo</h3><table><thead><tr><th>Tipo</th><th>Linhas na janela</th><th>Aptos</th></tr></thead><tbody>';
-    tiposVisiveis().forEach(function(tp){
-      html+="<tr><td>"+esc(tp.rot)+"</td><td>"+porTipoLinhas[tp.id]+"</td><td>"+(totGeralT[tp.id]||0)+((totGeralT[tp.id]||0)===1?" apto":" aptos")+"</td></tr>";
+    linhasVisiveis().forEach(function(ln){
+      html+="<tr><td>"+esc(ln.rot)+"</td><td>"+(porTipoLinhas[ln.id]||0)+"</td><td>"+(totGeralT[ln.id]||0)+((totGeralT[ln.id]||0)===1?" apto":" aptos")+"</td></tr>";
     });
     html+="</tbody></table></div>";
     var porCliente={},clientes=[],ck;
@@ -1963,7 +2225,7 @@
       ck=it.id||it.nome||"";
       if(!porCliente[ck])porCliente[ck]={nome:it.nome||ck,entregas:0,t:totaisPorTipoVazio()};
       porCliente[ck].entregas++;
-      porCliente[ck].t[it.tipoId||idTipoDeRotulo(it.tipo)]+=it.qtd||0;
+      porCliente[ck].t[chaveDeItemRel(it)]+=it.qtd||0;
     });
     clientes=Object.keys(porCliente).map(function(k){return porCliente[k]});
     clientes.sort(function(a,b){return (a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"})});
@@ -2014,6 +2276,7 @@
   // edição da obra (datas / previsão / tipo)
   var ovE=document.getElementById("ov-edit"),okE=document.getElementById("ok-edit"),edId=null;
   var edNome=document.getElementById("ed-nome"),edTipo=document.getElementById("ed-tipo"),edQtd=document.getElementById("ed-qtd"),edData=document.getElementById("ed-data"),edConc=document.getElementById("ed-conc"),edProx=document.getElementById("ed-prox");
+  if(edTipo)edTipo.addEventListener("change",function(){aoMudarTipoForm("ed");if(typeof previewEdicao==="function")previewEdicao()});
   function linhaData(box,rot,valor,attrs){
     var l=document.createElement("label");l.className="ed-linha";
     var a=document.createElement("span");a.className="lab";a.textContent=rot;l.appendChild(a);
@@ -2024,6 +2287,7 @@
     var o=fonte()[id];if(!o)return;edId=id;
     document.getElementById("mt-edit").textContent="Editar obra — "+(o.nome||id);
     edNome.value=o.nome||"";edTipo.value=tipoDe(o);edQtd.value=qnum(o)||"";edData.value=deIso(o.data)?o.data:"";
+    var edR=document.getElementById("ed-ramal");if(edR)edR.value=ramalDe(o)||"";mostraRamal("ed");
     var conc=estaConcluido(o);
     document.getElementById("ed-conc-wrap").hidden=!conc;edConc.value=conc?(dataFinalObra(o)||""):"";
     var lotsExpl=listaLotesPrevistos(o).filter(function(lt){return !lt.implicito});
@@ -2047,6 +2311,8 @@
     var base=fonte()[edId]||{},o={},k;for(k in base)if(Object.prototype.hasOwnProperty.call(base,k))o[k]=base[k];
     var p={atualizadoEm:Date.now()},nome=edNome.value.trim(),q=parseInt(edQtd.value,10);
     p.nome=nome;p.tipo=TIPO_MAP[edTipo.value]?edTipo.value:"eletrica";p.qtd=q>0?q:null;p.data=edData.value||"";
+    if(p.tipo==="hidraulica"){var edR=document.getElementById("ed-ramal"),rv=edR?edR.value:"";if(rv)p.ramal=rv}
+    else p.ramal=null;
     if(estaConcluido(base)&&deIso(edConc.value))p.dataConclusao=edConc.value;
     if(!document.getElementById("ed-prox-wrap").hidden)p.proximoLoteData=edProx.value||null;
     var inpL=document.querySelectorAll("#ed-lotes input[data-ed-lote]");
