@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Almoxarifado · Grupo HGI</title>
+<script>if(/[?&]exemplo=1(?:&|$)/.test(location.search))document.documentElement.classList.add("hgi-exemplo");</script>
+<link rel="stylesheet" href="css/modulos.css">
+</head>
+<body class="pagina">
+<div id="hgi-gate" role="dialog" aria-modal="true" aria-labelledby="hgi-gate-titulo">
+  <div class="hgi-gate-card">
+    <img src="logo-grupo-hgi.png" alt="Grupo HGI">
+    <h2 id="hgi-gate-titulo">Entrar · Grupo HGI</h2>
+    <p class="sub">Almoxarifado, romaneio e entregas. O acesso total vê os valores; o almoxarife, não.</p>
+    <form id="hgi-gate-form">
+      <label>E-mail<input type="email" id="hgi-email" autocomplete="username" required></label>
+      <label>Senha<input type="password" id="hgi-senha" autocomplete="current-password" required></label>
+      <button type="submit">Entrar</button>
+      <p id="hgi-gate-erro" class="hgi-erro" role="alert"></p>
+    </form>
+  </div>
+</div>
+<div class="miolo">
+  <header class="topo">
+    <div class="marca">
+      <img src="logo-grupo-hgi.png" alt="Grupo HGI">
+      <div>
+        <h1>Almoxarifado</h1>
+        <p>Grupo HGI · Estoque dos materiais dos kits</p>
+      </div>
+    </div>
+    <div class="topo-lado">
+      <nav id="hgi-nav" class="hgi-modnav" aria-label="Módulos"></nav>
+      <div id="hgi-quem"></div>
+    </div>
+  </header>
+  <main id="app"></main>
+  <footer class="rodape">Grupo HGI · uso interno</footer>
+</div>
+<script src="js/firebase-config.js"></script>
+<script src="js/calculos.js"></script>
+<script src="js/sessao.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/almoxarifado.js"></script>
+</body>
+</html>

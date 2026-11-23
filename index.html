@@ -358,10 +358,26 @@
   }
   @media (prefers-reduced-motion:reduce){.item .alerta-mini.lote-vencido,.alerta-lote-vencido.alerta{animation:none}}
 </style>
+<link rel="stylesheet" href="css/modulos.css">
 </head>
 <body>
+<div id="hgi-gate" role="dialog" aria-modal="true" aria-labelledby="hgi-gate-titulo">
+  <div class="hgi-gate-card">
+    <img src="logo-grupo-hgi.png" alt="Grupo HGI">
+    <h2 id="hgi-gate-titulo">Entrar · Grupo HGI</h2>
+    <p class="sub">Agenda, almoxarifado, romaneio e financeiro. Sem o papel de acesso total, a agenda não abre.</p>
+    <form id="hgi-gate-form">
+      <label>E-mail<input type="email" id="hgi-email" autocomplete="username" required></label>
+      <label>Senha<input type="password" id="hgi-senha" autocomplete="current-password" required></label>
+      <button type="submit">Entrar</button>
+      <p id="hgi-gate-erro" class="hgi-erro" role="alert"></p>
+    </form>
+  </div>
+</div>
 <div class="wrap">
   <header>
+    <nav id="hgi-nav" class="hgi-modnav" aria-label="Módulos"></nav>
+    <div id="hgi-quem"></div>
     <h1 id="titulo">Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <div class="htop-acoes">
       <button type="button" class="btn-incluir" id="incluir">+ Incluir lembrete</button>
@@ -572,6 +588,9 @@
 
 <div class="dd-etapa" id="n-dd-etapa" role="listbox" hidden></div>
 
+<script src="js/firebase-config.js"></script>
+<script src="js/calculos.js"></script>
+<script src="js/sessao.js"></script>
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
@@ -1966,7 +1985,9 @@
   function erro(el,msg){el.style.color="#c0392b";el.textContent=msg}
 
   function req(method,path,body){
-    return fetch(DB+path,{method:method,headers:{"Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)})
+    var token=window.HGI_TOKEN||"";
+    var url=DB+path+(token?((path.indexOf("?")>=0?"&":"?")+"auth="+encodeURIComponent(token)):"");
+    return fetch(url,{method:method,headers:{"Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()});
   }
   document.getElementById("salvar2").onclick=function(){
@@ -2038,14 +2059,23 @@
   function marca(k,on){CON[k]=on;estado(CON.entregas&&CON.lembretes)}
   function ouvir(caminho,aoMudar){
     if(!window.EventSource){estado(false);return}
-    var es=new EventSource(DB+"/"+caminho+".json");
-    function h(patch){return function(ev){try{var m=JSON.parse(ev.data);aoMudar(m.path,m.data,patch);marca(caminho,true)}catch(e){}}}
-    es.addEventListener("put",h(false));es.addEventListener("patch",h(true));
-    es.addEventListener("keep-alive",function(){marca(caminho,true)});
-    es.addEventListener("cancel",function(){marca(caminho,false)});
-    es.addEventListener("auth_revoked",function(){marca(caminho,false)});
-    es.onopen=function(){marca(caminho,true)};
-    es.onerror=function(){marca(caminho,false)};
+    var es=null;
+    function abrir(){
+      if(es){es.close();es=null}
+      var token=window.HGI_TOKEN||"";
+      if(!token){marca(caminho,false);return}
+      es=new EventSource(DB+"/"+caminho+".json?auth="+encodeURIComponent(token));
+      function h(patch){return function(ev){try{var m=JSON.parse(ev.data);aoMudar(m.path,m.data,patch);marca(caminho,true)}catch(e){}}}
+      es.addEventListener("put",h(false));es.addEventListener("patch",h(true));
+      es.addEventListener("keep-alive",function(){marca(caminho,true)});
+      es.addEventListener("cancel",function(){marca(caminho,false)});
+      es.addEventListener("auth_revoked",function(){marca(caminho,false)});
+      es.onopen=function(){marca(caminho,true)};
+      es.onerror=function(){marca(caminho,false)};
+    }
+    window.HGI_REOUVIR=window.HGI_REOUVIR||[];
+    window.HGI_REOUVIR.push(abrir);
+    abrir();
   }
   function renderAlertasCerca(){
     var box=document.getElementById("alertas-cerca");if(!box)return;box.innerHTML="";
@@ -2386,8 +2416,29 @@
     }).catch(function(){erro(okE,"Não foi possível salvar (sem conexão). Tente de novo.")});
   };
 
-  ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();tentarPopupAtraso()});
-  ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
+  var escutaIniciada=false;
+  function iniciarEscuta(){
+    if(escutaIniciada)return;
+    escutaIniciada=true;
+    if(REM==null)REM={};
+    if(LEM==null)LEM={};
+    render();
+    if(typeof renderLembretes==="function")renderLembretes();
+    document.body.classList.add("hgi-ok");
+    if(window.HGI&&HGI.montarChrome)HGI.montarChrome("agenda");
+    ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();tentarPopupAtraso()});
+    ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
+  }
+  if(!window.HGI){
+    var erGate=document.getElementById("hgi-gate-erro");
+    if(erGate)erGate.textContent="Não foi possível carregar o acesso. Atualize a página.";
+  }else{
+    HGI.aoEntrar(function(s){
+      if(s.papel==="almoxarife"){location.replace("almoxarifado.html");return}
+      if(s.papel!=="total"){HGI.mostrarSemPapel();return}
+      iniciarEscuta();
+    });
+  }
   agendaProximaHora();
 })();
 </script>
