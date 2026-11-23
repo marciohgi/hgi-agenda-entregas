@@ -143,7 +143,8 @@ var arquivos = [];
 walk(path.join(__dirname, ".."), arquivos);
 arquivos.forEach(function (p) {
   var t = fs.readFileSync(p, "utf8");
-  assert.ok(t.indexOf("AIza") < 0, "chave no arquivo " + p);
+  // A apiKey pública do app web só pode ficar em js/firebase-config.js.
+  if (!/firebase-config\.js$/.test(p)) assert.ok(t.indexOf("AIza") < 0, "chave no arquivo " + p);
   assert.ok(!/Construapp/i.test(t), "outra empresa em " + p);
   assert.ok(!/\bAtum\b/.test(t), "Atum em " + p);
 });
