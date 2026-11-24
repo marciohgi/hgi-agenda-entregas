@@ -2509,11 +2509,14 @@
   function novoId(nome){var f=fonte(),id;do{id=slug(nome)+"-"+Date.now().toString(36).slice(-4)+Math.random().toString(36).slice(2,4)}while(f[id]);return id}
   function erro(el,msg){el.style.color="#c0392b";el.textContent=msg}
 
-  function req(method,path,body){
+  function req(method,path,body,jaTentou){
     var token=window.HGI_TOKEN||"";
     var url=DB+path+(token?((path.indexOf("?")>=0?"&":"?")+"auth="+encodeURIComponent(token)):"");
     return fetch(url,{method:method,headers:{"Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)})
-      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()});
+      .then(function(r){
+        if((r.status===401||r.status===403)&&!jaTentou){var u=window.firebase&&firebase.auth&&firebase.auth().currentUser;
+          if(u)return u.getIdToken(true).then(function(t){window.HGI_TOKEN=t;return req(method,path,body,true)})}
+        if(!r.ok)throw new Error(r.status);return r.json()});
   }
   document.getElementById("salvar2").onclick=function(){
     var nome=nN.value.trim();if(!nome){erro(ok2,"Informe a obra / nome.");nN.focus();return}
@@ -2583,6 +2586,18 @@
   }
   var CON={entregas:false,lembretes:false};
   function marca(k,on){CON[k]=on;estado(CON.entregas&&CON.lembretes)}
+  // Reabre todas as escutas com token novo (o token do Firebase vence em 1 h; celular dormindo derruba o stream).
+  var reabrindo=null;
+  function reabrirComTokenNovo(){
+    if(reabrindo)return reabrindo;
+    var u=window.firebase&&firebase.auth&&firebase.auth().currentUser;if(!u)return Promise.resolve();
+    reabrindo=u.getIdToken(true).then(function(t){window.HGI_TOKEN=t;if(window.HGI&&HGI.sessao)HGI.sessao.token=t;(window.HGI_REOUVIR||[]).forEach(function(fn){try{fn()}catch(e){}})})
+      .catch(function(){}).then(function(){setTimeout(function(){reabrindo=null},5000)});
+    return reabrindo;
+  }
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")reabrirComTokenNovo()});
+  window.addEventListener("online",reabrirComTokenNovo);
+  setInterval(function(){if(document.visibilityState==="visible"&&!(CON.entregas&&CON.lembretes))reabrirComTokenNovo()},20000);
   function ouvir(caminho,aoMudar){
     if(!window.EventSource){estado(false);return}
     var es=null;
@@ -2594,10 +2609,10 @@
       function h(patch){return function(ev){try{var m=JSON.parse(ev.data);aoMudar(m.path,m.data,patch);marca(caminho,true)}catch(e){}}}
       es.addEventListener("put",h(false));es.addEventListener("patch",h(true));
       es.addEventListener("keep-alive",function(){marca(caminho,true)});
-      es.addEventListener("cancel",function(){marca(caminho,false)});
-      es.addEventListener("auth_revoked",function(){marca(caminho,false)});
+      es.addEventListener("cancel",function(){marca(caminho,false);reabrirComTokenNovo()});
+      es.addEventListener("auth_revoked",function(){marca(caminho,false);reabrirComTokenNovo()});
       es.onopen=function(){marca(caminho,true)};
-      es.onerror=function(){marca(caminho,false)};
+      es.onerror=function(){marca(caminho,false);if(es&&es.readyState===2)setTimeout(reabrirComTokenNovo,2000)};
     }
     function fechar(){if(es){es.close();es=null}marca(caminho,false)}
     window.HGI_REOUVIR=window.HGI_REOUVIR||[];
