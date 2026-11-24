@@ -207,7 +207,8 @@
   /* Projeção da semana em kits e R$ a partir de /entregas (kits) com reserva no preço do Financeiro. */
   function semana(fontes, ini, hoje) {
     var fim = calc.somarDias(ini, 6), ent = fontes.entregas || {}, mapa = mapaEmps(fontes.empreendimentos), visto = {};
-    var r = { ini: ini, fim: fim, pN: 0, pQ: 0, pV: 0, pComV: 0, rN: 0, rQ: 0, rV: 0, rComV: 0, semValor: {}, semQtd: {} };
+    var r = { ini: ini, fim: fim, pN: 0, pQ: 0, pV: 0, pComV: 0, rN: 0, rQ: 0, rV: 0, rComV: 0, semValor: {}, semQtd: {}, tipos: {} };
+    function T_(id) { return r.tipos[id] || (r.tipos[id] = { n: 0, q: 0, v: 0, cv: 0, rq: 0, rv: 0, crv: 0 }); }
     Object.keys(ent).forEach(function (id) {
       var o = ent[id]; if (!o || typeof o !== "object") return;
       var naSem = datasNaSemana(o, hoje).some(function (d) { return d >= ini && d <= fim; });
@@ -215,17 +216,17 @@
       if (!naSem) {
         var mb = ks[main]; if (!mb) return;
         var q = entregueNaSemana(o, ini, fim); if (!q) return;
-        r.rN++; r.rQ += q; var pv = precoKit(o, mb, mapa);
-        if (pv === null) r.semValor[id] = 1; else { r.rV += q * pv; r.rComV++; }
+        r.rN++; r.rQ += q; var pv = precoKit(o, mb, mapa), Tm = T_(mb.id); Tm.rq += q;
+        if (pv === null) r.semValor[id] = 1; else { r.rV += q * pv; r.rComV++; Tm.rv += q * pv; Tm.crv++; }
         return;
       }
       r.pN++;
       var tp = numV(o.valorProjetado), tr = numV(o.valorReal), qp = 0, vp = 0, falta = false, algum = false, qr = 0, vr = 0, faltaR = false, algumR = false;
       bl.forEach(function (b) {
-        var pr = precoKit(o, b, mapa);
-        if (!b.qtdPedido) r.semQtd[id] = 1; else { qp += b.qtdPedido; if (pr === null) falta = true; else { algum = true; vp += b.qtdPedido * pr; } }
+        var pr = precoKit(o, b, mapa), T = T_(b.id); T.n++;
+        if (!b.qtdPedido) r.semQtd[id] = 1; else { qp += b.qtdPedido; T.q += b.qtdPedido; if (pr === null) falta = true; else { algum = true; vp += b.qtdPedido * pr; T.v += b.qtdPedido * pr; T.cv++; } }
         var qe = (b.id === main && temParc) ? entregueNaSemana(o, ini, fim) : (b.qtdEntregue || 0);
-        if (qe > 0) { qr += qe; if (pr === null) faltaR = true; else { algumR = true; vr += qe * pr; } }
+        if (qe > 0) { qr += qe; T.rq += qe; if (pr === null) faltaR = true; else { algumR = true; vr += qe * pr; T.rv += qe * pr; T.crv++; } }
       });
       if (!bl.length && qnum(o)) { qp = qnum(o); falta = true; }
       r.pQ += qp; r.rQ += qr;

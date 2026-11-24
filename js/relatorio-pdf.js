@@ -13,7 +13,7 @@
       "#hgi-rel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);overflow:auto;padding:16px}",
       "#hgi-rel .hr-barra{max-width:900px;margin:0 auto 10px;display:flex;gap:8px;justify-content:flex-end}",
       "#hgi-rel .hr-barra button{font:inherit;font-weight:800;border-radius:6px;padding:9px 14px;cursor:pointer;border:2px solid #E87731}",
-      "#hgi-rel .hr-2{grid-template-columns:1fr 1fr!important}#hgi-rel .hr-kpis b{display:block;min-height:1.2em}#hgi-rel .hr-meta{font-size:11px;color:#666;margin:2px 0 6px}#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
+      "#hgi-rel .hr-2{grid-template-columns:1fr 1fr!important}#hgi-rel .hr-3{grid-template-columns:repeat(3,1fr)!important}#hgi-rel .hr-kpis b{display:block;min-height:1.2em}#hgi-rel .hr-meta{font-size:11px;color:#666;margin:2px 0 6px}#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
       "#hgi-rel .hr-imp{background:#E87731;color:#111}#hgi-rel .hr-fec{background:#111;color:#fff}",
       ".hr-folha{max-width:900px;margin:0 auto;background:#fff;color:#111;font-family:'Segoe UI',Arial,sans-serif;font-size:12px;padding:22px 26px;border-radius:6px}",
       ".hr-cab{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #E87731;padding-bottom:8px;margin-bottom:12px;gap:12px}",
@@ -63,7 +63,12 @@
     h += "<h2>1. Projeção da semana · " + esc(calc.formatSemana(semanaIni)) + "</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (obras e blocos de kit lançados na Agenda). Preço: valor do kit na obra; sem ele, preço do Financeiro (só elétrico e QDC).</p>';
     h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + m(r.proj) + '</b></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
-    h += '<p class="hr-meta">' + (r.dias ? 'Meta 50/dia · ' + q(r.meta) + ' na semana' : '') + '</p>';
+    var vz = function (n) { return n ? q(n) : ""; };
+    h += '<div class="hr-kpis hr-3"><div class="lar"><span>Meta (50/dia × ' + r.dias + ' dias úteis)</span><b>' + (r.dias ? q(r.meta) : "") + '</b></div><div><span>Programado</span><b>' + vz(r.pQ) + '</b></div><div><span>Entregue</span><b>' + vz(r.rQ) + '</b></div></div>';
+    var DEP = { "eletrica": "Elétrica", "qdc": "QDC", "hidraulica-agua-fria": "Água fria", "hidraulica-agua-quente": "Água quente", "hidraulica-esgoto": "Esgoto", "gas": "Gás" }, linhasDep = "";
+    K.LINHAS.forEach(function (ln) { var T = r.tipos[ln.id]; if (!T || !(T.n || T.rq)) return; var pv = T.cv ? T.v : null, rv = T.crv ? T.rv : (pv !== null ? 0 : null);
+      linhasDep += "<tr><td>" + esc(DEP[ln.id] || ln.rot) + '</td><td class="n">' + vz(T.q) + '</td><td class="n">' + m(pv) + '</td><td class="n">' + m(rv) + "</td></tr>"; });
+    if (linhasDep) h += '<table><thead><tr><th>Departamento</th><th class="n">Aptos/kits</th><th class="n">Projetado</th><th class="n">Real</th></tr></thead><tbody>' + linhasDep + '<tr class="tot"><td>Total</td><td class="n">' + vz(r.pQ) + '</td><td class="n">' + m(r.proj) + '</td><td class="n">' + m(r.real) + "</td></tr></tbody></table>";
     h += "<h2>2. Kits por tipo · todas as obras</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (blocos de kit). Obras antigas sem bloco usam o tipo e a quantidade da própria obra.</p>';
     h += '<table><thead><tr><th>Tipo</th><th class="n">Blocos</th><th class="n">Pedido</th><th class="n">Saldo do pedido</th><th class="n">R$ pedido</th><th class="n">R$ entregue</th><th class="n">R$ saldo</th></tr></thead><tbody>';

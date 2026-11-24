@@ -188,6 +188,19 @@
   .pk-aviso{grid-column:1/-1;font-size:12px;font-weight:700;color:#b4530f}
   .pk-aviso:empty{display:none}
   @media(max-width:600px){.pk-cab{display:none}.pk-linha{grid-template-columns:1fr 1fr}.pk-linha>b{grid-column:1/-1}.pk-linha .pk-n::before{content:"Pedido ";font-size:11px;font-weight:700;color:#555}.pk-linha .pk-saldo::before{content:"Saldo ";font-size:11px;font-weight:700;color:#555}}
+  .vs-qtds2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .vs-qtds2>div{background:#141414;border:1px solid #333;border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .vs-qtds2>div:first-child{border-color:#E87731}
+  .vs-qtds2 span{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#bfbfbf}
+  .vs-qtds2 small{font-size:9.5px;font-weight:600;text-transform:none;letter-spacing:0;color:#9a9a9a}
+  .vs-qtds2 b{font-size:16px;color:#fff;min-height:19px}
+  .vs-dep{width:100%;border-collapse:collapse;font-size:12px}
+  .vs-dep[hidden]{display:none}
+  .vs-dep th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:#bfbfbf;text-align:right;padding:4px 4px;border-bottom:1px solid #E87731}
+  .vs-dep th:first-child,.vs-dep td:first-child{text-align:left}
+  .vs-dep td{text-align:right;padding:4px 4px;border-bottom:1px solid #2a2a2a;color:#fff;white-space:nowrap}
+  .vs-dep td:last-child{color:#E87731}
+  .vs-dep tfoot td{font-weight:800;border-top:1px solid #E87731;border-bottom:0}
   .vs-meta-ref{font-size:11px;color:#9a9a9a;letter-spacing:.3px}
   .vs-meta-ref:empty{display:none}
   .vs-nota{font-size:10.5px;color:#9a9a9a;line-height:1.35}
@@ -236,6 +249,7 @@
   @media (max-width:600px){
     .kit-grid{grid-template-columns:1fr 1fr}
     .vs-qtds{grid-template-columns:1fr}
+    .vs-dep th{font-size:9px;letter-spacing:0;padding:4px 2px}.vs-dep td{padding:4px 2px;font-size:11.5px}.vs-qtds2 span{font-size:9px;letter-spacing:0}.vs-qtds2>div{padding:6px}
     .vs-qtds>div{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:2px 8px}
   }
   @media (max-width:980px){
@@ -516,7 +530,8 @@
         <div class="vs-linha"><div class="vs-rot">Projetado pra entregar</div><div class="vs-val" id="vs-proj"></div></div>
         <div class="vs-linha vs-real"><div class="vs-rot">Real entregue na semana</div><div class="vs-val" id="vs-real"></div></div>
       </div>
-      <div class="vs-meta-ref" id="vs-meta-ref"></div>
+      <div class="vs-qtds2"><div><span>Meta <small id="vs-meta-sub"></small></span><b id="vs-meta"></b></div><div><span>Programado</span><b id="vs-qprog"></b></div><div><span>Entregue</span><b id="vs-qent"></b></div></div>
+      <table class="vs-dep"><thead><tr><th>Departamento</th><th>Aptos/kits</th><th>Projetado</th><th>Real</th></tr></thead><tbody id="vs-dep-b"></tbody><tfoot id="vs-dep-t"></tfoot></table>
     </aside>
     </div>
   </header>
@@ -1590,7 +1605,8 @@
   // Uma conta só para o quadro da semana: quantidades em kits e R$.
   function calcSemana(sem,L){
     var ini=DIAS[0].iso,fim=DIAS[6].iso,scope=chavesFiltroTipo(FILTRO_TIPO),mapa=mapaEmps(),visto={};
-    var r={pN:0,pQ:0,pV:0,pComV:0,rN:0,rQ:0,rV:0,rComV:0,semValor:{},semQtd:{},nDigProj:0,nDigReal:0};
+    var r={pN:0,pQ:0,pV:0,pComV:0,rN:0,rQ:0,rV:0,rComV:0,semValor:{},semQtd:{},nDigProj:0,nDigReal:0,tipos:{}};
+    function tp_(id){return r.tipos[id]||(r.tipos[id]={n:0,q:0,v:0,cv:0,rq:0,rv:0,crv:0})}
     function entSemanaBloco(o,b){
       if(b.principal&&b.entAuto==="parciais")return entregueNaSemana(o,ini,fim).q;
       return b.qtdEntregue||0;
@@ -1601,10 +1617,10 @@
       var tp=numV(o.valorProjetado),tr=numV(o.valorReal);
       var qp=0,vp=0,falta=false,algum=false,qr=0,vr=0,faltaR=false,algumR=false;
       bl.forEach(function(b){
-        var pr=precoKit(o,b,mapa);
-        if(!b.qtdPedido){r.semQtd[x.id]=1}else{qp+=b.qtdPedido;if(pr.v===null)falta=true;else{algum=true;vp+=b.qtdPedido*pr.v}}
+        var pr=precoKit(o,b,mapa),T=tp_(b.id);T.n++;
+        if(!b.qtdPedido){r.semQtd[x.id]=1}else{qp+=b.qtdPedido;T.q+=b.qtdPedido;if(pr.v===null)falta=true;else{algum=true;vp+=b.qtdPedido*pr.v;T.v+=b.qtdPedido*pr.v;T.cv++}}
         var qe=entSemanaBloco(o,b);
-        if(qe>0){qr+=qe;if(pr.v===null)faltaR=true;else{algumR=true;vr+=qe*pr.v}}
+        if(qe>0){qr+=qe;T.rq+=qe;if(pr.v===null)faltaR=true;else{algumR=true;vr+=qe*pr.v;T.rv+=qe*pr.v;T.crv++}}
       });
       if(!bl.length&&qnum(o)){qp=qnum(o);falta=true}
       r.pQ+=qp;r.rQ+=qr;
@@ -1618,8 +1634,8 @@
       if(visto[x.id])return;var o=x.o,ks=kitsDe(o),main=ks[chaveTotal(o)];
       if(!main||(scope&&scope.indexOf(main.id)<0))return;
       var q=entregueNaSemana(o,ini,fim).q;if(!q)return;
-      r.rN++;r.rQ+=q;var pr=precoKit(o,main,mapa);
-      if(pr.v===null)r.semValor[x.id]=1;else{r.rV+=q*pr.v;r.rComV++}
+      r.rN++;r.rQ+=q;var pr=precoKit(o,main,mapa),T=tp_(main.id);T.rq+=q;
+      if(pr.v===null)r.semValor[x.id]=1;else{r.rV+=q*pr.v;r.rComV++;T.rv+=q*pr.v;T.crv++}
     });
     r.nSemValor=Object.keys(r.semValor).length;r.nSemQtd=Object.keys(r.semQtd).length;
     r.dias=diasUteisSemana();r.meta=50*r.dias;
@@ -1633,11 +1649,22 @@
     var fTxt=(FILTRO_CLIENTE?("Cliente: "+FILTRO_CLIENTE):"Todos os clientes")+" · "+(FILTRO_TIPO?("Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"Todos os tipos");
     $("vs-filtro").textContent=rotDataCurto(ini)+" a "+rotDataCurto(fim)+" · "+fTxt;
     var r=calcSemana(sem,L);
-    var mr=$("vs-meta-ref");if(mr)mr.textContent=r.dias?("Meta 50/dia · "+C.formatQtd(r.meta)+" na semana"):"";
-    if(EMPS===null){$("vs-proj").textContent="";$("vs-real").textContent="";return}
-    var proj=r.pComV?r.pV:null,real=r.rComV?r.rV:(proj!==null?0:null);
+    $("vs-meta").textContent=r.dias?C.formatQtd(r.meta):"";
+    $("vs-meta-sub").textContent=r.dias?("50/dia × "+r.dias+(r.dias===1?" dia útil":" dias úteis")):"";
+    $("vs-qprog").textContent=r.pQ?C.formatQtd(r.pQ):"";
+    $("vs-qent").textContent=r.rQ?C.formatQtd(r.rQ):"";
+    var ok=EMPS!==null;
+    var proj=ok&&r.pComV?r.pV:null,real=ok?(r.rComV?r.rV:(proj!==null?0:null)):null;
     $("vs-proj").textContent=proj===null?"":C.formatBRL(proj);
     $("vs-real").textContent=real===null?"":C.formatBRL(real);
+    var DEP={"eletrica":"Elétrica","qdc":"QDC","hidraulica-agua-fria":"Água fria","hidraulica-agua-quente":"Água quente","hidraulica-esgoto":"Esgoto","gas":"Gás"};
+    var tb="",n=0;
+    LINHAS_TOTAL.forEach(function(ln){var T=r.tipos[ln.id];if(!T||!(T.n||T.rq))return;n++;
+      var pv=ok&&T.cv?T.v:null,rv=ok?(T.crv?T.rv:(pv!==null?0:null)):null;
+      tb+='<tr><td>'+C.esc(DEP[ln.id]||ln.rot)+'</td><td>'+(T.q?C.formatQtd(T.q):"")+'</td><td>'+(pv===null?"":C.formatBRL(pv))+'</td><td>'+(rv===null?"":C.formatBRL(rv))+'</td></tr>'});
+    $("vs-dep-b").innerHTML=tb;
+    $("vs-dep-t").innerHTML=n?('<tr><td>Total</td><td>'+(r.pQ?C.formatQtd(r.pQ):"")+'</td><td>'+(proj===null?"":C.formatBRL(proj))+'</td><td>'+(real===null?"":C.formatBRL(real))+'</td></tr>'):"";
+    $("vs-dep-t").closest("table").hidden=!n;
   }
   function abrirLancarValor(id){if(!fonte()[id])return;abrir(id);abrirEdicao(id);setTimeout(function(){var s=document.getElementById("ed-kits-sec");if(s){s.scrollIntoView({block:"center"});var i=s.querySelector('[data-f=valor]');if(i)i.focus()}},60)}
   // ===== Formulário: blocos de kit por tipo + valor projetado/real da obra =====
