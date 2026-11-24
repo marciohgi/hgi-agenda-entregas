@@ -65,7 +65,8 @@
     var vz = function (n) { return n ? q(n) : ""; };
     h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + m(r.proj) + '</b><small>' + (r.imov ? q(r.imov) + (r.imov === 1 ? " imóvel" : " imóveis") : "") + '</small></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
     var mv = X.metaSemana(semanaIni);
-    if (mv) h += '<p class="hr-meta">Meta da semana ' + m(mv) + '</p>';
+    var mt = [mv ? "Meta da semana " + m(mv) : "", r.dias ? q(r.meta) + " aptos" : ""].filter(Boolean).join(" · ");
+    if (mt) h += '<p class="hr-meta">' + mt + '</p>';
     h += '<div class="hr-kpis hr-3"><div class="lar"><span>Pedido Total</span><b>' + vz(r.pedT) + '</b></div><div><span>Total Entregue</span><b>' + (r.pedT ? q(r.entT) : "") + '</b></div><div><span>Saldo Entrega</span><b>' + (r.pedT ? q(r.pedT - r.entT) : "") + '</b></div></div>';
     var DEP = { "eletrica": "Elétrica", "qdc": "QDC", "hidraulica-agua-fria": "Água fria", "hidraulica-agua-quente": "Água quente", "hidraulica-esgoto": "Esgoto", "gas": "Gás" }, linhasDep = "";
     K.LINHAS.forEach(function (ln) { var T = r.tipos[ln.id]; if (!T || !(T.n || T.rq)) return; var pv = T.cv ? T.v : null, rv = T.crv ? T.rv : (pv !== null ? 0 : null);

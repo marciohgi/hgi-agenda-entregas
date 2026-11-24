@@ -1656,7 +1656,7 @@
     var fTxt=(FILTRO_CLIENTE?("Cliente: "+FILTRO_CLIENTE):"Todos os clientes")+" · "+(FILTRO_TIPO?("Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"Todos os tipos");
     $("vs-filtro").textContent=rotDataCurto(ini)+" a "+rotDataCurto(fim)+" · "+fTxt;
     var r=calcSemana(sem,L);
-    var mv=window.HGIKitsExtra&&HGIKitsExtra.metaSemana(ini),mr=$("vs-meta-ref");if(mr)mr.textContent=mv?("Meta da semana "+C.formatBRL(mv)):"";
+    var mv=window.HGIKitsExtra&&HGIKitsExtra.metaSemana(ini),mr=$("vs-meta-ref");if(mr)mr.textContent=[mv?("Meta da semana "+C.formatBRL(mv)):"",r.dias?(C.formatQtd(r.meta)+" aptos"):""].filter(Boolean).join(" · ");
     $("vs-imov").textContent=r.imov?(C.formatQtd(r.imov)+(r.imov===1?" imóvel":" imóveis")):"";
     $("vs-pedt").textContent=r.pedT?C.formatQtd(r.pedT):"";
     $("vs-entt").textContent=r.pedT?C.formatQtd(r.entT):"";
