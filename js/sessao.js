@@ -2,6 +2,25 @@
   var cfg = window.HGI_FIREBASE || {};
   var calc = window.HGICalc;
   var EQUIPE_OCULTA = true;
+  /* Versão publicada: se a página aberta for de uma versão antiga, recarrega uma vez sem cache. */
+  var VERSAO = "20261124-1357";
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+    if (window.caches && caches.keys) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
+  } catch (e) {}
+  function conferirVersao() {
+    try {
+      fetch("versao.json?cb=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (!j || !j.versao || j.versao === VERSAO) return;
+        var k = "hgi-recarregou-" + j.versao;
+        if (sessionStorage.getItem(k)) return;
+        sessionStorage.setItem(k, "1");
+        location.reload();
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  conferirVersao();
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") conferirVersao(); });
   if (EQUIPE_OCULTA && /equipe\.html$/i.test(location.pathname)) { location.replace("index.html"); return; }
   var paginaNova = /(?:almoxarifado|romaneio|financeiro|painel|equipe)\.html$/i.test(location.pathname);
   var exemplo = paginaNova && /(?:\?|&)exemplo=1(?:&|$)/.test(location.search);

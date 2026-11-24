@@ -176,6 +176,7 @@
   .vs-falta{font-size:12px;font-weight:700;color:#E87731;line-height:1.35}
   .vs-falta:empty{display:none}
   .vs-val:empty{min-height:23px}
+  footer .versao{color:#9a9a9a;font-weight:400}
   .vs-sec{font-size:12px;color:#bfbfbf;margin-top:2px}.vs-sec:empty{display:none}
   .valor-semana .vs-linha .vs-val{font-size:22px}
   .vs-meta-ref{font-weight:800;color:#fff!important}
@@ -491,7 +492,7 @@
   }
   @media (prefers-reduced-motion:reduce){.item .alerta-mini.lote-vencido,.alerta-lote-vencido.alerta{animation:none}}
 </style>
-<link rel="stylesheet" href="css/modulos.css">
+<link rel="stylesheet" href="css/modulos.css?v=20261124-1357">
 </head>
 <body>
 <div id="hgi-gate" role="dialog" aria-modal="true" aria-labelledby="hgi-gate-titulo">
@@ -571,7 +572,7 @@
 
   <div class="outras" id="outras"><div class="rot" id="outras-rot">Sem data definida</div><div class="lista" id="outras-lista"></div></div>
 
-  <footer>Meta mínima: 50 apartamentos/dia</footer>
+  <footer>Meta mínima: 50 apartamentos/dia<span class="versao" id="hgi-versao"> · versão 20261124-1357</span></footer>
 </div>
 
 <div class="ov" id="ov">
@@ -755,11 +756,11 @@
 
 <div class="dd-etapa" id="n-dd-etapa" role="listbox" hidden></div>
 
-<script src="js/firebase-config.js"></script>
-<script src="js/calculos.js"></script>
-<script src="js/sessao.js"></script>
-<script src="js/kits-resumo.js"></script>
-<script src="js/relatorio-pdf.js"></script>
+<script src="js/firebase-config.js?v=20261124-1357"></script>
+<script src="js/calculos.js?v=20261124-1357"></script>
+<script src="js/sessao.js?v=20261124-1357"></script>
+<script src="js/kits-resumo.js?v=20261124-1357"></script>
+<script src="js/relatorio-pdf.js?v=20261124-1357"></script>
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
@@ -1535,7 +1536,7 @@
     }
     var sq=!sem.length?"Nenhuma entrega nesta semana":(nuniq+(nuniq===1?" entrega":" entregas")+" nesta semana")+(semq.length?". "+(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":". Todas com quantidade");
     document.getElementById("r-semq").textContent=sq;
-    renderValorSemana(sem,L);
+    try{renderValorSemana(sem,L)}catch(e){if(window.console)console.error("projecao",e)}
     renderPendencias();
     renderLembretes();
     renderAlertasCerca();
@@ -1650,7 +1651,8 @@
   }
   function renderValorSemana(sem,L){
     var box=document.getElementById("valor-semana");if(!box)return;
-    if(!VS_ON||!window.HGI||!HGI.sessao||HGI.sessao.papel!=="total"){box.hidden=true;return}
+    var ss=window.HGI&&HGI.sessao,podeVer=!!ss&&(ss.papel==="total"||/^diretoria$/i.test(ss.setor||""));
+    if(!VS_ON||!podeVer){box.hidden=true;return}
     box.hidden=false;
     var C=window.HGICalc,ini=DIAS[0].iso,fim=DIAS[6].iso,$=function(i){return document.getElementById(i)};
     var fTxt=(FILTRO_CLIENTE?("Cliente: "+FILTRO_CLIENTE):"Todos os clientes")+" · "+(FILTRO_TIPO?("Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"Todos os tipos");
@@ -2974,8 +2976,8 @@
     if(window.HGI&&HGI.montarChrome)HGI.montarChrome("agenda");
     ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();if(NOVO_PEDIDO){novoAberto||setTimeout(talvezAbrirNovo,0)}else if(ED_PEDIDO){edAberto||setTimeout(talvezAbrirEd,0)}else tentarPopupAtraso()});
     ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
-    if(window.HGI&&HGI.sessao&&HGI.sessao.papel==="total"){
-      VS_ON=true;
+    if(window.HGI&&HGI.sessao&&(HGI.sessao.papel==="total"||/^diretoria$/i.test(HGI.sessao.setor||""))){
+      VS_ON=true;render();
       ouvirValores("empreendimentos",function(p,d,pt){EMPS=mescla(EMPS,p,d,pt);render()});
     }
   }
