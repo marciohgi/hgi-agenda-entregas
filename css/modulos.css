@@ -147,3 +147,9 @@ footer.rodape{margin-top:8px;text-align:center;color:var(--mudo);font-size:12px}
 @media(max-width:1100px){.re-lista{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:800px){.re-lista{grid-template-columns:repeat(2,minmax(0,1fr))}.re-filtros{margin-left:0}}
 @media(max-width:520px){.re-lista{grid-template-columns:1fr}}
+
+.topo-acoes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+.topo-acoes[hidden]{display:none!important}
+.topo-acoes a.btn{text-decoration:none;display:inline-block}
+body.pagina .topo-acoes .btn{background:#111;font-size:15px;padding:11px 18px}
+body.pagina .topo-acoes .btn.lar{background:var(--laranja);color:#111}

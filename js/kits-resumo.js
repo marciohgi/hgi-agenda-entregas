@@ -126,5 +126,134 @@
       return h;
     }).join("");
   }
+
+  /* ===== Semana (mesma lógica da Agenda para saber quais obras aparecem na semana) ===== */
+  function iso(t) { return /^\d{4}-\d{2}-\d{2}$/.test(t || "") ? t : ""; }
+  function parciais(o) {
+    var p = o && o.entregasParciais, arr = [], k, x, q;
+    if (!p || typeof p !== "object") return arr;
+    for (k in p) if (Object.prototype.hasOwnProperty.call(p, k)) {
+      x = p[k]; if (!x || typeof x !== "object") continue;
+      q = (typeof x.qtd === "string") ? parseInt(x.qtd, 10) : x.qtd;
+      arr.push({ id: k, qtd: (typeof q === "number" && isFinite(q) && q > 0) ? q : 0, data: x.data || "", lote: parseInt(x.lote, 10) || 0, criadoEm: x.criadoEm || 0 });
+    }
+    arr.sort(function (a, b) { return (a.data || "").localeCompare(b.data || "") || (a.criadoEm - b.criadoEm); });
+    return arr;
+  }
+  function lotes(o) {
+    var p = o && o.lotesPrevistos, arr = [], k, x, q;
+    if (p && typeof p === "object") for (k in p) if (Object.prototype.hasOwnProperty.call(p, k)) {
+      x = p[k]; if (!x || typeof x !== "object") continue;
+      q = (typeof x.qtd === "string") ? parseInt(x.qtd, 10) : x.qtd;
+      arr.push({ n: parseInt(x.n || k, 10) || 0, qtd: (typeof q === "number" && q > 0) ? q : 0, data: x.data || "" });
+    }
+    return arr.filter(function (l) { return l.n >= 1; }).sort(function (a, b) { return a.n - b.n; });
+  }
+  function integral(o) { var q = qnum(o); return q > 0 && entregueTotal(o).q >= q; }
+  function enviado(o) {
+    if (estaConcluido(o) || integral(o)) return true;
+    var s = norm(o && (o.statusCodigo || o.status));
+    return s === "pronto" || s.indexOf("entregue") >= 0 || s.indexOf("enviado") >= 0;
+  }
+  function dataFinal(o) {
+    if (estaConcluido(o)) { if (iso(o.dataConclusao)) return o.dataConclusao; if (iso(o.data)) return o.data; }
+    if (integral(o)) { var ps = parciais(o).filter(function (p) { return iso(p.data); }); if (ps.length) return ps[ps.length - 1].data; }
+    return "";
+  }
+  function dataRef(o) {
+    var falta = qnum(o) ? Math.max(0, qnum(o) - entregueTotal(o).q) : 0;
+    if (falta > 0 && iso(o.proximoLoteData)) return o.proximoLoteData;
+    var ent = entregueTotal(o).q, acum = 0, ls = lotes(o), i;
+    for (i = 0; i < ls.length; i++) { acum += ls[i].qtd; if ((acum > ent || !ls[i].qtd) && iso(ls[i].data)) return ls[i].data; }
+    return o.data || "";
+  }
+  function datasNaSemana(o, hoje) {
+    var df = dataFinal(o);
+    if (df) return [df];
+    if (!enviado(o)) { var ref = dataRef(o); if (iso(o.data) && (!iso(ref) || o.data < ref)) ref = o.data; if (iso(ref) && ref < hoje) return [hoje]; }
+    var d = [];
+    if (iso(o.data)) d.push(o.data);
+    lotes(o).forEach(function (l) { if (iso(l.data)) d.push(l.data); });
+    if (iso(o.proximoLoteData)) d.push(o.proximoLoteData);
+    return d;
+  }
+  function entregueNaSemana(o, ini, fim) {
+    var q = qnum(o), antes = 0, dentro = 0;
+    parciais(o).forEach(function (x) { if (!iso(x.data)) return; if (x.data < ini) antes += x.qtd; else if (x.data <= fim) dentro += x.qtd; });
+    if (estaConcluido(o)) { var df = dataFinal(o); if (!df || df < ini || df > fim) return 0; return q ? Math.max(0, q - antes) : 0; }
+    if (q) dentro = Math.min(dentro, Math.max(0, q - antes));
+    return dentro;
+  }
+  function mapaEmps(emps) {
+    var m = {}; Object.keys(emps || {}).forEach(function (k) { var e = emps[k]; if (!e || !e.nome) return; var c = chaveNome(e.nome); m[c] = (m[c] === undefined) ? e : null; }); return m;
+  }
+  function precoKit(o, b, mapa) {
+    if (b.valor !== null) return b.valor;
+    var e = mapa[chaveNome(o.nome)];
+    if (e && b.id === "eletrica") return numV(e.valorKitEletrico);
+    if (e && b.id === "qdc") return numV(e.valorKitQdc);
+    return null;
+  }
+  function diasUteis(ini) {
+    var n = 0, d, i;
+    for (i = 0; i < 5; i++) { d = calc.somarDias(ini, i); if (d < "2026-12-24" || d > "2026-12-27") n++; }
+    return n;
+  }
+  /* Projeção da semana em kits e R$ a partir de /entregas (kits) com reserva no preço do Financeiro. */
+  function semana(fontes, ini, hoje) {
+    var fim = calc.somarDias(ini, 6), ent = fontes.entregas || {}, mapa = mapaEmps(fontes.empreendimentos), visto = {};
+    var r = { ini: ini, fim: fim, pN: 0, pQ: 0, pV: 0, pComV: 0, rN: 0, rQ: 0, rV: 0, rComV: 0, semValor: {}, semQtd: {} };
+    Object.keys(ent).forEach(function (id) {
+      var o = ent[id]; if (!o || typeof o !== "object") return;
+      var naSem = datasNaSemana(o, hoje).some(function (d) { return d >= ini && d <= fim; });
+      var ks = kitsDe(o), bl = Object.keys(ks).map(function (k) { return ks[k]; }), main = chaveTotal(o), temParc = parciais(o).length > 0;
+      if (!naSem) {
+        var mb = ks[main]; if (!mb) return;
+        var q = entregueNaSemana(o, ini, fim); if (!q) return;
+        r.rN++; r.rQ += q; var pv = precoKit(o, mb, mapa);
+        if (pv === null) r.semValor[id] = 1; else { r.rV += q * pv; r.rComV++; }
+        return;
+      }
+      r.pN++;
+      var tp = numV(o.valorProjetado), tr = numV(o.valorReal), qp = 0, vp = 0, falta = false, algum = false, qr = 0, vr = 0, faltaR = false, algumR = false;
+      bl.forEach(function (b) {
+        var pr = precoKit(o, b, mapa);
+        if (!b.qtdPedido) r.semQtd[id] = 1; else { qp += b.qtdPedido; if (pr === null) falta = true; else { algum = true; vp += b.qtdPedido * pr; } }
+        var qe = (b.id === main && temParc) ? entregueNaSemana(o, ini, fim) : (b.qtdEntregue || 0);
+        if (qe > 0) { qr += qe; if (pr === null) faltaR = true; else { algumR = true; vr += qe * pr; } }
+      });
+      if (!bl.length && qnum(o)) { qp = qnum(o); falta = true; }
+      r.pQ += qp; r.rQ += qr;
+      if (tp !== null) { r.pV += tp; r.pComV++; } else { if (algum) { r.pV += vp; r.pComV++; } if (falta || (!algum && qp)) r.semValor[id] = 1; }
+      if (qr > 0 || tr !== null) r.rN++;
+      if (tr !== null) { r.rV += tr; r.rComV++; } else { if (algumR) { r.rV += vr; r.rComV++; } if (faltaR) r.semValor[id] = 1; }
+    });
+    r.nSemValor = Object.keys(r.semValor).length; r.nSemQtd = Object.keys(r.semQtd).length;
+    r.dias = diasUteis(ini); r.meta = 50 * r.dias;
+    r.proj = r.pComV ? r.pV : null; r.real = r.rComV ? r.rV : (r.proj !== null ? 0 : null);
+    r.dif = (r.proj !== null && r.real !== null) ? r.real - r.proj : null;
+    r.pct = (r.dif !== null && r.proj > 0) ? r.real / r.proj * 100 : null;
+    return r;
+  }
+  /* Totais por tipo de kit em todas as obras. */
+  function porTipo(fontes) {
+    var ent = fontes.entregas || {}, mapa = mapaEmps(fontes.empreendimentos), t = {};
+    LINHAS.forEach(function (ln) { t[ln.id] = { rot: ln.rot, n: 0, ped: 0, ent: 0, vPed: 0, vEnt: 0, comValor: 0, semValor: 0, semQtd: 0 }; });
+    Object.keys(ent).forEach(function (id) {
+      var o = ent[id]; if (!o || typeof o !== "object") return;
+      var ks = kitsDe(o);
+      Object.keys(ks).forEach(function (k) {
+        var b = ks[k], x = t[k]; x.n++;
+        if (b.qtdPedido === null) { x.semQtd++; return; }
+        x.ped += b.qtdPedido; x.ent += (b.qtdEntregue || 0);
+        var v = precoKit(o, b, mapa);
+        if (v === null) x.semValor++; else { x.comValor++; x.vPed += v * b.qtdPedido; x.vEnt += v * (b.qtdEntregue || 0); }
+      });
+    });
+    return t;
+  }
+  function moeda(n) { return n === null || n === undefined ? "—" : calc.formatBRL(n); }
+  function pctTxt(n) { return n === null || n === undefined ? "—" : n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%"; }
+  window.HGIKitsExtra = { semana: semana, porTipo: porTipo, parciais: parciais, dataFinal: dataFinal, precoKit: precoKit, mapaEmps: mapaEmps, moeda: moeda, pctTxt: pctTxt, numV: numV, qnum: qnum, chaveTotal: chaveTotal };
   window.HGIKits = { LINHAS: LINHAS, kitsDe: kitsDe, chaveNome: chaveNome, agrupar: agrupar, htmlCards: htmlCards };
 })();

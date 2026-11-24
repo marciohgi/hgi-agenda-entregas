@@ -28,6 +28,16 @@
     var h2 = document.querySelector(".sec-fin");
     if (s.papel !== "total") { sec.hidden = true; if (h2) h2.hidden = true; return; }
     sec.hidden = false;
+    var ac = document.getElementById("re-acoes");
+    if (ac && !HGI.exemplo) {
+      ac.hidden = false;
+      document.getElementById("re-rel").onclick = function () {
+        var b = this, sem = ""; b.disabled = true;
+        try { sem = sessionStorage.getItem("hgi-semana-vista") || ""; } catch (e) {}
+        if (!calc.parseISO(sem)) sem = calc.hojeSP();
+        HGIRel.abrirGeral(calc.segundaDe(sem)).catch(function () { alert("Não foi possível ler os dados para o relatório."); }).then(function () { b.disabled = false; });
+      };
+    }
     if (HGI.exemplo) { document.getElementById("re-lista").innerHTML = '<div class="re-vazio">No exemplo visual o resumo não é montado: ele lê as obras reais da Agenda.</div>'; return; }
     Object.keys(fontes).forEach(function (k) {
       HGIDados.escutar(k, function (v) { fontes[k] = v || {}; render(); }, function () { fontes[k] = {}; render(); });

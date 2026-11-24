@@ -194,7 +194,12 @@
   .kit-tit{display:flex;align-items:center;gap:8px;margin-bottom:4px}
   .kit-nome{font-weight:800;font-size:13px}
   .kit-princ{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#111;background:#E87731;border-radius:4px;padding:1px 6px}
-  .kit-x{margin-left:auto;background:none;border:1px solid #555;color:#fff;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:16px;line-height:1}
+  .kit-x{margin-left:auto;background:#111;border:1px solid #E87731;color:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;font:inherit;font-size:12px;font-weight:800}
+  .kit-x:hover{background:#E87731;color:#111}
+  .kits-sec select.kit-tipo-sel{width:auto;margin:0;padding:4px 8px;font-weight:800;font-size:13px}
+  .kits-novo{display:block;width:100%;margin:0 0 10px;background:#E87731;color:#111;border:0;border-radius:6px;padding:9px 12px;font:inherit;font-weight:800;cursor:pointer}
+  .kits-novo:disabled{opacity:.5;cursor:default}
+  .kits-vazio{font-size:12px;color:#cfcfcf;padding:6px 0 10px}
   .kit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .kit-rs{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:#bfbfbf;margin-top:6px}
   .kit-rs b{color:#fff}
@@ -608,7 +613,7 @@
       <div class="upd" id="upd"></div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
-      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn lar" id="editar-obra" type="button">✎ Editar obra</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
+      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn lar" id="editar-obra" type="button">✎ Editar obra</button><button class="btn sec" id="rel-obra" type="button">Gerar relatório da obra (PDF)</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
     </div>
   </div>
 </div>
@@ -719,6 +724,8 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/calculos.js"></script>
 <script src="js/sessao.js"></script>
+<script src="js/kits-resumo.js"></script>
+<script src="js/relatorio-pdf.js"></script>
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
@@ -1535,6 +1542,7 @@
     if(k&&typeof k!=="object")k=null;
     LINHAS_TOTAL.forEach(function(ln){
       var b=k&&k[ln.id],isMain=ln.id===main;
+      if(b&&typeof b==="object"&&b.ativo===false)return;
       if(!b&&!isMain)return;
       b=(b&&typeof b==="object")?b:{};
       var ped=numV(b.qtdPedido),ent=numV(b.qtdEntregue),pedAuto=false,entAuto="";
@@ -1645,15 +1653,24 @@
     var sec=document.getElementById(pref+"-kits-sec");if(!sec||sec.getAttribute("data-ok"))return;sec.setAttribute("data-ok","1");
     var h='<div class="kits-cab"><span>Kits e valores</span><span class="vs-int">Uso interno</span></div>';
     h+='<div class="kits-blocos" id="'+pref+'-kits"></div>';
-    h+='<label class="rot kits-add">+ Tipo de kit<select id="'+pref+'-kit-add"><option value="">— adicionar outro tipo nesta obra —</option></select></label>';
+    h+='<button type="button" class="kits-novo" id="'+pref+'-kit-novo">+ Novo item</button>';
     h+='<div class="campos"><label class="rot">Valor projetado da obra (R$)<input type="text" inputmode="decimal" id="'+pref+'-vproj" data-moeda="1"></label><label class="rot">Valor real (R$)<input type="text" inputmode="decimal" id="'+pref+'-vreal" data-moeda="1"></label></div>';
     h+='<div class="kits-nota">Em branco, o projetado é a soma de valor × qtd pedida dos blocos e o real, valor × qtd entregue. O real pode ficar vazio até a entrega.</div>';
     sec.innerHTML=h;
-    var add=document.getElementById(pref+"-kit-add");
-    add.addEventListener("change",function(){var v=add.value;if(!v)return;KF[pref].blocos[v]=KF[pref].blocos[v]||{valor:null,qtdPedido:null,qtdEntregue:null};add.value="";desenhaKits(pref)});
+    document.getElementById(pref+"-kit-novo").addEventListener("click",function(){
+      var st=KF[pref],livre=LINHAS_TOTAL.filter(function(ln){return !st.blocos[ln.id]})[0];
+      if(!livre){alert("Todos os seis tipos de kit já estão nesta obra.");return}
+      st.blocos[livre.id]={};delete st.excl[livre.id];desenhaKits(pref);
+    });
+    sec.addEventListener("change",function(ev){var sl=ev.target;if(!sl.classList||!sl.classList.contains("kit-tipo-sel"))return;
+      var st=KF[pref],de=sl.getAttribute("data-kit"),para=sl.value;if(!para||para===de||st.blocos[para])return;
+      st.blocos[para]=st.blocos[de];delete st.blocos[de];if(st.orig[de]||de===st.main)st.excl[de]=1;delete st.excl[para];desenhaKits(pref)});
     sec.addEventListener("input",function(ev){var i=ev.target;if(!i.getAttribute)return;var bk=i.closest(".kit-bloco");if(bk){var f=i.getAttribute("data-f"),b=KF[pref].blocos[bk.getAttribute("data-kit")];if(b&&f){b[f+"Txt"]=i.value}}atualizaKitsCalc(pref)});
     sec.addEventListener("focusout",function(ev){var i=ev.target;if(i&&i.getAttribute&&i.getAttribute("data-moeda")){var m=lerMoeda(i.value);if(m.ok&&m.v!==null)i.value=brl2(m.v);i.classList.toggle("inv",!m.ok)}});
-    sec.addEventListener("click",function(ev){var x=ev.target.closest&&ev.target.closest(".kit-x");if(!x)return;var id=x.getAttribute("data-kit");delete KF[pref].blocos[id];desenhaKits(pref)});
+    sec.addEventListener("click",function(ev){var x=ev.target.closest&&ev.target.closest(".kit-x");if(!x)return;var id=x.getAttribute("data-kit"),st=KF[pref];
+      var n=Object.keys(st.blocos).length,rot=(LINHA_MAP[id]||{}).rot||id;
+      if(n<=1&&!window.confirm("Este é o último item de kit desta obra ("+rot+"). Excluir mesmo assim? A obra continua na agenda; só fica sem kit lançado."))return;
+      delete st.blocos[id];if(st.orig[id]||id===st.main)st.excl[id]=1;desenhaKits(pref)});
     var t=document.getElementById(pref==="n"?"n-tipo":"ed-tipo"),r=document.getElementById(pref==="n"?"n-ramal":"ed-ramal"),q=document.getElementById(pref==="n"?"n-qtd":"ed-qtd");
     [t,r].forEach(function(el){if(el)el.addEventListener("change",function(){sincPrincipal(pref)})});
     if(q)q.addEventListener("input",function(){atualizaKitsCalc(pref)});
@@ -1662,18 +1679,18 @@
   function sincPrincipal(pref){
     var st=KF[pref];if(!st)return;var novo=principalForm(pref);
     if(st.main&&st.main!==novo&&blocoVazio(st.blocos[st.main])&&!st.orig[st.main])delete st.blocos[st.main];
-    st.main=novo;if(novo&&!st.blocos[novo])st.blocos[novo]={};
+    st.main=novo;if(novo&&!st.blocos[novo]){st.blocos[novo]={};delete st.excl[novo]}
     desenhaKits(pref);
   }
   function carregaKits(pref,o){
     montaKitsSec(pref);o=o||{};
-    var st=KF[pref]={blocos:{},orig:{},main:"",parc:listaParciais(o).length?entregueTotal(o):null,conc:estaConcluido(o)};
+    var st=KF[pref]={blocos:{},orig:{},excl:{},main:"",parc:listaParciais(o).length?entregueTotal(o):null,conc:estaConcluido(o)};
     var k=(o.kits&&typeof o.kits==="object")?o.kits:{};
-    LINHAS_TOTAL.forEach(function(ln){var b=k[ln.id];if(!b||typeof b!=="object")return;st.orig[ln.id]=1;
+    LINHAS_TOTAL.forEach(function(ln){var b=k[ln.id];if(!b||typeof b!=="object")return;st.orig[ln.id]=1;if(b.ativo===false){st.excl[ln.id]=1;return}
       st.blocos[ln.id]={valorTxt:numV(b.valor)!==null?brl2(numV(b.valor)):"",qtdPedidoTxt:numV(b.qtdPedido)!==null?String(numV(b.qtdPedido)):"",qtdEntregueTxt:numV(b.qtdEntregue)!==null?String(numV(b.qtdEntregue)):""}});
     document.getElementById(pref+"-vproj").value=numV(o.valorProjetado)!==null?brl2(numV(o.valorProjetado)):"";
     document.getElementById(pref+"-vreal").value=numV(o.valorReal)!==null?brl2(numV(o.valorReal)):"";
-    st.main=principalForm(pref);if(st.main&&!st.blocos[st.main])st.blocos[st.main]={};
+    st.main=principalForm(pref);if(st.main&&!st.blocos[st.main]&&!st.excl[st.main])st.blocos[st.main]={};
     desenhaKits(pref);
   }
   function desenhaKits(pref){
@@ -1683,7 +1700,8 @@
       var b=st.blocos[ln.id];if(!b)return;var isMain=ln.id===st.main;
       var d=document.createElement("div");d.className="kit-bloco";d.setAttribute("data-kit",ln.id);
       var entLock=isMain&&st.parc!==null;
-      d.innerHTML='<div class="kit-tit"><span class="kit-nome">'+C.esc(ln.rot)+'</span>'+(isMain?'<span class="kit-princ">tipo da entrega</span>':'<button type="button" class="kit-x" data-kit="'+ln.id+'" aria-label="Tirar '+C.esc(ln.rot)+'">×</button>')+'</div>'+
+      var opts=LINHAS_TOTAL.filter(function(x){return x.id===ln.id||!st.blocos[x.id]}).map(function(x){return '<option value="'+x.id+'"'+(x.id===ln.id?" selected":"")+'>'+C.esc(x.rot)+'</option>'}).join("");
+      d.innerHTML='<div class="kit-tit"><select class="kit-tipo-sel" data-kit="'+ln.id+'" aria-label="Tipo do kit">'+opts+'</select>'+(isMain?'<span class="kit-princ">tipo da entrega</span>':'')+'<button type="button" class="kit-x" data-kit="'+ln.id+'">Excluir</button></div>'+
         '<div class="kit-grid">'+
         '<label class="rot">Valor do kit (R$)<input type="text" inputmode="decimal" data-f="valor" data-moeda="1" placeholder="0,00"></label>'+
         '<label class="rot">Qtd pedida<input type="number" min="0" step="1" data-f="qtdPedido"></label>'+
@@ -1695,7 +1713,8 @@
       d.querySelector('[data-f="qtdPedido"]').value=b.qtdPedidoTxt||"";
       d.querySelector('[data-f="qtdEntregue"]').value=entLock?String(st.parc):(b.qtdEntregueTxt||"");
     });
-    if(add){add.innerHTML='<option value="">— adicionar outro tipo nesta obra —</option>';LINHAS_TOTAL.forEach(function(ln){if(st.blocos[ln.id])return;var op=document.createElement("option");op.value=ln.id;op.textContent=ln.rot;add.appendChild(op)});add.disabled=add.options.length<2}
+    var nv=document.getElementById(pref+"-kit-novo");if(nv)nv.disabled=Object.keys(st.blocos).length>=LINHAS_TOTAL.length;
+    if(!Object.keys(st.blocos).length)box.innerHTML='<div class="kits-vazio">Nenhum item de kit nesta obra. Use "+ Novo item" para lançar.</div>';
     atualizaKitsCalc(pref);
   }
   function blocoCalc(pref,id){
@@ -1739,6 +1758,7 @@
       if(c.e.v!==null&&!(c.isMain&&st.parc!==null))b.qtdEntregue=c.e.v;
       out[id]=b;n++;
     });
+    Object.keys(st.excl||{}).forEach(function(id){if(!st.blocos[id]){out[id]={ativo:false};n++}});
     var vp=lerMoeda(document.getElementById(pref+"-vproj").value),vr=lerMoeda(document.getElementById(pref+"-vreal").value);
     if(!vp.ok)err="Valor projetado inválido.";if(!vr.ok)err="Valor real inválido.";
     return {erro:err,kits:n?out:null,vp:vp.v,vr:vr.v};
@@ -1768,6 +1788,14 @@
   (function(){var w=document.getElementById("alertas-wrap");if(!w)return;var v=null;try{v=localStorage.getItem("hgi-agenda-alertas-abertos")}catch(e){}
     w.open=v==="1";
     w.addEventListener("toggle",function(){try{localStorage.setItem("hgi-agenda-alertas-abertos",w.open?"1":"0")}catch(e){}})})();
+  (function(){var b=document.getElementById("rel-obra");if(!b)return;b.onclick=function(){
+    if(!cur||!VS_ON)return;var id=cur,o=fonte()[id];if(!o)return;b.disabled=true;var t=b.textContent;b.textContent="Gerando…";
+    Promise.all([req("GET","/empreendimentos.json"),req("GET","/producao.json")]).then(function(r){
+      HGIRel.abrir("Relatório da obra · "+(o.nome||id),HGIRel.obra({o:o,id:id,emps:r[0]||{},producao:r[1]||{}}));
+    }).catch(function(){erro(ok,"Não foi possível ler o Financeiro para o relatório (sem conexão).")}).then(function(){b.disabled=false;b.textContent=t});
+  }})();
+  var NOVO_PEDIDO=/[?&]novo=1(?:&|$)/.test(location.search),novoAberto=false;
+  function talvezAbrirNovo(){if(!NOVO_PEDIDO||novoAberto||!VS_ON)return;novoAberto=true;try{history.replaceState(null,"",location.pathname)}catch(e){}abrirNovo(HOJE)}
   // painel de detalhe
   var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),upd=document.getElementById("upd"),cur=null;
   var eS=document.getElementById("e-status"),eD=document.getElementById("e-data"),eQ=document.getElementById("e-qtd");
@@ -2834,7 +2862,7 @@
     if(typeof renderLembretes==="function")renderLembretes();
     document.body.classList.add("hgi-ok");
     if(window.HGI&&HGI.montarChrome)HGI.montarChrome("agenda");
-    ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();tentarPopupAtraso()});
+    ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();if(NOVO_PEDIDO){novoAberto||setTimeout(talvezAbrirNovo,0)}else tentarPopupAtraso()});
     ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
     if(window.HGI&&HGI.sessao&&HGI.sessao.papel==="total"){
       VS_ON=true;

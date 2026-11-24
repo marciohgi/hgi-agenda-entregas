@@ -32,6 +32,7 @@
     html += "<strong>" + calc.esc(calc.formatSemana(semana)) + "</strong>";
     if (atual) html += '<span class="selo-semana">Semana atual</span>';
     html += '<button type="button" class="btn lar" id="abrir-acumulado">Acumulado do mês</button>';
+    if (!HGI.exemplo) html += '<button type="button" class="btn lar" id="gerar-rel-pdf">Gerar Relatório PDF</button>';
     html += "</div></div>";
 
     html += '<div class="cartoes">';
@@ -159,6 +160,11 @@
   }
   app.addEventListener("click", function (ev) {
     if (ev.target.id === "abrir-acumulado") { abrirModal(); return; }
+    if (ev.target.id === "gerar-rel-pdf") {
+      var bt = ev.target; bt.disabled = true;
+      HGIRel.abrirGeral(semana).catch(function () { alert("Não foi possível ler os dados para o relatório."); }).then(function () { bt.disabled = false; });
+      return;
+    }
     if (ev.target.hasAttribute("data-nav")) {
       var nav = ev.target.getAttribute("data-nav");
       if (nav === "0") gravarSemana(calc.hojeSP());
