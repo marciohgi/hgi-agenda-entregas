@@ -176,7 +176,9 @@
   .vs-falta{font-size:12px;font-weight:700;color:#E87731;line-height:1.35}
   .vs-falta:empty{display:none}
   .vs-val:empty{min-height:23px}
-  #vs-imov{font-size:17px}#vs-imov:empty{min-height:0}
+  .vs-sec{font-size:12px;color:#bfbfbf;margin-top:2px}.vs-sec:empty{display:none}
+  .valor-semana .vs-linha .vs-val{font-size:22px}
+  .vs-meta-ref{font-weight:800;color:#fff!important}
   #parc-kit[hidden]{display:none}
   .pk-cab,.pk-linha{display:grid;grid-template-columns:1.4fr .8fr 1fr 1fr;gap:8px;align-items:center}
   .pk-cab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#555;padding:0 0 6px;border-bottom:2px solid #111}
@@ -194,7 +196,7 @@
   .vs-qtds2>div:first-child{border-color:#E87731}
   .vs-qtds2 span{font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#bfbfbf}
   .vs-qtds2 small{font-size:9.5px;font-weight:600;text-transform:none;letter-spacing:0;color:#9a9a9a}
-  .vs-qtds2 b{font-size:16px;color:#fff;min-height:19px}
+  .vs-qtds2 b{font-size:13px;font-weight:700;color:#fff;min-height:19px}
   .vs-dep{width:100%;border-collapse:collapse;font-size:12px}
   .vs-dep[hidden]{display:none}
   .vs-dep th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:#bfbfbf;text-align:right;padding:4px 4px;border-bottom:1px solid #E87731}
@@ -202,7 +204,7 @@
   .vs-dep td{text-align:right;padding:4px 4px;border-bottom:1px solid #2a2a2a;color:#fff;white-space:nowrap}
   .vs-dep td:last-child{color:#E87731}
   .vs-dep tfoot td{font-weight:800;border-top:1px solid #E87731;border-bottom:0}
-  .vs-meta-ref{font-size:11px;color:#9a9a9a;letter-spacing:.3px}
+  .vs-meta-ref{font-size:12px;color:#d9d9d9;letter-spacing:.3px;margin-top:-4px}
   .vs-meta-ref:empty{display:none}
   .vs-nota{font-size:10.5px;color:#9a9a9a;line-height:1.35}
   .vs-qtds{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
@@ -528,9 +530,10 @@
       <div class="vs-cab"><span class="vs-tit">Projeção da semana</span><span class="vs-int">Uso interno</span></div>
       <div class="vs-filtro" id="vs-filtro"></div>
       <div class="vs-linhas">
-        <div class="vs-linha"><div class="vs-rot">Projetado pra entregar</div><div class="vs-val" id="vs-imov"></div><div class="vs-val" id="vs-proj"></div></div>
+        <div class="vs-linha"><div class="vs-rot">Projetado pra entregar</div><div class="vs-val" id="vs-proj"></div><div class="vs-sec" id="vs-imov"></div></div>
         <div class="vs-linha vs-real"><div class="vs-rot">Real entregue na semana</div><div class="vs-val" id="vs-real"></div></div>
       </div>
+      <div class="vs-meta-ref" id="vs-meta-ref"></div>
       <div class="vs-qtds2"><div><span>Pedido Total</span><b id="vs-pedt"></b></div><div><span>Total Entregue</span><b id="vs-entt"></b></div><div><span>Saldo Entrega</span><b id="vs-saldo"></b></div></div>
       <table class="vs-dep"><thead><tr><th>Departamento</th><th>Aptos/kits</th><th>Projetado</th><th>Real</th></tr></thead><tbody id="vs-dep-b"></tbody><tfoot id="vs-dep-t"></tfoot></table>
     </aside>
@@ -1653,6 +1656,7 @@
     var fTxt=(FILTRO_CLIENTE?("Cliente: "+FILTRO_CLIENTE):"Todos os clientes")+" · "+(FILTRO_TIPO?("Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"Todos os tipos");
     $("vs-filtro").textContent=rotDataCurto(ini)+" a "+rotDataCurto(fim)+" · "+fTxt;
     var r=calcSemana(sem,L);
+    var mv=window.HGIKitsExtra&&HGIKitsExtra.metaSemana(ini),mr=$("vs-meta-ref");if(mr)mr.textContent=mv?("Meta da semana "+C.formatBRL(mv)):"";
     $("vs-imov").textContent=r.imov?(C.formatQtd(r.imov)+(r.imov===1?" imóvel":" imóveis")):"";
     $("vs-pedt").textContent=r.pedT?C.formatQtd(r.pedT):"";
     $("vs-entt").textContent=r.pedT?C.formatQtd(r.entT):"";

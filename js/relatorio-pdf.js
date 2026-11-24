@@ -13,7 +13,7 @@
       "#hgi-rel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);overflow:auto;padding:16px}",
       "#hgi-rel .hr-barra{max-width:900px;margin:0 auto 10px;display:flex;gap:8px;justify-content:flex-end}",
       "#hgi-rel .hr-barra button{font:inherit;font-weight:800;border-radius:6px;padding:9px 14px;cursor:pointer;border:2px solid #E87731}",
-      "#hgi-rel .hr-2{grid-template-columns:1fr 1fr!important}#hgi-rel .hr-3{grid-template-columns:repeat(3,1fr)!important}#hgi-rel .hr-kpis b{display:block;min-height:1.2em}#hgi-rel .hr-meta{font-size:11px;color:#666;margin:2px 0 6px}#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
+      "#hgi-rel .hr-2{grid-template-columns:1fr 1fr!important}#hgi-rel .hr-3{grid-template-columns:repeat(3,1fr)!important}#hgi-rel .hr-3 b{font-size:12px}#hgi-rel .hr-2 b{font-size:18px}#hgi-rel .hr-2 small{display:block;font-size:10px;color:#555}#hgi-rel .hr-kpis b{display:block;min-height:1.2em}#hgi-rel .hr-meta{font-size:12px;color:#111;font-weight:700;margin:2px 0 6px}#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
       "#hgi-rel .hr-imp{background:#E87731;color:#111}#hgi-rel .hr-fec{background:#111;color:#fff}",
       ".hr-folha{max-width:900px;margin:0 auto;background:#fff;color:#111;font-family:'Segoe UI',Arial,sans-serif;font-size:12px;padding:22px 26px;border-radius:6px}",
       ".hr-cab{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #E87731;padding-bottom:8px;margin-bottom:12px;gap:12px}",
@@ -63,7 +63,9 @@
     h += "<h2>1. Projeção da semana · " + esc(calc.formatSemana(semanaIni)) + "</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (obras e blocos de kit lançados na Agenda). Preço: valor do kit na obra; sem ele, preço do Financeiro (só elétrico e QDC).</p>';
     var vz = function (n) { return n ? q(n) : ""; };
-    h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + (r.imov ? q(r.imov) + (r.imov === 1 ? " imóvel" : " imóveis") : "") + '</b><b>' + m(r.proj) + '</b></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
+    h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + m(r.proj) + '</b><small>' + (r.imov ? q(r.imov) + (r.imov === 1 ? " imóvel" : " imóveis") : "") + '</small></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
+    var mv = X.metaSemana(semanaIni);
+    if (mv) h += '<p class="hr-meta">Meta da semana ' + m(mv) + '</p>';
     h += '<div class="hr-kpis hr-3"><div class="lar"><span>Pedido Total</span><b>' + vz(r.pedT) + '</b></div><div><span>Total Entregue</span><b>' + (r.pedT ? q(r.entT) : "") + '</b></div><div><span>Saldo Entrega</span><b>' + (r.pedT ? q(r.pedT - r.entT) : "") + '</b></div></div>';
     var DEP = { "eletrica": "Elétrica", "qdc": "QDC", "hidraulica-agua-fria": "Água fria", "hidraulica-agua-quente": "Água quente", "hidraulica-esgoto": "Esgoto", "gas": "Gás" }, linhasDep = "";
     K.LINHAS.forEach(function (ln) { var T = r.tipos[ln.id]; if (!T || !(T.n || T.rq)) return; var pv = T.cv ? T.v : null, rv = T.crv ? T.rv : (pv !== null ? 0 : null);

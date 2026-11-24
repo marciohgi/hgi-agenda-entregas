@@ -4,6 +4,16 @@
    do bloco principal; obra concluída sem parciais conta entregue = pedido. */
 (function () {
   var calc = window.HGICalc;
+  /* META DE FATURAMENTO POR SEMANA (único lugar para mudar). Vale a faixa da segunda-feira da semana. */
+  var META_SEMANA = [
+    { ate: "2026-12-31", valor: 150000 },
+    { desde: "2027-01-01", valor: 200000 }
+  ];
+  function metaSemana(ini) {
+    for (var i = 0; i < META_SEMANA.length; i++) { var f = META_SEMANA[i];
+      if ((!f.desde || ini >= f.desde) && (!f.ate || ini <= f.ate)) return f.valor; }
+    return null;
+  }
   var LINHAS = [
     { id: "eletrica", tipo: "eletrica", rot: "Elétrico" },
     { id: "qdc", tipo: "qdc", rot: "QDC" },
@@ -263,6 +273,6 @@
   }
   function moeda(n) { return n === null || n === undefined ? "" : calc.formatBRL(n); }
   function pctTxt(n) { return n === null || n === undefined ? "" : n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%"; }
-  window.HGIKitsExtra = { semana: semana, porTipo: porTipo, parciais: parciais, dataFinal: dataFinal, precoKit: precoKit, mapaEmps: mapaEmps, moeda: moeda, pctTxt: pctTxt, numV: numV, qnum: qnum, chaveTotal: chaveTotal };
+  window.HGIKitsExtra = { metaSemana: metaSemana, META_SEMANA: META_SEMANA, semana: semana, porTipo: porTipo, parciais: parciais, dataFinal: dataFinal, precoKit: precoKit, mapaEmps: mapaEmps, moeda: moeda, pctTxt: pctTxt, numV: numV, qnum: qnum, chaveTotal: chaveTotal };
   window.HGIKits = { LINHAS: LINHAS, kitsDe: kitsDe, chaveNome: chaveNome, agrupar: agrupar, htmlCards: htmlCards };
 })();
