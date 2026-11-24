@@ -36,19 +36,17 @@
     html += "</div></div>";
 
     html += '<div class="cartoes">';
-    html += card("Projetado na semana", periodo.temLancamento ? calc.formatBRL(periodo.totais.projecaoReais) : "—", "R$", false);
-    html += card("Projetado na semana", periodo.temLancamento ? calc.formatQtd(periodo.totais.projecaoQtd) : "—", "quantidade · itens/apartamentos", false);
-    html += card("Real na semana", periodo.temLancamento ? calc.formatBRL(periodo.totais.entregaReais) : "—", "R$ · o que foi entregue" + pct(periodo.totais.entregaReais, periodo.totais.projecaoReais), true);
-    html += card("Real na semana", periodo.temLancamento ? calc.formatQtd(periodo.totais.entregaQtd) : "—", "quantidade · o que foi entregue" + pct(periodo.totais.entregaQtd, periodo.totais.projecaoQtd), true);
-    html += card("Produzido na semana", periodo.temLancamento ? calc.formatBRL(periodo.totais.produzidoReais) : "—", "R$", false);
-    html += card("Produzido na semana", periodo.temLancamento ? calc.formatQtd(periodo.totais.produzidoQtd) : "—", "quantidade", false);
-    html += card("Romaneios na semana", periodo.temLancamento ? String(periodo.totais.romaneioN) : "—", (periodo.temLancamento ? calc.formatQtd(periodo.totais.romaneioQtd) + " itens · " + calc.formatBRL(periodo.totais.romaneioReais) : "quantidade e R$"), false);
+    html += card("Projetado na semana", periodo.temLancamento ? calc.formatBRL(periodo.totais.projecaoReais) : "", "R$", false);
+    html += card("Projetado na semana", periodo.temLancamento ? calc.formatQtd(periodo.totais.projecaoQtd) : "", "quantidade · itens/apartamentos", false);
+    html += card("Real na semana", periodo.temLancamento ? calc.formatBRL(periodo.totais.entregaReais) : "", "R$ · o que foi entregue" + pct(periodo.totais.entregaReais, periodo.totais.projecaoReais), true);
+    html += card("Real na semana", periodo.temLancamento ? calc.formatQtd(periodo.totais.entregaQtd) : "", "quantidade · o que foi entregue" + pct(periodo.totais.entregaQtd, periodo.totais.projecaoQtd), true);
+    html += card("Produzido na semana", periodo.temLancamento ? calc.formatBRL(periodo.totais.produzidoReais) : "", "R$", false);
+    html += card("Produzido na semana", periodo.temLancamento ? calc.formatQtd(periodo.totais.produzidoQtd) : "", "quantidade", false);
+    html += card("Romaneios na semana", periodo.temLancamento ? String(periodo.totais.romaneioN) : "", (periodo.temLancamento ? calc.formatQtd(periodo.totais.romaneioQtd) + " itens · " + calc.formatBRL(periodo.totais.romaneioReais) : "quantidade e R$"), false);
     html += "</div>";
 
     if (!periodo.temLancamento) {
-      html += '<div class="bloco"><h2>Sem lançamentos nesta semana</h2><p class="nota">Por que aparece "—": esta aba só mostra o que foi lançado em <b>/producao</b>, e não há lançamento nesta semana. Para aparecer valor: cadastre a obra com o valor do kit e lance a quantidade em <b>Resumo por Empreendimento → Financeiro dos kits</b>. A projeção dos kits lançados na Agenda fica no quadro "Projeção da semana" da Agenda.</p><p><a class="btn lar" href="financeiro.html#emp-nome">Ir para o lançamento</a></p>';
-      if (!HGI.exemplo) html += '<p><a href="painel.html?exemplo=1">Ver exemplo visual</a></p>';
-      html += "</div>";
+      if (!HGI.exemplo) html += '<p class="nota"><a href="painel.html?exemplo=1">Ver exemplo visual</a></p>';
     } else {
       html += '<div class="bloco"><h2>Por empreendimento · R$</h2>' + svg(periodo.empreendimentos, "projetadoReais", "realReais", true) + "</div>";
       html += '<div class="bloco"><h2>Por empreendimento · quantidade</h2>' + svg(periodo.empreendimentos, "projetadoQtd", "realQtd", false) + "</div>";
@@ -73,11 +71,12 @@
     return " · " + Math.round((real || 0) / proj * 100) + "% do projetado";
   }
   function card(rot, val, sub, real) {
-    return '<article class="cartao' + (real ? " real" : "") + '"><div class="rot">' + calc.esc(rot) + '</div><div class="val">' + calc.esc(val) + '</div><div class="sub">' + calc.esc(sub) + "</div></article>";
+    return '<article class="cartao' + (real ? " real" : "") + '"><div class="rot">' + calc.esc(rot) + '</div><div class="val">' + calc.esc(val === "—" ? "" : val) + '</div><div class="sub">' + calc.esc(sub) + "</div></article>";
   }
   function nums(vals, money, tem) {
     return vals.map(function (v, i) {
-      var txt = tem ? (money[i] ? calc.formatBRL(v) : calc.formatQtd(v)) : "—";
+      var txt = tem ? (money[i] ? calc.formatBRL(v) : calc.formatQtd(v)) : "";
+      if (txt === "—") txt = "";
       return '<td class="num">' + calc.esc(txt) + "</td>";
     }).join("");
   }

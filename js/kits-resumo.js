@@ -78,7 +78,7 @@
     function grupo(nome, origem) {
       var k = chaveNome(nome);
       if (!k) return null;
-      if (!grupos[k]) { grupos[k] = { chave: k, nome: String(nome).trim(), n: 0, ped: 0, ent: 0, semQtd: 0, tipos: {}, origens: {}, temKit: false }; ordem.push(k); }
+      if (!grupos[k]) { grupos[k] = { chave: k, nome: String(nome).trim(), n: 0, ped: 0, ent: 0, semQtd: 0, tipos: {}, origens: {}, temKit: false, obras: [] }; ordem.push(k); }
       grupos[k].origens[origem] = 1;
       return grupos[k];
     }
@@ -87,7 +87,9 @@
       var o = ent[id]; if (!o || typeof o !== "object") return;
       var g = grupo(o.nome || id, "agenda"); if (!g) return;
       g.n++;
-      var ks = kitsDe(o);
+      var ks = kitsDe(o), sal = 0;
+      Object.keys(ks).forEach(function (kk) { var b = ks[kk]; if (b.qtdPedido !== null) sal += Math.max(0, b.qtdPedido - (b.qtdEntregue || 0)); });
+      if (!estaConcluido(o) && sal > 0) g.obras.push({ id: id, data: o.data || "" });
       Object.keys(ks).forEach(function (kk) {
         var b = ks[kk];
         if (scope && scope.indexOf(b.id) < 0) return;
@@ -118,11 +120,14 @@
       var zerado = g.saldo <= 0;
       var h = '<div class="re-card' + (zerado ? " re-ok" : "") + '">';
       h += '<div class="re-nome" title="' + esc(g.nome) + '">' + esc(g.nome) + (g.n > 1 ? ' <span class="re-n">' + g.n + " lançamentos</span>" : "") + "</div>";
-      h += '<div class="re-nums"><div><span>Pedido</span><b>' + f(g.ped) + '</b></div><div><span>Entregue</span><b>' + f(g.ent) + '</b></div><div class="re-saldo"><span>Saldo</span><b>' + f(g.saldo) + "</b></div></div>";
-      var tps = Object.keys(g.tipos).map(function (k) { var t = g.tipos[k]; return '<span class="re-tipo" title="' + esc(t.rot) + ": pedido " + t.ped + ", entregue " + t.ent + ", saldo " + (t.ped - t.ent) + '">' + esc(t.rot.replace("Hidráulica ", "H. ")) + " " + t.ent + "/" + t.ped + "</span>"; });
+      h += '<div class="re-nums"><div><span>Pedido</span><b>' + f(g.ped) + '</b></div><div class="re-saldo"><span>Saldo do pedido</span><b>' + f(g.saldo) + "</b></div></div>";
+      var tps = Object.keys(g.tipos).map(function (k) { var t = g.tipos[k]; return '<span class="re-tipo" title="' + esc(t.rot) + ": pedido " + t.ped + ", saldo do pedido " + (t.ped - t.ent) + '">' + esc(t.rot.replace("Hidráulica ", "H. ")) + " " + t.ped + " · saldo " + (t.ped - t.ent) + "</span>"; });
       if (g.semQtd) tps.push('<span class="re-tipo re-sq">' + g.semQtd + " sem qtd</span>");
       if (!g.n) tps.push('<span class="re-tipo re-sq">sem obra na Agenda</span>');
-      h += '<div class="re-tipos">' + tps.join("") + "</div></div>";
+      h += '<div class="re-tipos">' + tps.join("") + "</div>";
+      var obs = (g.obras || []).slice().sort(function (a, b) { return a.data.localeCompare(b.data); });
+      if (obs.length) h += '<div class="re-parc">' + obs.map(function (x) { return '<a class="re-parc-btn" href="index.html?obra=' + encodeURIComponent(x.id) + '&parcial=1">Lançar entrega parcial' + (obs.length > 1 && /^\d{4}-\d{2}-\d{2}$/.test(x.data) ? " · " + x.data.slice(8, 10) + "/" + x.data.slice(5, 7) : "") + "</a>"; }).join("") + "</div>";
+      h += "</div>";
       return h;
     }).join("");
   }
@@ -252,8 +257,8 @@
     });
     return t;
   }
-  function moeda(n) { return n === null || n === undefined ? "—" : calc.formatBRL(n); }
-  function pctTxt(n) { return n === null || n === undefined ? "—" : n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%"; }
+  function moeda(n) { return n === null || n === undefined ? "" : calc.formatBRL(n); }
+  function pctTxt(n) { return n === null || n === undefined ? "" : n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%"; }
   window.HGIKitsExtra = { semana: semana, porTipo: porTipo, parciais: parciais, dataFinal: dataFinal, precoKit: precoKit, mapaEmps: mapaEmps, moeda: moeda, pctTxt: pctTxt, numV: numV, qnum: qnum, chaveTotal: chaveTotal };
   window.HGIKits = { LINHAS: LINHAS, kitsDe: kitsDe, chaveNome: chaveNome, agrupar: agrupar, htmlCards: htmlCards };
 })();

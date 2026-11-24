@@ -51,7 +51,7 @@ body:not(.hgi-ok) .wrap{display:none}
 .cartao{background:#fff;border:1px solid var(--linha);border-left:5px solid var(--navy);border-radius:8px;padding:12px 14px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
 .cartao.real{border-left-color:var(--laranja)}
 .cartao .rot{font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--mudo);font-weight:700}
-.cartao .val{font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1}
+.cartao .val{min-height:1.1em;font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1}
 .cartao.real .val{color:#c86220}
 .cartao .sub{font-size:12px;color:var(--mudo);margin-top:4px}
 .painel-semana{background:#fff;border:1px solid var(--linha);border-radius:10px;padding:14px;margin-bottom:12px}
@@ -135,7 +135,7 @@ footer.rodape{margin-top:8px;text-align:center;color:var(--mudo);font-size:12px}
 .re-card.re-ok{border-left-color:#fff;opacity:.6}
 .re-nome{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .re-n{font-weight:600;font-size:10.5px;color:#9a9a9a}
-.re-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0 4px}
+.re-nums{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin:6px 0 4px}
 .re-nums span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#9a9a9a}
 .re-nums b{font-size:17px}
 .re-saldo b{color:#E87731}
@@ -153,3 +153,6 @@ footer.rodape{margin-top:8px;text-align:center;color:var(--mudo);font-size:12px}
 .topo-acoes a.btn{text-decoration:none;display:inline-block}
 body.pagina .topo-acoes .btn{background:#111;font-size:15px;padding:11px 18px}
 body.pagina .topo-acoes .btn.lar{background:var(--laranja);color:#111}
+.re-parc{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.re-parc-btn{font-size:11px;font-weight:800;background:var(--laranja);color:#111;border-radius:5px;padding:4px 8px;text-decoration:none}
+.re-parc-btn:hover{background:#fff}

@@ -13,7 +13,7 @@
       "#hgi-rel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);overflow:auto;padding:16px}",
       "#hgi-rel .hr-barra{max-width:900px;margin:0 auto 10px;display:flex;gap:8px;justify-content:flex-end}",
       "#hgi-rel .hr-barra button{font:inherit;font-weight:800;border-radius:6px;padding:9px 14px;cursor:pointer;border:2px solid #E87731}",
-      "#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
+      "#hgi-rel .hr-2{grid-template-columns:1fr 1fr!important}#hgi-rel .hr-kpis b{display:block;min-height:1.2em}#hgi-rel .hr-meta{font-size:11px;color:#666;margin:2px 0 6px}#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
       "#hgi-rel .hr-imp{background:#E87731;color:#111}#hgi-rel .hr-fec{background:#111;color:#fff}",
       ".hr-folha{max-width:900px;margin:0 auto;background:#fff;color:#111;font-family:'Segoe UI',Arial,sans-serif;font-size:12px;padding:22px 26px;border-radius:6px}",
       ".hr-cab{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #E87731;padding-bottom:8px;margin-bottom:12px;gap:12px}",
@@ -42,8 +42,8 @@
     var old = document.getElementById("hgi-rel"); if (old) old.remove();
     var ov = document.createElement("div"); ov.id = "hgi-rel";
     ov.innerHTML = '<div class="hr-barra"><button type="button" class="hr-imp">Imprimir / salvar PDF</button><button type="button" class="hr-fec">Fechar</button></div>' +
-      '<div class="hr-folha"><div class="hr-cab"><div><div class="hr-marca">GRUPO <b>HGI</b></div><h1>' + esc(titulo) + '</h1></div><div class="hr-dir"><span class="hr-int">USO INTERNO</span><br>Emitido em ' + esc(agora()) + '<br>Emitido por: ' + esc((window.HGI && HGI.sessao && (HGI.sessao.setor || HGI.sessao.nome)) || "—") + '</div></div>' +
-      corpo + '<div class="hr-rod">Grupo HGI · uso interno · não comentar nem prometer a cliente. Onde aparece "—" o valor não foi lançado; nada foi estimado.</div></div>';
+      '<div class="hr-folha"><div class="hr-cab"><div><div class="hr-marca">GRUPO <b>HGI</b></div><h1>' + esc(titulo) + '</h1></div><div class="hr-dir"><span class="hr-int">USO INTERNO</span><br>Emitido em ' + esc(agora()) + '<br>Emitido por: ' + esc((window.HGI && HGI.sessao && (HGI.sessao.setor || HGI.sessao.nome)) || "") + '</div></div>' +
+      corpo + '<div class="hr-rod">Grupo HGI · uso interno · não comentar nem prometer a cliente.</div></div>';
     document.body.appendChild(ov);
     document.documentElement.classList.add("hgi-rel-on");
     var prevTitle = document.title;
@@ -54,7 +54,7 @@
   function base() { return location.origin + location.pathname.replace(/[^\/]*$/, ""); }
   function lnkEd(id) { return base() + "index.html?obra=" + encodeURIComponent(id) + "&editar=1"; }
   function comoLancar() { return 'Lance o valor do kit em <b>✎ Editar obra</b> (Agenda, blocos de kit) ou em <a href="' + base() + 'financeiro.html#emp-nome">Financeiro dos kits</a> (só elétrico e QDC; o nome precisa ser igual ao da obra).'; }
-  function q(n) { return n === null || n === undefined ? "—" : calc.formatQtd(n); }
+  function q(n) { return n === null || n === undefined ? "" : calc.formatQtd(n); }
   /* Relatório geral (Painel e Resumo por Empreendimento). */
   function geral(fontes, semanaIni, hoje) {
     var K = HGIKits, X = HGIKitsExtra, m = X.moeda;
@@ -62,45 +62,36 @@
     var h = "";
     h += "<h2>1. Projeção da semana · " + esc(calc.formatSemana(semanaIni)) + "</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (obras e blocos de kit lançados na Agenda). Preço: valor do kit na obra; sem ele, preço do Financeiro (só elétrico e QDC).</p>';
-    h += '<div class="hr-kpis"><div class="lar"><span>Meta (referência interna)</span><b>' + q(r.meta) + ' imóveis</b><br><small>50/dia × ' + r.dias + ' dias úteis</small></div><div><span>Programado na semana</span><b>' + q(r.pQ) + ' kits</b><br><small>' + r.pN + ' obras</small></div><div><span>Entregue na semana</span><b>' + q(r.rQ) + ' kits</b></div><div><span>Obras sem valor</span><b>' + r.nSemValor + '</b>' + (r.nSemQtd ? '<br><small>' + r.nSemQtd + ' sem qtd pedida</small>' : "") + '</div></div>';
-    h += '<div class="hr-kpis"><div><span>Valor projetado para entregar</span><b>' + m(r.proj) + '</b></div><div class="lar"><span>Valor real entregue</span><b>' + m(r.real) + '</b></div><div><span>Diferença (real − projetado)</span><b>' + (r.dif === null ? "—" : (r.dif > 0 ? "+" : "") + m(r.dif)) + '</b></div><div><span>% realizado</span><b>' + X.pctTxt(r.pct) + '</b></div></div>';
-    h += '<p class="hr-nota">A meta é em imóveis; programado e entregue somam kits, não apartamentos (o mesmo apto pode ter mais de um kit).' + (r.nSemValor ? ' <span class="hr-alerta">' + r.nSemValor + ' obra(s) sem valor ficaram fora da soma em R$ ou entraram só em parte.</span>' : "") + '</p>';
-
-    var ids = Object.keys(r.semValor || {}), ent = fontes.entregas || {};
-    if (ids.length) {
-      h += '<div class="hr-sem"><b>' + (r.proj === null ? 'Por que aparece "—": nenhuma das ' + ids.length + " obras da semana tem preço de kit lançado." : "Sem preço lançado em " + ids.length + " obra(s): ficaram fora da soma em R$.") + "</b> " + comoLancar() + "<ul>" +
-        ids.map(function (id) { return { id: id, n: (ent[id] && ent[id].nome) || id }; }).sort(function (a, b) { return a.n.localeCompare(b.n, "pt-BR"); })
-          .map(function (x) { return '<li>' + esc(x.n) + ' · <a href="' + lnkEd(x.id) + '">lançar valor</a></li>'; }).join("") + "</ul></div>";
-    }
+    h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + m(r.proj) + '</b></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
+    h += '<p class="hr-meta">' + (r.dias ? 'Meta 50/dia · ' + q(r.meta) + ' na semana' : '') + '</p>';
     h += "<h2>2. Kits por tipo · todas as obras</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (blocos de kit). Obras antigas sem bloco usam o tipo e a quantidade da própria obra.</p>';
-    h += '<table><thead><tr><th>Tipo</th><th class="n">Blocos</th><th class="n">Pedido</th><th class="n">Entregue</th><th class="n">Saldo</th><th class="n">R$ pedido</th><th class="n">R$ entregue</th><th class="n">R$ saldo</th><th class="n">Sem valor</th></tr></thead><tbody>';
+    h += '<table><thead><tr><th>Tipo</th><th class="n">Blocos</th><th class="n">Pedido</th><th class="n">Saldo do pedido</th><th class="n">R$ pedido</th><th class="n">R$ entregue</th><th class="n">R$ saldo</th></tr></thead><tbody>';
     var tt = { n: 0, ped: 0, ent: 0, vPed: 0, vEnt: 0, com: 0, sem: 0 };
     K.LINHAS.forEach(function (ln) {
       var x = t[ln.id]; tt.n += x.n; tt.ped += x.ped; tt.ent += x.ent; tt.vPed += x.vPed; tt.vEnt += x.vEnt; tt.com += x.comValor; tt.sem += x.semValor + x.semQtd;
       var cv = x.comValor > 0;
-      h += "<tr><td>" + esc(x.rot) + '</td><td class="n">' + x.n + '</td><td class="n">' + q(x.ped) + '</td><td class="n">' + q(x.ent) + '</td><td class="n">' + q(x.ped - x.ent) + '</td><td class="n">' + (cv ? m(x.vPed) : "—") + '</td><td class="n">' + (cv ? m(x.vEnt) : "—") + '</td><td class="n">' + (cv ? m(x.vPed - x.vEnt) : "—") + '</td><td class="n">' + (x.semValor + x.semQtd) + "</td></tr>";
+      h += "<tr><td>" + esc(x.rot) + '</td><td class="n">' + x.n + '</td><td class="n">' + q(x.ped) + '</td><td class="n">' + q(x.ped - x.ent) + '</td><td class="n">' + (cv ? m(x.vPed) : "") + '</td><td class="n">' + (cv ? m(x.vEnt) : "") + '</td><td class="n">' + (cv ? m(x.vPed - x.vEnt) : "") + "</td></tr>";
     });
-    h += '<tr class="tot"><td>Total (kits)</td><td class="n">' + tt.n + '</td><td class="n">' + q(tt.ped) + '</td><td class="n">' + q(tt.ent) + '</td><td class="n">' + q(tt.ped - tt.ent) + '</td><td class="n">' + (tt.com ? m(tt.vPed) : "—") + '</td><td class="n">' + (tt.com ? m(tt.vEnt) : "—") + '</td><td class="n">' + (tt.com ? m(tt.vPed - tt.vEnt) : "—") + '</td><td class="n">' + tt.sem + "</td></tr></tbody></table>";
-    h += '<p class="hr-nota">R$ soma só os blocos com valor; a coluna "Sem valor" conta os blocos sem preço ou sem quantidade.</p>';
+    h += '<tr class="tot"><td>Total (kits)</td><td class="n">' + tt.n + '</td><td class="n">' + q(tt.ped) + '</td><td class="n">' + q(tt.ped - tt.ent) + '</td><td class="n">' + (tt.com ? m(tt.vPed) : "") + '</td><td class="n">' + (tt.com ? m(tt.vEnt) : "") + '</td><td class="n">' + (tt.com ? m(tt.vPed - tt.vEnt) : "") + "</td></tr></tbody></table>";
 
     h += "<h2>3. Resumo por empreendimento · todos</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas, mais os nomes de /empreendimentos e do romaneio. Nomes iguais sem diferença de maiúscula ou acento são juntados.</p>';
-    h += '<table><thead><tr><th>Empreendimento</th><th class="n">Lanç.</th><th class="n">Pedido</th><th class="n">Entregue</th><th class="n">Saldo</th><th>Por tipo (entregue/pedido)</th></tr></thead><tbody>';
+    h += '<table><thead><tr><th>Empreendimento</th><th class="n">Lanç.</th><th class="n">Pedido</th><th class="n">Saldo do pedido</th><th>Por tipo (pedido · saldo)</th></tr></thead><tbody>';
     var sp = 0, se = 0;
     arr.forEach(function (g) {
       sp += g.ped; se += g.ent;
-      var tps = Object.keys(g.tipos).map(function (k) { var x = g.tipos[k]; return esc(x.rot.replace("Hidráulica ", "H. ")) + " " + x.ent + "/" + x.ped; }).join(" · ");
-      if (!g.n) tps = "sem obra na Agenda";
-      h += "<tr><td>" + esc(g.nome) + '</td><td class="n">' + g.n + '</td><td class="n">' + q(g.ped) + '</td><td class="n">' + q(g.ent) + '</td><td class="n">' + q(g.saldo) + "</td><td>" + tps + "</td></tr>";
+      var tps = Object.keys(g.tipos).map(function (k) { var x = g.tipos[k]; return esc(x.rot.replace("Hidráulica ", "H. ")) + " " + x.ped + " · saldo " + (x.ped - x.ent); }).join(" · ");
+      if (!g.n) tps = "";
+      h += "<tr><td>" + esc(g.nome) + '</td><td class="n">' + g.n + '</td><td class="n">' + q(g.ped) + '</td><td class="n">' + q(g.saldo) + "</td><td>" + tps + "</td></tr>";
     });
-    h += '<tr class="tot"><td>' + arr.length + ' empreendimentos</td><td></td><td class="n">' + q(sp) + '</td><td class="n">' + q(se) + '</td><td class="n">' + q(sp - se) + "</td><td>kits</td></tr></tbody></table>";
+    h += '<tr class="tot"><td>' + arr.length + ' empreendimentos</td><td></td><td class="n">' + q(sp) + '</td><td class="n">' + q(sp - se) + "</td><td></td></tr></tbody></table>";
 
     h += "<h2>4. Lançamentos do Financeiro na semana</h2>";
     h += '<p class="hr-fonte">Fonte: /producao (aba Resumo por Empreendimento → Lançar quantidade). É o que alimenta os cartões e gráficos da aba Painel.</p>';
     var dias = calc.diasDaSemana(semanaIni);
     var per = calc.periodoAcumulado(calc.entradas(fontes.empreendimentos), calc.unirRomaneios(calc.entradas(fontes.producao), calc.entradas(fontes.romaneios)), dias[0], dias[6]);
-    if (!per.temLancamento) h += '<p class="hr-nota">Nenhum lançamento em /producao nesta semana, por isso os valores desta parte aparecem "—". Para lançar: <a href="' + base() + 'financeiro.html#emp-nome">Resumo por Empreendimento → Financeiro dos kits</a> (cadastro da obra com valor do kit e Lançar quantidade).</p>';
+    if (!per.temLancamento) h += '<p class="hr-nota">Nenhum lançamento nesta semana.</p>';
     else {
       var T = per.totais;
       h += '<table><thead><tr><th></th><th class="n">Quantidade</th><th class="n">R$</th></tr></thead><tbody>';
@@ -120,12 +111,12 @@
   /* Relatório de uma obra. dados: {o, id, emps, producao} */
   function obra(d) {
     var K = HGIKits, X = HGIKitsExtra, m = X.moeda, o = d.o || {}, ks = K.kitsDe(o), mapa = X.mapaEmps(d.emps);
-    var df = function (t) { return /^\d{4}-\d{2}-\d{2}$/.test(t || "") ? calc.formatDataBR(t) : "—"; };
+    var df = function (t) { return /^\d{4}-\d{2}-\d{2}$/.test(t || "") ? calc.formatDataBR(t) : ""; };
     var h = "<h2>Obra</h2><table><tbody>";
     h += "<tr><td>Empreendimento / obra</td><td><b>" + esc(o.nome || d.id) + "</b></td></tr>";
-    h += "<tr><td>Status</td><td>" + esc(o.status || o.statusCodigo || "—") + "</td></tr>";
-    h += "<tr><td>Estágio</td><td>" + esc(o.etapa ? String(o.etapa) : "—") + "</td></tr>";
-    h += "<tr><td>Padrão</td><td>" + esc(o.padrao || "—") + "</td></tr>";
+    h += "<tr><td>Status</td><td>" + esc(o.status || o.statusCodigo || "") + "</td></tr>";
+    h += "<tr><td>Estágio</td><td>" + esc(o.etapa ? String(o.etapa) : "") + "</td></tr>";
+    h += "<tr><td>Padrão</td><td>" + esc(o.padrao || "") + "</td></tr>";
     h += "<tr><td>Quantidade de aptos (agenda)</td><td>" + q(X.qnum(o) || null) + "</td></tr>";
     h += "<tr><td>Previsão de entrega</td><td>" + df(o.data) + "</td></tr>";
     h += "<tr><td>Entrou na produção</td><td>" + df(o.entrouProducao) + "</td></tr>";
@@ -133,27 +124,26 @@
     h += "<tr><td>Conclusão (embarque)</td><td>" + df(X.dataFinal(o)) + "</td></tr>";
     h += "</tbody></table>";
     h += "<h2>Kits por tipo</h2><p class=\"hr-fonte\">Fonte: /entregas (blocos de kit desta obra).</p>";
-    h += '<table><thead><tr><th>Tipo</th><th class="n">Valor do kit</th><th class="n">Pedido</th><th class="n">Entregue</th><th class="n">Saldo</th><th class="n">R$ pedido</th><th class="n">R$ entregue</th><th class="n">R$ saldo</th></tr></thead><tbody>';
+    h += '<table><thead><tr><th>Tipo</th><th class="n">Valor do kit</th><th class="n">Pedido</th><th class="n">Saldo do pedido</th><th class="n">R$ pedido</th><th class="n">R$ entregue</th><th class="n">R$ saldo</th></tr></thead><tbody>';
     var sp = 0, se = 0, temV = false, semV = 0;
     Object.keys(ks).forEach(function (k) {
       var b = ks[k], v = X.precoKit(o, b, mapa), ped = b.qtdPedido, en = b.qtdEntregue || 0, sal = ped === null ? null : ped - en;
       if (v === null) semV++; else if (ped !== null) { temV = true; sp += v * ped; se += v * en; }
-      h += "<tr><td>" + esc(b.rot) + (b.valor === null && v !== null ? " <small>(preço do Financeiro)</small>" : "") + '</td><td class="n">' + m(v) + '</td><td class="n">' + q(ped) + '</td><td class="n">' + q(b.qtdEntregue) + '</td><td class="n">' + q(sal) + '</td><td class="n">' + (v !== null && ped !== null ? m(v * ped) : "—") + '</td><td class="n">' + (v !== null ? m(v * en) : "—") + '</td><td class="n">' + (v !== null && sal !== null ? m(v * sal) : "—") + "</td></tr>";
+      h += "<tr><td>" + esc(b.rot) + (b.valor === null && v !== null ? " <small>(preço do Financeiro)</small>" : "") + '</td><td class="n">' + m(v) + '</td><td class="n">' + q(ped) + '</td><td class="n">' + q(sal) + '</td><td class="n">' + (v !== null && ped !== null ? m(v * ped) : "") + '</td><td class="n">' + (v !== null ? m(v * en) : "") + '</td><td class="n">' + (v !== null && sal !== null ? m(v * sal) : "") + "</td></tr>";
     });
-    if (!Object.keys(ks).length) h += '<tr><td colspan="8">Nenhum bloco de kit (hidráulica sem ramal ou kits excluídos).</td></tr>';
+    if (!Object.keys(ks).length) h += '<tr><td colspan="7">Nenhum bloco de kit (hidráulica sem ramal ou kits excluídos).</td></tr>';
     h += "</tbody></table>";
     var vp = X.numV(o.valorProjetado), vr = X.numV(o.valorReal);
     var proj = vp !== null ? vp : (temV ? sp : null), real = vr !== null ? vr : (temV ? se : null);
     var dif = proj !== null && real !== null ? real - proj : null, pct = dif !== null && proj > 0 ? real / proj * 100 : null;
     h += "<h2>Valores da obra</h2>";
-    h += '<div class="hr-kpis"><div><span>Valor projetado</span><b>' + m(proj) + '</b><br><small>' + (vp !== null ? "digitado na obra" : (temV ? "valor × qtd pedida" : "sem valor")) + '</small></div><div class="lar"><span>Valor real</span><b>' + m(real) + '</b><br><small>' + (vr !== null ? "digitado na obra" : (temV ? "valor × qtd entregue" : "sem valor")) + '</small></div><div><span>Diferença (real − projetado)</span><b>' + (dif === null ? "—" : (dif > 0 ? "+" : "") + m(dif)) + '</b></div><div><span>% realizado</span><b>' + X.pctTxt(pct) + "</b></div></div>";
-    if (semV || !Object.keys(ks).length) h += '<div class="hr-sem"><b>' + (proj === null ? 'Por que aparece "—": ' : "") + (semV ? semV + " bloco(s) sem preço lançado." : "Nenhum bloco de kit.") + "</b> " + comoLancar() + ' <a href="' + lnkEd(d.id) + '">Lançar valor nesta obra</a>.</div>';
+    h += '<div class="hr-kpis"><div><span>Valor projetado</span><b>' + m(proj) + '</b></div><div class="lar"><span>Valor real</span><b>' + m(real) + '</b></div><div><span>Diferença (real − projetado)</span><b>' + (dif === null ? "" : (dif > 0 ? "+" : "") + m(dif)) + '</b></div><div><span>% realizado</span><b>' + X.pctTxt(pct) + "</b></div></div>";
     var ps = X.parciais(o);
     h += "<h2>Entregas parciais</h2>";
     if (!ps.length) h += '<p class="hr-nota">Nenhuma entrega parcial lançada.</p>';
     else {
       h += '<table><thead><tr><th>Data</th><th class="n">Lote</th><th class="n">Quantidade</th></tr></thead><tbody>';
-      var tq = 0; ps.forEach(function (p) { tq += p.qtd; h += "<tr><td>" + df(p.data) + '</td><td class="n">' + (p.lote || "—") + '</td><td class="n">' + q(p.qtd) + "</td></tr>"; });
+      var tq = 0; ps.forEach(function (p) { tq += p.qtd; h += "<tr><td>" + df(p.data) + '</td><td class="n">' + (p.lote || "") + '</td><td class="n">' + q(p.qtd) + "</td></tr>"; });
       h += '<tr class="tot"><td>Total</td><td></td><td class="n">' + q(tq) + "</td></tr></tbody></table>";
     }
     h += "<h2>Lançamentos do Financeiro (/producao)</h2>";
@@ -164,7 +154,7 @@
     else if (!movs.length) h += '<p class="hr-nota">Cadastro encontrado no Financeiro, sem lançamentos.</p>';
     else {
       h += '<table><thead><tr><th>Data</th><th>Tipo</th><th class="n">Quantidade</th><th class="n">R$</th><th>Lançado por</th></tr></thead><tbody>';
-      movs.forEach(function (x) { h += "<tr><td>" + df(x.data) + "</td><td>" + esc(x.tipo === "entrega" ? "Entrega" : x.tipo === "produzido" ? "Produzido" : "Projeção") + '</td><td class="n">' + q(x.qtd) + '</td><td class="n">' + m(X.numV(x.valorTotal)) + "</td><td>" + esc(x.lancadoPorNome || "—") + "</td></tr>"; });
+      movs.forEach(function (x) { h += "<tr><td>" + df(x.data) + "</td><td>" + esc(x.tipo === "entrega" ? "Entrega" : x.tipo === "produzido" ? "Produzido" : "Projeção") + '</td><td class="n">' + q(x.qtd) + '</td><td class="n">' + m(X.numV(x.valorTotal)) + "</td><td>" + esc(x.lancadoPorNome || "") + "</td></tr>"; });
       h += "</tbody></table>";
     }
     return h;

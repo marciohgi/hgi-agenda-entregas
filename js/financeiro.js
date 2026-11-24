@@ -54,7 +54,7 @@
     });
     html += "</tr></thead><tbody>";
     if (!linhas.length) {
-      html += '<tr><td colspan="11" class="vazio">Nenhuma obra cadastrada, por isso os valores aparecem "—". Preencha Nome da obra e Valor kit elétrico/QDC acima e clique em Salvar obra; depois use Lançar quantidade. Use o mesmo nome da obra na Agenda para o preço entrar na Projeção da semana.</td></tr>';
+      html += '<tr><td colspan="11" class="vazio">Nenhuma obra cadastrada.</td></tr>';
     }
     linhas.forEach(function (l) {
       var saldoCls = l.saldo !== null && l.saldo < 0 ? "neg" : "";
@@ -64,12 +64,12 @@
       html += td(calc.formatBRL(l.valorKitQdc));
       html += td(calc.formatQtd(l.qtdContratada));
       html += td(calc.formatQtd(l.qtdEntregue));
-      html += '<td class="num ' + saldoCls + '">' + calc.esc(calc.formatQtd(l.saldo)) + "</td>";
+      html += '<td class="num ' + saldoCls + '">' + calc.esc(vz(calc.formatQtd(l.saldo))) + "</td>";
       html += td(calc.formatQtd(l.qtdProjetadaSemana));
       html += td(calc.formatBRL(l.valorProjetadoSemana));
       html += td(calc.formatQtd(l.qtdRealSemana));
       html += td(calc.formatBRL(l.valorRealSemana));
-      html += "<td class=\"quem\">lançado por: " + calc.esc(l.lancadoPorNome || "—") + "</td>";
+      html += "<td class=\"quem\">lançado por: " + calc.esc(l.lancadoPorNome || "") + "</td>";
       html += "</tr>";
     });
     html += "</tbody></table></div>";
@@ -105,7 +105,8 @@
       document.getElementById("emp-qtd").value = e && e.qtdContratada != null ? e.qtdContratada : "";
     });
   }
-  function td(texto) { return '<td class="num">' + calc.esc(texto) + "</td>"; }
+  function vz(t) { return t === "—" ? "" : t; }
+  function td(texto) { return '<td class="num">' + calc.esc(vz(texto)) + "</td>"; }
   function dizer(id, ok, texto) {
     var a = document.getElementById(ok ? "msg-" + id : "erro-" + id);
     var b = document.getElementById(ok ? "erro-" + id : "msg-" + id);

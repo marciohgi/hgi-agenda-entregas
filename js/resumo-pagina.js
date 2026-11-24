@@ -15,7 +15,7 @@
     if (atual && !todos.some(function (g) { return g.chave === atual; })) { filtro.cliente = ""; sel.value = ""; }
     var arr = K.agrupar(fontes, filtro), p = 0, e = 0;
     arr.forEach(function (g) { p += g.ped; e += g.ent; });
-    tot.textContent = arr.length + (arr.length === 1 ? " empreendimento" : " empreendimentos") + " · pedido " + calc.formatQtd(p) + " · entregue " + calc.formatQtd(e) + " · saldo " + calc.formatQtd(p - e) + " kits";
+    tot.textContent = arr.length + (arr.length === 1 ? " empreendimento" : " empreendimentos") + " · pedido " + calc.formatQtd(p) + " · saldo do pedido " + calc.formatQtd(p - e);
     lista.innerHTML = K.htmlCards(arr);
   }
   var selT = document.getElementById("re-tipo");

@@ -126,7 +126,8 @@
   .p-pronto{background:#2e8b57}.p-andamento{background:#b8900f}.p-aguardando{background:#e07b1a}.p-critico{background:#c0392b}.p-concluido{background:#1e9a4a}
   .atual{background:#f5f7fa;border:1px solid #d5dce5;border-radius:6px;padding:10px 12px;font-size:15px;margin:6px 0 14px;white-space:pre-wrap}
   textarea{width:100%;min-height:100px;font:inherit;font-size:14px;padding:10px;border:1px solid #b8c4d2;border-radius:6px;resize:vertical;margin-top:6px}
-  .acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;align-items:center}
+  .acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  @media(max-width:600px){#ov .acoes .btn{flex:1 1 45%}#ov .acoes .ok{flex-basis:100%}}
   .ok{font-size:12px;color:#2e8b57;margin-right:auto}
   .btn{background:#2f5d8a;color:#fff;border:0;border-radius:6px;padding:9px 18px;font-size:14px;cursor:pointer}
   .btn.sec{background:#e3e8ee;color:#1f2a37}
@@ -174,6 +175,21 @@
   .vs-barra i{display:block;height:100%;width:0;background:#E87731}
   .vs-falta{font-size:12px;font-weight:700;color:#E87731;line-height:1.35}
   .vs-falta:empty{display:none}
+  .vs-val:empty{min-height:23px}
+  #parc-kit[hidden]{display:none}
+  .pk-cab,.pk-linha{display:grid;grid-template-columns:1.4fr .8fr 1fr 1fr;gap:8px;align-items:center}
+  .pk-cab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#555;padding:0 0 6px;border-bottom:2px solid #111}
+  .pk-linha{padding:8px 0;border-bottom:1px solid #ddd}
+  .pk-linha b{font-size:14px}
+  .pk-linha .pk-n{font-size:16px;font-weight:800}
+  .pk-linha input{width:100%;font:inherit;font-size:16px;padding:8px;border:1px solid #111;border-radius:6px}
+  .pk-linha.pk-erro input{border-color:#E87731;outline:2px solid #E87731}
+  .pk-saldo{font-size:18px;font-weight:800;color:#E87731}
+  .pk-aviso{grid-column:1/-1;font-size:12px;font-weight:700;color:#b4530f}
+  .pk-aviso:empty{display:none}
+  @media(max-width:600px){.pk-cab{display:none}.pk-linha{grid-template-columns:1fr 1fr}.pk-linha>b{grid-column:1/-1}.pk-linha .pk-n::before{content:"Pedido ";font-size:11px;font-weight:700;color:#555}.pk-linha .pk-saldo::before{content:"Saldo ";font-size:11px;font-weight:700;color:#555}}
+  .vs-meta-ref{font-size:11px;color:#9a9a9a;letter-spacing:.3px}
+  .vs-meta-ref:empty{display:none}
   .vs-nota{font-size:10.5px;color:#9a9a9a;line-height:1.35}
   .vs-qtds{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
   .vs-qtds>div{display:flex;flex-direction:column;gap:1px;background:#141414;border:1px solid #333;border-radius:8px;padding:6px 8px;min-width:0}
@@ -197,15 +213,6 @@
   .kit-x{margin-left:auto;background:#111;border:1px solid #E87731;color:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;font:inherit;font-size:12px;font-weight:800}
   .kit-x:hover{background:#E87731;color:#111}
   .kits-sec select.kit-tipo-sel{width:auto;margin:0;padding:4px 8px;font-weight:800;font-size:13px}
-  .vs-sem{margin-top:8px;border:1px solid #E87731;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.45;color:#fff;background:#1a1a1a}
-  .vs-sem[hidden]{display:none}
-  .vs-sem a{color:#E87731;font-weight:800}
-  .vs-sem-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center}
-  .vs-sem-btn{background:#E87731;color:#111;border:0;border-radius:6px;padding:6px 10px;font:inherit;font-weight:800;cursor:pointer}
-  .vs-sem-lnk{border:1px solid #fff;color:#fff!important;border-radius:6px;padding:5px 10px;text-decoration:none}
-  .vs-sem-lista{margin-top:6px}.vs-sem-lista summary{cursor:pointer;color:#E87731;font-weight:700}
-  .vs-sem-it{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #333;color:#fff;padding:5px 2px;font:inherit;cursor:pointer}
-  .vs-sem-it:hover{color:#E87731}
   .kits-novo{display:block;width:100%;margin:0 0 10px;background:#E87731;color:#111;border:0;border-radius:6px;padding:9px 12px;font:inherit;font-weight:800;cursor:pointer}
   .kits-novo:disabled{opacity:.5;cursor:default}
   .kits-vazio{font-size:12px;color:#cfcfcf;padding:6px 0 10px}
@@ -505,23 +512,11 @@
     <aside class="valor-semana" id="valor-semana" hidden aria-label="Projeção da semana (uso interno)">
       <div class="vs-cab"><span class="vs-tit">Projeção da semana</span><span class="vs-int">Uso interno</span></div>
       <div class="vs-filtro" id="vs-filtro"></div>
-      <div class="vs-qtds">
-        <div><span class="vs-rot">Meta (ref.)</span><b id="vs-meta">—</b><small id="vs-meta-sub"></small></div>
-        <div><span class="vs-rot">Programado</span><b id="vs-qprog">—</b><small>pedido das obras da semana</small></div>
-        <div><span class="vs-rot">Entregue</span><b id="vs-qent">—</b><small>na semana</small></div>
-      </div>
       <div class="vs-linhas">
-        <div class="vs-linha"><div class="vs-rot">Projetado para entregar</div><div class="vs-val" id="vs-proj">—</div></div>
-        <div class="vs-linha vs-real"><div class="vs-rot">Real entregue</div><div class="vs-val" id="vs-real">—</div></div>
+        <div class="vs-linha"><div class="vs-rot">Projetado pra entregar</div><div class="vs-val" id="vs-proj"></div></div>
+        <div class="vs-linha vs-real"><div class="vs-rot">Real entregue na semana</div><div class="vs-val" id="vs-real"></div></div>
       </div>
-      <div class="vs-pe">
-        <div><span class="vs-rot">Diferença (real − projetado)</span><b id="vs-dif">—</b></div>
-        <div><span class="vs-rot">Realizado</span><b id="vs-pct">—</b></div>
-      </div>
-      <div class="vs-barra" aria-hidden="true"><i id="vs-barra"></i></div>
-      <div class="vs-falta" id="vs-falta"></div>
-      <div class="vs-sem" id="vs-sem" hidden></div>
-      <div class="vs-nota">Meta de 50 imóveis/dia é referência interna. Programado e entregue somam kits, não apartamentos. Não comentar nem prometer a cliente.</div>
+      <div class="vs-meta-ref" id="vs-meta-ref"></div>
     </aside>
     </div>
   </header>
@@ -610,7 +605,7 @@
           <label class="rot">Data da entrega<input type="date" id="e-parc-data"></label>
           <label class="rot">Lote<select id="e-parc-lote"></select></label>
         </div>
-        <button type="button" class="btn sec mini" id="e-parc-add">Lançar entrega parcial</button>
+        <button type="button" class="btn sec mini" id="e-parc-add">Lançar com data e lote</button>
         <div class="parc-ok" id="e-parc-ok"></div>
       </div>
       <div class="campos">
@@ -623,7 +618,7 @@
       <div class="upd" id="upd"></div>
       <div class="rot">Atualizar estágio</div>
       <textarea id="campo"></textarea>
-      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn lar" id="editar-obra" type="button">✎ Editar obra</button><button class="btn sec" id="rel-obra" type="button">Gerar relatório da obra (PDF)</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
+      <div class="acoes"><span class="ok" id="ok"></span><button class="btn del" id="excluir">Excluir</button><button class="btn lar" id="parc-kit" type="button">Lançar entrega parcial</button><button class="btn lar" id="editar-obra" type="button">✎ Editar obra</button><button class="btn sec" id="rel-obra" type="button">Gerar relatório da obra (PDF)</button><button class="btn sec" id="cancelar">Fechar</button><button class="btn" id="salvar">Salvar</button></div>
     </div>
   </div>
 </div>
@@ -701,6 +696,16 @@
   </div>
 </div>
 
+<div class="ov" id="ov-parc">
+  <div class="modal" role="dialog" aria-labelledby="mt-parc" aria-modal="true">
+    <h2 style="background:#E87731;color:#111"><span id="mt-parc">Lançar entrega parcial</span><button type="button" id="fechar-parc" aria-label="Fechar">×</button></h2>
+    <div class="mb">
+      <div class="pk-cab"><span>Tipo de kit</span><span>Pedido</span><span>Entregue agora</span><span>Saldo do pedido</span></div>
+      <div id="pk-linhas"></div>
+      <div class="acoes"><span class="ok" id="ok-parc"></span><button class="btn sec" id="cancelar-parc" type="button">Cancelar</button><button class="btn lar" id="salvar-parc" type="button">Salvar entrega</button></div>
+    </div>
+  </div>
+</div>
 <div class="ov" id="ov-edit">
   <div class="modal" role="dialog" aria-labelledby="mt-edit" aria-modal="true">
     <h2 style="background:#E87731"><span id="mt-edit">Editar obra</span><button type="button" id="fechar-edit" aria-label="Fechar">×</button></h2>
@@ -1628,38 +1633,13 @@
     var fTxt=(FILTRO_CLIENTE?("Cliente: "+FILTRO_CLIENTE):"Todos os clientes")+" · "+(FILTRO_TIPO?("Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"Todos os tipos");
     $("vs-filtro").textContent=rotDataCurto(ini)+" a "+rotDataCurto(fim)+" · "+fTxt;
     var r=calcSemana(sem,L);
-    $("vs-meta").textContent=r.dias?(C.formatQtd(r.meta)+" imóveis"):"—";
-    $("vs-meta-sub").textContent=r.dias?("50/dia × "+r.dias+(r.dias===1?" dia útil":" dias úteis")):"Semana sem dia útil";
-    $("vs-qprog").textContent=C.formatQtd(r.pQ)+" kits";
-    $("vs-qent").textContent=C.formatQtd(r.rQ)+" kits";
-    if(EMPS===null){["vs-proj","vs-real","vs-dif","vs-pct"].forEach(function(i){$(i).textContent="…"});$("vs-falta").textContent="Carregando preços…";$("vs-barra").style.width="0";return}
+    var mr=$("vs-meta-ref");if(mr)mr.textContent=r.dias?("Meta 50/dia · "+C.formatQtd(r.meta)+" na semana"):"";
+    if(EMPS===null){$("vs-proj").textContent="";$("vs-real").textContent="";return}
     var proj=r.pComV?r.pV:null,real=r.rComV?r.rV:(proj!==null?0:null);
-    $("vs-proj").textContent=proj===null?"—":C.formatBRL(proj);
-    $("vs-real").textContent=real===null?"—":C.formatBRL(real);
-    var dif=null,pct=null;
-    if(proj!==null&&real!==null){dif=real-proj;if(proj>0)pct=real/proj*100}
-    $("vs-dif").textContent=dif===null?"—":((dif>0?"+":"")+C.formatBRL(dif));
-    $("vs-pct").textContent=pct===null?"—":(pct.toLocaleString("pt-BR",{maximumFractionDigits:1})+"%");
-    $("vs-barra").style.width=pct===null?"0":(Math.max(0,Math.min(100,pct))+"%");
-    var falta=[];
-    if(r.nSemValor)falta.push(r.nSemValor+(r.nSemValor===1?" obra sem valor":" obras sem valor")+" (fora da soma ou soma parcial)");
-    if(r.nSemQtd)falta.push(r.nSemQtd+(r.nSemQtd===1?" obra sem quantidade pedida":" obras sem quantidade pedida"));
-    $("vs-falta").textContent=falta.join(" · ");
-    vsSemPreco(r,proj);
-    $("vs-falta").title=r.pN+" obras na semana · "+r.pComV+" com valor no projetado · "+r.nDigProj+" com valor projetado digitado · "+r.nDigReal+" com valor real digitado";
-  }
-  function vsSemPreco(r,proj){
-    var el=document.getElementById("vs-sem");if(!el)return;var ids=Object.keys(r.semValor||{}),F=fonte();
-    if(!ids.length){el.hidden=true;el.innerHTML="";return}
-    var C=window.HGICalc,lst=ids.map(function(id){return {id:id,n:(F[id]&&F[id].nome)||id}}).sort(function(a,b){return a.n.localeCompare(b.n,"pt-BR")});
-    var h='<b>'+(proj===null?'Por que aparece "—":</b> nenhuma das '+ids.length+(ids.length===1?' obra':' obras')+' da semana tem preço de kit lançado.':'Sem preço lançado em '+ids.length+(ids.length===1?' obra':' obras')+':</b> ficaram fora da soma em R$.');
-    h+=' Lance o valor do kit em <b>✎ Editar obra</b> (blocos de kit) ou em <a href="financeiro.html#emp-nome">Financeiro dos kits</a> (só elétrico e QDC; o nome precisa ser igual ao da obra).';
-    h+='<div class="vs-sem-acoes"><button type="button" class="vs-sem-btn" data-ed="'+C.esc(lst[0].id)+'">✎ Lançar valor: '+C.esc(lst[0].n)+'</button><a class="vs-sem-lnk" href="financeiro.html#emp-nome">Abrir Financeiro dos kits</a></div>';
-    h+='<details class="vs-sem-lista"><summary>Ver as '+ids.length+' obras sem preço</summary>'+lst.map(function(x){return '<button type="button" class="vs-sem-it" data-ed="'+C.esc(x.id)+'">'+C.esc(x.n)+' · lançar valor</button>'}).join("")+'</details>';
-    el.innerHTML=h;el.hidden=false;
+    $("vs-proj").textContent=proj===null?"":C.formatBRL(proj);
+    $("vs-real").textContent=real===null?"":C.formatBRL(real);
   }
   function abrirLancarValor(id){if(!fonte()[id])return;abrir(id);abrirEdicao(id);setTimeout(function(){var s=document.getElementById("ed-kits-sec");if(s){s.scrollIntoView({block:"center"});var i=s.querySelector('[data-f=valor]');if(i)i.focus()}},60)}
-  document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-ed]");if(!b||!b.closest("#vs-sem"))return;abrirLancarValor(b.getAttribute("data-ed"))});
   // ===== Formulário: blocos de kit por tipo + valor projetado/real da obra =====
   var KF={};
   function brl2(n){return n===null||n===undefined?"":n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}
@@ -1795,14 +1775,14 @@
     ids.forEach(function(k){var b=ks[k],s=saldoKit(b);
       if(b.valor!==null&&b.qtdPedido!==null){sp+=b.valor*b.qtdPedido;tp=true}
       if(b.valor!==null&&b.qtdEntregue){se+=b.valor*b.qtdEntregue;te=true}
-      h+='<div class="fk-linha"><b>'+C.esc(b.rot)+'</b><span>kit '+(b.valor!==null?C.formatBRL(b.valor):"sem valor")+'</span><span>pedido '+(b.qtdPedido!==null?b.qtdPedido:"—")+'</span><span>entregue '+(b.qtdEntregue!==null?b.qtdEntregue:"—")+'</span><span>saldo '+(s!==null?s:"—")+'</span></div>'});
+      h+='<div class="fk-linha"><b>'+C.esc(b.rot)+'</b><span>'+(b.valor!==null?"kit "+C.formatBRL(b.valor):"")+'</span><span>pedido '+(b.qtdPedido!==null?b.qtdPedido:"")+'</span><span>saldo do pedido '+(s!==null?s:"")+'</span></div>'});
     var vp=numV(o.valorProjetado),vr=numV(o.valorReal);
-    var tProj=vp!==null?C.formatBRL(vp):(tp?C.formatBRL(sp)+" (calc.)":"—"),tReal=vr!==null?C.formatBRL(vr):(te?C.formatBRL(se)+" (calc.)":"—");
-    h+='<div class="fk-tot"><span>Projetado <b>'+tProj+'</b></span><span>Real <b>'+tReal+'</b></span><span class="fk-dica">Editar em ✎ Editar obra</span></div>';
+    var tProj=vp!==null?C.formatBRL(vp):(tp?C.formatBRL(sp):""),tReal=vr!==null?C.formatBRL(vr):(te?C.formatBRL(se):(tp?C.formatBRL(0):""));
+    h+='<div class="fk-tot"><span>Projetado <b>'+tProj+'</b></span><span>Real <b>'+tReal+'</b></span></div>';
     el.innerHTML='<div class="rot">Kits e valores · uso interno</div>'+h;el.hidden=false;
   }
   var _preencheTopoBase=preencheTopo;
-  preencheTopo=function(id,o){_preencheTopoBase(id,o);resumoKitsFicha(o)};
+  preencheTopo=function(id,o){_preencheTopoBase(id,o);resumoKitsFicha(o);var pb=document.getElementById("parc-kit");if(pb)pb.hidden=!VS_ON||!o||estaConcluido(o)};
   function contaAlertas(){
     var w=document.getElementById("alertas-wrap"),n=document.getElementById("alertas-n");if(!w||!n)return;
     var c=0;["alertas-cerca","alertas-carry","lembretes"].forEach(function(id){var b=document.getElementById(id);if(b)c+=b.querySelectorAll(".alerta").length});
@@ -1820,8 +1800,62 @@
   var NOVO_PEDIDO=/[?&]novo=1(?:&|$)/.test(location.search),novoAberto=false;
   var ED_PEDIDO=(location.search.match(/[?&]obra=([^&]+)/)||[])[1],edAberto=false;
   if(ED_PEDIDO){try{ED_PEDIDO=decodeURIComponent(ED_PEDIDO)}catch(e){}}
-  function talvezAbrirEd(){if(!ED_PEDIDO||edAberto||!VS_ON||!fonte()[ED_PEDIDO])return;edAberto=true;try{history.replaceState(null,"",location.pathname)}catch(e){}if(/[?&]editar=1/.test(location.search+"&editar=1"))abrirLancarValor(ED_PEDIDO)}
+  var ED_MODO=/[?&]parcial=1/.test(location.search)?"parcial":(/[?&]editar=1/.test(location.search)?"editar":"ficha");
+  function talvezAbrirEd(){if(!ED_PEDIDO||edAberto||!VS_ON||!fonte()[ED_PEDIDO])return;edAberto=true;try{history.replaceState(null,"",location.pathname)}catch(e){}
+    if(ED_MODO==="editar")abrirLancarValor(ED_PEDIDO);else{abrir(ED_PEDIDO);if(ED_MODO==="parcial")abrirParcialKit(ED_PEDIDO)}}
   function talvezAbrirNovo(){if(!NOVO_PEDIDO||novoAberto||!VS_ON)return;novoAberto=true;try{history.replaceState(null,"",location.pathname)}catch(e){}abrirNovo(HOJE)}
+  // ===== Entrega parcial por tipo de kit (soma em kits.<tipo>.qtdEntregue) =====
+  var PK={id:null,linhas:[]};
+  function abrirParcialKit(id){
+    var o=fonte()[id];if(!o||!VS_ON)return;if(estaConcluido(o)){alert("Obra concluída: não há saldo para lançar.");return}
+    var ks=kitsDe(o),main=chaveTotal(o),temParc=listaParciais(o).length>0,C=window.HGICalc;
+    PK={id:id,linhas:Object.keys(ks).map(function(k){var b=ks[k];return {k:k,rot:b.rot,ped:b.qtdPedido,ent:b.qtdEntregue||0,main:k===main,parc:k===main&&temParc,temNo:!!(o.kits&&o.kits[k]&&typeof o.kits[k]==="object")}})};
+    document.getElementById("mt-parc").textContent="Lançar entrega parcial · "+(o.nome||id);
+    var box=document.getElementById("pk-linhas");
+    box.innerHTML=PK.linhas.length?PK.linhas.map(function(l,i){var sal=l.ped===null?null:l.ped-l.ent;
+      return '<div class="pk-linha" data-i="'+i+'"><b>'+C.esc(l.rot)+'</b><span class="pk-n">'+(l.ped===null?"":C.formatQtd(l.ped))+'</span><input type="text" inputmode="numeric" data-i="'+i+'" placeholder="0" aria-label="Entregue agora · '+C.esc(l.rot)+'"'+(sal!==null&&sal<=0?" disabled":"")+'><span class="pk-saldo" id="pk-s'+i+'">'+(sal===null?"":C.formatQtd(sal))+'</span><span class="pk-aviso" id="pk-a'+i+'"></span></div>'}).join(""):'<div class="pk-linha"><b>Nenhum kit nesta obra.</b></div>';
+    document.getElementById("ok-parc").textContent="";
+    document.getElementById("ov-parc").classList.add("on");
+    var f=box.querySelector("input:not([disabled])");if(f)setTimeout(function(){f.focus()},30);
+  }
+  function pkCalc(){
+    var C=window.HGICalc,ok=true,algum=false;
+    PK.linhas.forEach(function(l,i){var inp=document.querySelector('#pk-linhas input[data-i="'+i+'"]');if(!inp)return;
+      var r=lerInt(inp.value),av=document.getElementById("pk-a"+i),sEl=document.getElementById("pk-s"+i),row=inp.closest(".pk-linha"),msg="";
+      l.add=0;
+      if(!r.ok)msg="Use número inteiro.";
+      else if(r.v){l.add=r.v;algum=true;if(l.ped===null)msg="Sem qtd pedida neste kit: lance o pedido em ✎ Editar obra.";else if(l.ent+r.v>l.ped)msg="Passa do pedido: saldo é "+C.formatQtd(l.ped-l.ent)+".";}
+      var sal=l.ped===null?null:l.ped-l.ent-(r.ok&&r.v?r.v:0);
+      sEl.textContent=sal===null?"":C.formatQtd(sal);
+      av.textContent=msg;row.classList.toggle("pk-erro",!!msg);if(msg)ok=false;
+    });
+    return {ok:ok,algum:algum};
+  }
+  function fecharParcialKit(){document.getElementById("ov-parc").classList.remove("on")}
+  document.getElementById("pk-linhas").addEventListener("input",function(){document.getElementById("ok-parc").textContent="";pkCalc()});
+  document.getElementById("fechar-parc").onclick=fecharParcialKit;
+  document.getElementById("cancelar-parc").onclick=fecharParcialKit;
+  document.getElementById("parc-kit").onclick=function(){if(cur)abrirParcialKit(cur)};
+  document.getElementById("salvar-parc").onclick=function(){
+    var st=pkCalc(),okEl=document.getElementById("ok-parc"),id=PK.id,o=fonte()[id];
+    if(!o)return;if(!st.ok){okEl.textContent="Corrija o que está marcado.";return}
+    if(!st.algum){okEl.textContent="Informe a quantidade entregue agora.";return}
+    var ag=Date.now(),patch={atualizadoEm:ag},post=[];
+    PK.linhas.forEach(function(l){if(!l.add)return;var nv=l.ent+l.add;
+      if(l.temNo){patch["kits/"+l.k+"/qtdEntregue"]=nv;patch["kits/"+l.k+"/ativo"]=true}
+      else patch["kits/"+l.k]={ativo:true,qtdPedido:l.ped,qtdEntregue:nv};
+      if(l.parc)post.push({qtd:l.add,data:HOJE,criadoEm:ag});
+    });
+    var bt=this;bt.disabled=true;okEl.textContent="Salvando…";
+    req("PATCH","/entregas/"+id+".json",patch).then(function(){
+      var R=REM&&REM[id];if(R){if(!R.kits||typeof R.kits!=="object")R.kits={};R.atualizadoEm=ag;
+        PK.linhas.forEach(function(l){if(!l.add)return;var nv=l.ent+l.add;if(l.temNo&&R.kits[l.k]){R.kits[l.k].qtdEntregue=nv;R.kits[l.k].ativo=true}else R.kits[l.k]={ativo:true,qtdPedido:l.ped,qtdEntregue:nv}})}
+      return Promise.all(post.map(function(b){return req("POST","/entregas/"+id+"/entregasParciais.json",b).then(function(r){var k=r&&r.name;if(R&&k){if(!R.entregasParciais||typeof R.entregasParciais!=="object")R.entregasParciais={};R.entregasParciais[k]=b}})}));
+    }).then(function(){
+      render();if(cur===id){var oo=fonte()[id];if(oo){preencheTopo(id,oo);if(typeof preencheLotesFicha==="function")preencheLotesFicha(oo)}}
+      okEl.textContent="Entrega gravada.";setTimeout(fecharParcialKit,500);
+    }).catch(function(){okEl.textContent="Não foi possível gravar (sem conexão ou sem permissão)."}).then(function(){bt.disabled=false});
+  };
   // painel de detalhe
   var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),upd=document.getElementById("upd"),cur=null;
   var eS=document.getElementById("e-status"),eD=document.getElementById("e-data"),eQ=document.getElementById("e-qtd");
