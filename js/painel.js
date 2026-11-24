@@ -46,7 +46,7 @@
     html += "</div>";
 
     if (!periodo.temLancamento) {
-      html += '<div class="bloco"><h2>Sem lançamentos nesta semana</h2><p class="nota">Projeção, produção e entrega começam vazias. Lance no Financeiro. O gráfico usa só o que foi lançado.</p>';
+      html += '<div class="bloco"><h2>Sem lançamentos nesta semana</h2><p class="nota">Por que aparece "—": esta aba só mostra o que foi lançado em <b>/producao</b>, e não há lançamento nesta semana. Para aparecer valor: cadastre a obra com o valor do kit e lance a quantidade em <b>Resumo por Empreendimento → Financeiro dos kits</b>. A projeção dos kits lançados na Agenda fica no quadro "Projeção da semana" da Agenda.</p><p><a class="btn lar" href="financeiro.html#emp-nome">Ir para o lançamento</a></p>';
       if (!HGI.exemplo) html += '<p><a href="painel.html?exemplo=1">Ver exemplo visual</a></p>';
       html += "</div>";
     } else {

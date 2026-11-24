@@ -197,6 +197,15 @@
   .kit-x{margin-left:auto;background:#111;border:1px solid #E87731;color:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;font:inherit;font-size:12px;font-weight:800}
   .kit-x:hover{background:#E87731;color:#111}
   .kits-sec select.kit-tipo-sel{width:auto;margin:0;padding:4px 8px;font-weight:800;font-size:13px}
+  .vs-sem{margin-top:8px;border:1px solid #E87731;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.45;color:#fff;background:#1a1a1a}
+  .vs-sem[hidden]{display:none}
+  .vs-sem a{color:#E87731;font-weight:800}
+  .vs-sem-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center}
+  .vs-sem-btn{background:#E87731;color:#111;border:0;border-radius:6px;padding:6px 10px;font:inherit;font-weight:800;cursor:pointer}
+  .vs-sem-lnk{border:1px solid #fff;color:#fff!important;border-radius:6px;padding:5px 10px;text-decoration:none}
+  .vs-sem-lista{margin-top:6px}.vs-sem-lista summary{cursor:pointer;color:#E87731;font-weight:700}
+  .vs-sem-it{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #333;color:#fff;padding:5px 2px;font:inherit;cursor:pointer}
+  .vs-sem-it:hover{color:#E87731}
   .kits-novo{display:block;width:100%;margin:0 0 10px;background:#E87731;color:#111;border:0;border-radius:6px;padding:9px 12px;font:inherit;font-weight:800;cursor:pointer}
   .kits-novo:disabled{opacity:.5;cursor:default}
   .kits-vazio{font-size:12px;color:#cfcfcf;padding:6px 0 10px}
@@ -511,6 +520,7 @@
       </div>
       <div class="vs-barra" aria-hidden="true"><i id="vs-barra"></i></div>
       <div class="vs-falta" id="vs-falta"></div>
+      <div class="vs-sem" id="vs-sem" hidden></div>
       <div class="vs-nota">Meta de 50 imóveis/dia é referência interna. Programado e entregue somam kits, não apartamentos. Não comentar nem prometer a cliente.</div>
     </aside>
     </div>
@@ -1635,13 +1645,26 @@
     if(r.nSemValor)falta.push(r.nSemValor+(r.nSemValor===1?" obra sem valor":" obras sem valor")+" (fora da soma ou soma parcial)");
     if(r.nSemQtd)falta.push(r.nSemQtd+(r.nSemQtd===1?" obra sem quantidade pedida":" obras sem quantidade pedida"));
     $("vs-falta").textContent=falta.join(" · ");
+    vsSemPreco(r,proj);
     $("vs-falta").title=r.pN+" obras na semana · "+r.pComV+" com valor no projetado · "+r.nDigProj+" com valor projetado digitado · "+r.nDigReal+" com valor real digitado";
   }
+  function vsSemPreco(r,proj){
+    var el=document.getElementById("vs-sem");if(!el)return;var ids=Object.keys(r.semValor||{}),F=fonte();
+    if(!ids.length){el.hidden=true;el.innerHTML="";return}
+    var C=window.HGICalc,lst=ids.map(function(id){return {id:id,n:(F[id]&&F[id].nome)||id}}).sort(function(a,b){return a.n.localeCompare(b.n,"pt-BR")});
+    var h='<b>'+(proj===null?'Por que aparece "—":</b> nenhuma das '+ids.length+(ids.length===1?' obra':' obras')+' da semana tem preço de kit lançado.':'Sem preço lançado em '+ids.length+(ids.length===1?' obra':' obras')+':</b> ficaram fora da soma em R$.');
+    h+=' Lance o valor do kit em <b>✎ Editar obra</b> (blocos de kit) ou em <a href="financeiro.html#emp-nome">Financeiro dos kits</a> (só elétrico e QDC; o nome precisa ser igual ao da obra).';
+    h+='<div class="vs-sem-acoes"><button type="button" class="vs-sem-btn" data-ed="'+C.esc(lst[0].id)+'">✎ Lançar valor: '+C.esc(lst[0].n)+'</button><a class="vs-sem-lnk" href="financeiro.html#emp-nome">Abrir Financeiro dos kits</a></div>';
+    h+='<details class="vs-sem-lista"><summary>Ver as '+ids.length+' obras sem preço</summary>'+lst.map(function(x){return '<button type="button" class="vs-sem-it" data-ed="'+C.esc(x.id)+'">'+C.esc(x.n)+' · lançar valor</button>'}).join("")+'</details>';
+    el.innerHTML=h;el.hidden=false;
+  }
+  function abrirLancarValor(id){if(!fonte()[id])return;abrir(id);abrirEdicao(id);setTimeout(function(){var s=document.getElementById("ed-kits-sec");if(s){s.scrollIntoView({block:"center"});var i=s.querySelector('[data-f=valor]');if(i)i.focus()}},60)}
+  document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-ed]");if(!b||!b.closest("#vs-sem"))return;abrirLancarValor(b.getAttribute("data-ed"))});
   // ===== Formulário: blocos de kit por tipo + valor projetado/real da obra =====
   var KF={};
   function brl2(n){return n===null||n===undefined?"":n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}
-  function lerMoeda(s){s=String(s||"").replace(/R\$/g,"").replace(/\s+/g,"").trim();if(!s)return {v:null,ok:true};var n=window.HGICalc.numOrNull(s);if(n===null||n<0)return {v:null,ok:false};return {v:Math.round(n*100)/100,ok:true}}
-  function lerInt(s){s=String(s||"").trim();if(!s)return {v:null,ok:true};var n=Number(s.replace(",","."));if(!isFinite(n)||n<0||Math.floor(n)!==n)return {v:null,ok:false};return {v:n,ok:true}}
+  function lerMoeda(s){s=String(s||"").replace(/R\$/g,"").replace(/\s+/g,"").trim();if(!s)return {v:null,ok:true};if(/^\d{1,3}(,\d{3})+\.\d{1,2}$/.test(s))s=s.replace(/,/g,"");var n=window.HGICalc.numOrNull(s);if(n===null||n<0)return {v:null,ok:false};return {v:Math.round(n*100)/100,ok:true}}
+  function lerInt(s){s=String(s||"").trim();if(!s)return {v:null,ok:true};if(/^\d{1,3}([.,]\d{3})+$/.test(s))s=s.replace(/[.,]/g,"");var n=Number(s.replace(",","."));if(!isFinite(n)||n<0||Math.floor(n)!==n)return {v:null,ok:false};return {v:n,ok:true}}
   function principalForm(pref){
     var t=document.getElementById(pref==="n"?"n-tipo":"ed-tipo"),r=document.getElementById(pref==="n"?"n-ramal":"ed-ramal");
     var tv=t&&TIPO_MAP[t.value]?t.value:"eletrica";
@@ -1795,6 +1818,9 @@
     }).catch(function(){erro(ok,"Não foi possível ler o Financeiro para o relatório (sem conexão).")}).then(function(){b.disabled=false;b.textContent=t});
   }})();
   var NOVO_PEDIDO=/[?&]novo=1(?:&|$)/.test(location.search),novoAberto=false;
+  var ED_PEDIDO=(location.search.match(/[?&]obra=([^&]+)/)||[])[1],edAberto=false;
+  if(ED_PEDIDO){try{ED_PEDIDO=decodeURIComponent(ED_PEDIDO)}catch(e){}}
+  function talvezAbrirEd(){if(!ED_PEDIDO||edAberto||!VS_ON||!fonte()[ED_PEDIDO])return;edAberto=true;try{history.replaceState(null,"",location.pathname)}catch(e){}if(/[?&]editar=1/.test(location.search+"&editar=1"))abrirLancarValor(ED_PEDIDO)}
   function talvezAbrirNovo(){if(!NOVO_PEDIDO||novoAberto||!VS_ON)return;novoAberto=true;try{history.replaceState(null,"",location.pathname)}catch(e){}abrirNovo(HOJE)}
   // painel de detalhe
   var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),upd=document.getElementById("upd"),cur=null;
@@ -2862,7 +2888,7 @@
     if(typeof renderLembretes==="function")renderLembretes();
     document.body.classList.add("hgi-ok");
     if(window.HGI&&HGI.montarChrome)HGI.montarChrome("agenda");
-    ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();if(NOVO_PEDIDO){novoAberto||setTimeout(talvezAbrirNovo,0)}else tentarPopupAtraso()});
+    ouvir("entregas",function(p,d,pt){REM=mescla(REM,p,d,pt);render();if(NOVO_PEDIDO){novoAberto||setTimeout(talvezAbrirNovo,0)}else if(ED_PEDIDO){edAberto||setTimeout(talvezAbrirEd,0)}else tentarPopupAtraso()});
     ouvir("lembretes",function(p,d,pt){LEM=mescla(LEM,p,d,pt);renderLembretes();renderAlertasCerca()});
     if(window.HGI&&HGI.sessao&&HGI.sessao.papel==="total"){
       VS_ON=true;

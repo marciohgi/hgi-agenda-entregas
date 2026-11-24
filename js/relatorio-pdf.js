@@ -13,6 +13,7 @@
       "#hgi-rel{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);overflow:auto;padding:16px}",
       "#hgi-rel .hr-barra{max-width:900px;margin:0 auto 10px;display:flex;gap:8px;justify-content:flex-end}",
       "#hgi-rel .hr-barra button{font:inherit;font-weight:800;border-radius:6px;padding:9px 14px;cursor:pointer;border:2px solid #E87731}",
+      "#hgi-rel .hr-sem{border:1px solid #E87731;border-left:6px solid #E87731;padding:8px 10px;margin:8px 0 4px;font-size:12px;line-height:1.5}#hgi-rel .hr-sem a{color:#b4530f;font-weight:700}#hgi-rel .hr-sem ul{margin:4px 0 0 18px;padding:0;columns:2}" +
       "#hgi-rel .hr-imp{background:#E87731;color:#111}#hgi-rel .hr-fec{background:#111;color:#fff}",
       ".hr-folha{max-width:900px;margin:0 auto;background:#fff;color:#111;font-family:'Segoe UI',Arial,sans-serif;font-size:12px;padding:22px 26px;border-radius:6px}",
       ".hr-cab{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #E87731;padding-bottom:8px;margin-bottom:12px;gap:12px}",
@@ -50,6 +51,9 @@
     ov.querySelector(".hr-fec").onclick = function () { ov.remove(); document.documentElement.classList.remove("hgi-rel-on"); };
     return ov;
   }
+  function base() { return location.origin + location.pathname.replace(/[^\/]*$/, ""); }
+  function lnkEd(id) { return base() + "index.html?obra=" + encodeURIComponent(id) + "&editar=1"; }
+  function comoLancar() { return 'Lance o valor do kit em <b>✎ Editar obra</b> (Agenda, blocos de kit) ou em <a href="' + base() + 'financeiro.html#emp-nome">Financeiro dos kits</a> (só elétrico e QDC; o nome precisa ser igual ao da obra).'; }
   function q(n) { return n === null || n === undefined ? "—" : calc.formatQtd(n); }
   /* Relatório geral (Painel e Resumo por Empreendimento). */
   function geral(fontes, semanaIni, hoje) {
@@ -62,6 +66,12 @@
     h += '<div class="hr-kpis"><div><span>Valor projetado para entregar</span><b>' + m(r.proj) + '</b></div><div class="lar"><span>Valor real entregue</span><b>' + m(r.real) + '</b></div><div><span>Diferença (real − projetado)</span><b>' + (r.dif === null ? "—" : (r.dif > 0 ? "+" : "") + m(r.dif)) + '</b></div><div><span>% realizado</span><b>' + X.pctTxt(r.pct) + '</b></div></div>';
     h += '<p class="hr-nota">A meta é em imóveis; programado e entregue somam kits, não apartamentos (o mesmo apto pode ter mais de um kit).' + (r.nSemValor ? ' <span class="hr-alerta">' + r.nSemValor + ' obra(s) sem valor ficaram fora da soma em R$ ou entraram só em parte.</span>' : "") + '</p>';
 
+    var ids = Object.keys(r.semValor || {}), ent = fontes.entregas || {};
+    if (ids.length) {
+      h += '<div class="hr-sem"><b>' + (r.proj === null ? 'Por que aparece "—": nenhuma das ' + ids.length + " obras da semana tem preço de kit lançado." : "Sem preço lançado em " + ids.length + " obra(s): ficaram fora da soma em R$.") + "</b> " + comoLancar() + "<ul>" +
+        ids.map(function (id) { return { id: id, n: (ent[id] && ent[id].nome) || id }; }).sort(function (a, b) { return a.n.localeCompare(b.n, "pt-BR"); })
+          .map(function (x) { return '<li>' + esc(x.n) + ' · <a href="' + lnkEd(x.id) + '">lançar valor</a></li>'; }).join("") + "</ul></div>";
+    }
     h += "<h2>2. Kits por tipo · todas as obras</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (blocos de kit). Obras antigas sem bloco usam o tipo e a quantidade da própria obra.</p>';
     h += '<table><thead><tr><th>Tipo</th><th class="n">Blocos</th><th class="n">Pedido</th><th class="n">Entregue</th><th class="n">Saldo</th><th class="n">R$ pedido</th><th class="n">R$ entregue</th><th class="n">R$ saldo</th><th class="n">Sem valor</th></tr></thead><tbody>';
@@ -90,7 +100,7 @@
     h += '<p class="hr-fonte">Fonte: /producao (aba Resumo por Empreendimento → Lançar quantidade). É o que alimenta os cartões e gráficos da aba Painel.</p>';
     var dias = calc.diasDaSemana(semanaIni);
     var per = calc.periodoAcumulado(calc.entradas(fontes.empreendimentos), calc.unirRomaneios(calc.entradas(fontes.producao), calc.entradas(fontes.romaneios)), dias[0], dias[6]);
-    if (!per.temLancamento) h += '<p class="hr-nota">Nenhum lançamento em /producao nesta semana. Valores: —.</p>';
+    if (!per.temLancamento) h += '<p class="hr-nota">Nenhum lançamento em /producao nesta semana, por isso os valores desta parte aparecem "—". Para lançar: <a href="' + base() + 'financeiro.html#emp-nome">Resumo por Empreendimento → Financeiro dos kits</a> (cadastro da obra com valor do kit e Lançar quantidade).</p>';
     else {
       var T = per.totais;
       h += '<table><thead><tr><th></th><th class="n">Quantidade</th><th class="n">R$</th></tr></thead><tbody>';
@@ -137,7 +147,7 @@
     var dif = proj !== null && real !== null ? real - proj : null, pct = dif !== null && proj > 0 ? real / proj * 100 : null;
     h += "<h2>Valores da obra</h2>";
     h += '<div class="hr-kpis"><div><span>Valor projetado</span><b>' + m(proj) + '</b><br><small>' + (vp !== null ? "digitado na obra" : (temV ? "valor × qtd pedida" : "sem valor")) + '</small></div><div class="lar"><span>Valor real</span><b>' + m(real) + '</b><br><small>' + (vr !== null ? "digitado na obra" : (temV ? "valor × qtd entregue" : "sem valor")) + '</small></div><div><span>Diferença (real − projetado)</span><b>' + (dif === null ? "—" : (dif > 0 ? "+" : "") + m(dif)) + '</b></div><div><span>% realizado</span><b>' + X.pctTxt(pct) + "</b></div></div>";
-    if (semV) h += '<p class="hr-nota hr-alerta">' + semV + " bloco(s) sem valor do kit.</p>";
+    if (semV || !Object.keys(ks).length) h += '<div class="hr-sem"><b>' + (proj === null ? 'Por que aparece "—": ' : "") + (semV ? semV + " bloco(s) sem preço lançado." : "Nenhum bloco de kit.") + "</b> " + comoLancar() + ' <a href="' + lnkEd(d.id) + '">Lançar valor nesta obra</a>.</div>';
     var ps = X.parciais(o);
     h += "<h2>Entregas parciais</h2>";
     if (!ps.length) h += '<p class="hr-nota">Nenhuma entrega parcial lançada.</p>';

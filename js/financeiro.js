@@ -54,7 +54,7 @@
     });
     html += "</tr></thead><tbody>";
     if (!linhas.length) {
-      html += '<tr><td colspan="11" class="vazio">Nenhuma obra cadastrada. A tabela começa vazia — nada aqui foi inventado.</td></tr>';
+      html += '<tr><td colspan="11" class="vazio">Nenhuma obra cadastrada, por isso os valores aparecem "—". Preencha Nome da obra e Valor kit elétrico/QDC acima e clique em Salvar obra; depois use Lançar quantidade. Use o mesmo nome da obra na Agenda para o preço entrar na Projeção da semana.</td></tr>';
     }
     linhas.forEach(function (l) {
       var saldoCls = l.saldo !== null && l.saldo < 0 ? "neg" : "";
@@ -95,6 +95,7 @@
     html += "</div></div>";
     if (!HGI.exemplo && !linhas.length) html += '<p><a href="financeiro.html?exemplo=1">Ver exemplo visual</a> — números fictícios, rotulados, fora do banco.</p>';
     app.innerHTML = html;
+    if (location.hash === "#emp-nome" && !render.foiHash) { render.foiHash = true; var en = document.getElementById("emp-nome"); if (en) setTimeout(function () { en.scrollIntoView({ block: "center" }); en.focus(); }, 50); }
     var sel = document.getElementById("emp-sel");
     sel.addEventListener("change", function () {
       var e = emps[sel.value];
