@@ -62,9 +62,9 @@
     var h = "";
     h += "<h2>1. Projeção da semana · " + esc(calc.formatSemana(semanaIni)) + "</h2>";
     h += '<p class="hr-fonte">Fonte: /entregas (obras e blocos de kit lançados na Agenda). Preço: valor do kit na obra; sem ele, preço do Financeiro (só elétrico e QDC).</p>';
-    h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + m(r.proj) + '</b></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
     var vz = function (n) { return n ? q(n) : ""; };
-    h += '<div class="hr-kpis hr-3"><div class="lar"><span>Meta (50/dia × ' + r.dias + ' dias úteis)</span><b>' + (r.dias ? q(r.meta) : "") + '</b></div><div><span>Programado</span><b>' + vz(r.pQ) + '</b></div><div><span>Entregue</span><b>' + vz(r.rQ) + '</b></div></div>';
+    h += '<div class="hr-kpis hr-2"><div><span>Projetado pra entregar</span><b>' + (r.imov ? q(r.imov) + (r.imov === 1 ? " imóvel" : " imóveis") : "") + '</b><b>' + m(r.proj) + '</b></div><div class="lar"><span>Real entregue na semana</span><b>' + m(r.real) + '</b></div></div>';
+    h += '<div class="hr-kpis hr-3"><div class="lar"><span>Pedido Total</span><b>' + vz(r.pedT) + '</b></div><div><span>Total Entregue</span><b>' + (r.pedT ? q(r.entT) : "") + '</b></div><div><span>Saldo Entrega</span><b>' + (r.pedT ? q(r.pedT - r.entT) : "") + '</b></div></div>';
     var DEP = { "eletrica": "Elétrica", "qdc": "QDC", "hidraulica-agua-fria": "Água fria", "hidraulica-agua-quente": "Água quente", "hidraulica-esgoto": "Esgoto", "gas": "Gás" }, linhasDep = "";
     K.LINHAS.forEach(function (ln) { var T = r.tipos[ln.id]; if (!T || !(T.n || T.rq)) return; var pv = T.cv ? T.v : null, rv = T.crv ? T.rv : (pv !== null ? 0 : null);
       linhasDep += "<tr><td>" + esc(DEP[ln.id] || ln.rot) + '</td><td class="n">' + vz(T.q) + '</td><td class="n">' + m(pv) + '</td><td class="n">' + m(rv) + "</td></tr>"; });

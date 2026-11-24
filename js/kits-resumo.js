@@ -207,7 +207,7 @@
   /* Projeção da semana em kits e R$ a partir de /entregas (kits) com reserva no preço do Financeiro. */
   function semana(fontes, ini, hoje) {
     var fim = calc.somarDias(ini, 6), ent = fontes.entregas || {}, mapa = mapaEmps(fontes.empreendimentos), visto = {};
-    var r = { ini: ini, fim: fim, pN: 0, pQ: 0, pV: 0, pComV: 0, rN: 0, rQ: 0, rV: 0, rComV: 0, semValor: {}, semQtd: {}, tipos: {} };
+    var r = { ini: ini, fim: fim, pN: 0, pQ: 0, pV: 0, pComV: 0, rN: 0, rQ: 0, rV: 0, rComV: 0, semValor: {}, semQtd: {}, tipos: {}, imov: 0, pedT: 0, entT: 0 };
     function T_(id) { return r.tipos[id] || (r.tipos[id] = { n: 0, q: 0, v: 0, cv: 0, rq: 0, rv: 0, crv: 0 }); }
     Object.keys(ent).forEach(function (id) {
       var o = ent[id]; if (!o || typeof o !== "object") return;
@@ -222,6 +222,9 @@
       }
       r.pN++;
       var tp = numV(o.valorProjetado), tr = numV(o.valorReal), qp = 0, vp = 0, falta = false, algum = false, qr = 0, vr = 0, faltaR = false, algumR = false;
+      var mxP = 0;
+      bl.forEach(function (b) { if (b.qtdPedido) { mxP = Math.max(mxP, b.qtdPedido); r.pedT += b.qtdPedido; r.entT += Math.min(b.qtdEntregue || 0, b.qtdPedido); } });
+      r.imov += qnum(o) || mxP;
       bl.forEach(function (b) {
         var pr = precoKit(o, b, mapa), T = T_(b.id); T.n++;
         if (!b.qtdPedido) r.semQtd[id] = 1; else { qp += b.qtdPedido; T.q += b.qtdPedido; if (pr === null) falta = true; else { algum = true; vp += b.qtdPedido * pr; T.v += b.qtdPedido * pr; T.cv++; } }

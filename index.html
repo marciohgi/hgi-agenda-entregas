@@ -176,6 +176,7 @@
   .vs-falta{font-size:12px;font-weight:700;color:#E87731;line-height:1.35}
   .vs-falta:empty{display:none}
   .vs-val:empty{min-height:23px}
+  #vs-imov{font-size:17px}#vs-imov:empty{min-height:0}
   #parc-kit[hidden]{display:none}
   .pk-cab,.pk-linha{display:grid;grid-template-columns:1.4fr .8fr 1fr 1fr;gap:8px;align-items:center}
   .pk-cab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#555;padding:0 0 6px;border-bottom:2px solid #111}
@@ -189,9 +190,9 @@
   .pk-aviso:empty{display:none}
   @media(max-width:600px){.pk-cab{display:none}.pk-linha{grid-template-columns:1fr 1fr}.pk-linha>b{grid-column:1/-1}.pk-linha .pk-n::before{content:"Pedido ";font-size:11px;font-weight:700;color:#555}.pk-linha .pk-saldo::before{content:"Saldo ";font-size:11px;font-weight:700;color:#555}}
   .vs-qtds2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .vs-qtds2>div{background:#141414;border:1px solid #333;border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .vs-qtds2>div{background:#141414;border:1px solid #555;border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
   .vs-qtds2>div:first-child{border-color:#E87731}
-  .vs-qtds2 span{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#bfbfbf}
+  .vs-qtds2 span{font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#bfbfbf}
   .vs-qtds2 small{font-size:9.5px;font-weight:600;text-transform:none;letter-spacing:0;color:#9a9a9a}
   .vs-qtds2 b{font-size:16px;color:#fff;min-height:19px}
   .vs-dep{width:100%;border-collapse:collapse;font-size:12px}
@@ -527,10 +528,10 @@
       <div class="vs-cab"><span class="vs-tit">Projeção da semana</span><span class="vs-int">Uso interno</span></div>
       <div class="vs-filtro" id="vs-filtro"></div>
       <div class="vs-linhas">
-        <div class="vs-linha"><div class="vs-rot">Projetado pra entregar</div><div class="vs-val" id="vs-proj"></div></div>
+        <div class="vs-linha"><div class="vs-rot">Projetado pra entregar</div><div class="vs-val" id="vs-imov"></div><div class="vs-val" id="vs-proj"></div></div>
         <div class="vs-linha vs-real"><div class="vs-rot">Real entregue na semana</div><div class="vs-val" id="vs-real"></div></div>
       </div>
-      <div class="vs-qtds2"><div><span>Meta <small id="vs-meta-sub"></small></span><b id="vs-meta"></b></div><div><span>Programado</span><b id="vs-qprog"></b></div><div><span>Entregue</span><b id="vs-qent"></b></div></div>
+      <div class="vs-qtds2"><div><span>Pedido Total</span><b id="vs-pedt"></b></div><div><span>Total Entregue</span><b id="vs-entt"></b></div><div><span>Saldo Entrega</span><b id="vs-saldo"></b></div></div>
       <table class="vs-dep"><thead><tr><th>Departamento</th><th>Aptos/kits</th><th>Projetado</th><th>Real</th></tr></thead><tbody id="vs-dep-b"></tbody><tfoot id="vs-dep-t"></tfoot></table>
     </aside>
     </div>
@@ -1605,7 +1606,7 @@
   // Uma conta só para o quadro da semana: quantidades em kits e R$.
   function calcSemana(sem,L){
     var ini=DIAS[0].iso,fim=DIAS[6].iso,scope=chavesFiltroTipo(FILTRO_TIPO),mapa=mapaEmps(),visto={};
-    var r={pN:0,pQ:0,pV:0,pComV:0,rN:0,rQ:0,rV:0,rComV:0,semValor:{},semQtd:{},nDigProj:0,nDigReal:0,tipos:{}};
+    var r={pN:0,pQ:0,pV:0,pComV:0,rN:0,rQ:0,rV:0,rComV:0,semValor:{},semQtd:{},nDigProj:0,nDigReal:0,tipos:{},imov:0,pedT:0,entT:0};
     function tp_(id){return r.tipos[id]||(r.tipos[id]={n:0,q:0,v:0,cv:0,rq:0,rv:0,crv:0})}
     function entSemanaBloco(o,b){
       if(b.principal&&b.entAuto==="parciais")return entregueNaSemana(o,ini,fim).q;
@@ -1616,6 +1617,9 @@
       var o=x.o,bl=kitsNoEscopo(o,scope),inteira=obraInteiraNoEscopo(o,scope);
       var tp=numV(o.valorProjetado),tr=numV(o.valorReal);
       var qp=0,vp=0,falta=false,algum=false,qr=0,vr=0,faltaR=false,algumR=false;
+      var mxP=0;
+      bl.forEach(function(b){if(b.qtdPedido){mxP=Math.max(mxP,b.qtdPedido);r.pedT+=b.qtdPedido;r.entT+=Math.min(b.qtdEntregue||0,b.qtdPedido)}});
+      r.imov+=(inteira&&qnum(o))?qnum(o):mxP;
       bl.forEach(function(b){
         var pr=precoKit(o,b,mapa),T=tp_(b.id);T.n++;
         if(!b.qtdPedido){r.semQtd[x.id]=1}else{qp+=b.qtdPedido;T.q+=b.qtdPedido;if(pr.v===null)falta=true;else{algum=true;vp+=b.qtdPedido*pr.v;T.v+=b.qtdPedido*pr.v;T.cv++}}
@@ -1649,10 +1653,10 @@
     var fTxt=(FILTRO_CLIENTE?("Cliente: "+FILTRO_CLIENTE):"Todos os clientes")+" · "+(FILTRO_TIPO?("Tipo: "+rotuloFiltroTipo(FILTRO_TIPO)):"Todos os tipos");
     $("vs-filtro").textContent=rotDataCurto(ini)+" a "+rotDataCurto(fim)+" · "+fTxt;
     var r=calcSemana(sem,L);
-    $("vs-meta").textContent=r.dias?C.formatQtd(r.meta):"";
-    $("vs-meta-sub").textContent=r.dias?("50/dia × "+r.dias+(r.dias===1?" dia útil":" dias úteis")):"";
-    $("vs-qprog").textContent=r.pQ?C.formatQtd(r.pQ):"";
-    $("vs-qent").textContent=r.rQ?C.formatQtd(r.rQ):"";
+    $("vs-imov").textContent=r.imov?(C.formatQtd(r.imov)+(r.imov===1?" imóvel":" imóveis")):"";
+    $("vs-pedt").textContent=r.pedT?C.formatQtd(r.pedT):"";
+    $("vs-entt").textContent=r.pedT?C.formatQtd(r.entT):"";
+    $("vs-saldo").textContent=r.pedT?C.formatQtd(r.pedT-r.entT):"";
     var ok=EMPS!==null;
     var proj=ok&&r.pComV?r.pV:null,real=ok?(r.rComV?r.rV:(proj!==null?0:null)):null;
     $("vs-proj").textContent=proj===null?"":C.formatBRL(proj);
