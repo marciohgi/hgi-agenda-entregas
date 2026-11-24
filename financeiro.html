@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Financeiro dos kits · Grupo HGI</title>
+<title>Resumo por Empreendimento · Grupo HGI</title>
 <script>if(/[?&]exemplo=1(?:&|$)/.test(location.search))document.documentElement.classList.add("hgi-exemplo");</script>
 <link rel="stylesheet" href="css/modulos.css">
 </head>
@@ -26,8 +26,8 @@
     <div class="marca">
       <img src="logo-grupo-hgi.png" alt="Grupo HGI">
       <div>
-        <h1>Financeiro dos kits</h1>
-        <p>Grupo HGI · Valor do kit, quantidade contratada, entregue e saldo</p>
+        <h1>Resumo por Empreendimento</h1>
+        <p>Grupo HGI · Kits pedidos, entregues e saldo por empreendimento · Financeiro dos kits logo abaixo</p>
       </div>
     </div>
     <div class="topo-lado">
@@ -35,6 +35,13 @@
       <div id="hgi-quem"></div>
     </div>
   </header>
+  <section class="resumo-emp" id="resumo-emp-sec" hidden>
+    <div class="re-cab"><span class="re-tit">Resumo por empreendimento</span><span class="re-tot" id="re-tot"></span>
+      <span class="re-filtros"><label>Cliente<select id="re-cliente"><option value="">Todos</option></select></label><label>Tipo<select id="re-tipo"></select></label></span></div>
+    <div class="re-aviso">Todos os empreendimentos da Agenda, do cadastro do Financeiro e do romaneio, de qualquer data e status. Soma dos blocos de kit; totais em kits, não em apartamentos. Por tipo: entregue/pedido. Atualiza sozinho.</div>
+    <div class="re-lista" id="re-lista"></div>
+  </section>
+  <h2 class="sec-fin">Financeiro dos kits</h2>
   <main id="app"></main>
   <footer class="rodape">Grupo HGI · uso interno</footer>
 </div>
@@ -43,5 +50,7 @@
 <script src="js/sessao.js"></script>
 <script src="js/dados.js"></script>
 <script src="js/financeiro.js"></script>
+<script src="js/kits-resumo.js"></script>
+<script src="js/resumo-pagina.js"></script>
 </body>
 </html>

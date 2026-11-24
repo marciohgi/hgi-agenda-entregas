@@ -182,29 +182,6 @@
   .vs-qtds small{font-size:10px;color:#9a9a9a;line-height:1.25}
   .vs-qtds>div:first-child{border-color:#E87731}
   .vs-linha .vs-val{font-size:19px}
-  /* resumo por empreendimento */
-  .resumo-emp{background:#0b0b0b;color:#fff;border:1px solid #E87731;border-radius:10px;margin:0 0 14px;padding:0 14px}
-  .resumo-emp[hidden]{display:none!important}
-  .resumo-emp summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:12px 0}
-  .resumo-emp summary::-webkit-details-marker{display:none}
-  .resumo-emp summary::before{content:"▸";color:#E87731;font-weight:800}
-  .resumo-emp[open] summary::before{content:"▾"}
-  .re-tit{font-size:14px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#E87731}
-  .re-tot{font-size:13px;color:#d9d9d9}
-  .re-aviso{font-size:11.5px;color:#9a9a9a;margin:-4px 0 10px}
-  .re-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;padding-bottom:14px}
-  .re-card{background:#141414;border:1px solid #333;border-left:4px solid #E87731;border-radius:8px;padding:8px 10px;min-width:0}
-  .re-card.re-ok{border-left-color:#fff;opacity:.75}
-  .re-nome{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .re-n{font-weight:600;font-size:10.5px;color:#9a9a9a}
-  .re-nums{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0 4px}
-  .re-nums span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#9a9a9a}
-  .re-nums b{font-size:17px}
-  .re-saldo b{color:#E87731}
-  .re-tipos{display:flex;flex-wrap:wrap;gap:4px}
-  .re-tipo{font-size:10.5px;border:1px solid #444;border-radius:4px;padding:1px 5px;color:#e5e5e5;white-space:nowrap}
-  .re-tipo.re-sq{border-color:#E87731;color:#E87731}
-  .re-vazio{color:#9a9a9a;font-style:italic;font-size:13px;padding-bottom:12px}
   /* kits no formulário */
   .kits-sec{background:#0b0b0b;color:#fff;border:1px solid #E87731;border-radius:10px;padding:10px 12px;margin:0 0 12px}
   .kits-sec:empty{display:none}
@@ -239,7 +216,6 @@
     .kit-grid{grid-template-columns:1fr 1fr}
     .vs-qtds{grid-template-columns:1fr}
     .vs-qtds>div{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:2px 8px}
-    .re-lista{grid-template-columns:1fr}
   }
   @media (max-width:980px){
     .hcorpo{flex-direction:column}
@@ -250,18 +226,30 @@
     header #hgi-quem{order:-1;width:100%;justify-content:space-between}
     .vs-linhas{grid-template-columns:1fr}
   }
-  .btn-incluir,.btn-relatorio{flex:0 1 auto;box-sizing:border-box;max-width:100%;padding:12px 20px;font:inherit;font-size:15px;font-weight:700;line-height:1.25;cursor:pointer;border-radius:8px;white-space:nowrap;text-align:center}
+  .btn-lancar,.btn-incluir,.btn-relatorio{flex:0 1 auto;box-sizing:border-box;max-width:100%;padding:12px 20px;font:inherit;font-size:15px;font-weight:700;line-height:1.25;cursor:pointer;border-radius:8px;white-space:nowrap;text-align:center}
   .btn-incluir{background:#c0392b;color:#fff;border:2px solid #fdecea;box-shadow:0 2px 6px rgba(0,0,0,.25)}
   .btn-incluir:hover{background:#a93226}
-  .btn-relatorio{background:#1e9a4a;color:#fff;border:2px solid #d8f5e3;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-  .btn-relatorio:hover{background:#178a40}
+  .btn-lancar{background:#E87731;color:#111;border:2px solid #E87731;box-shadow:0 2px 6px rgba(0,0,0,.25);font-weight:800}
+  .btn-lancar:hover{background:#ff8c45}
+  .btn-relatorio{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.7);box-shadow:none}
+  .btn-relatorio:hover{background:rgba(255,255,255,.12)}
+  .alertas-wrap{margin:0 0 12px;border:1px solid #d5dce5;border-radius:8px;background:#fff;padding:0 12px}
+  .alertas-wrap>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:10px 0;font-weight:800;color:#111}
+  .alertas-wrap>summary::-webkit-details-marker{display:none}
+  .alertas-wrap>summary::before{content:"▸";color:#E87731}
+  .alertas-wrap[open]>summary::before{content:"▾"}
+  .aw-n{background:#E87731;color:#111;border-radius:999px;padding:1px 9px;font-size:12px}
+  .alertas-wrap.vazio .aw-n{background:#e3e8ee;color:#5b6b7d}
+  .aw-dica{margin-left:auto;font-size:11px;font-weight:500;color:#8a96a5}
+  .alertas-wrap[open]{padding-bottom:6px}
   @media (max-width:768px){
     .htop-acoes{gap:16px}
-    .btn-incluir,.btn-relatorio{flex:1 1 calc(50% - 8px);min-width:calc(50% - 8px);white-space:normal}
+    .btn-lancar,.btn-incluir,.btn-relatorio{flex:1 1 calc(50% - 8px);min-width:calc(50% - 8px);white-space:normal}
   }
   @media (max-width:600px){
-    .htop-acoes{display:grid;grid-template-columns:1fr;gap:16px;margin:16px 0 18px}
-    .btn-incluir,.btn-relatorio{width:100%;min-width:0;white-space:normal;text-align:center;padding:12px 14px}
+    .htop-acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 14px}
+    .btn-lancar,.btn-incluir,.btn-relatorio{width:100%;min-width:0;white-space:normal;text-align:center;padding:11px 10px;font-size:14px}
+    .aw-dica{display:none}
     .modal-rel .acoes{flex-direction:column;align-items:stretch}
     .modal-rel .acoes .btn{width:100%}
   }
@@ -491,6 +479,7 @@
     <div class="hesq">
     <h1 id="titulo">Dashboard de Entregas – Semana de 09 a 15/11/2026</h1>
     <div class="htop-acoes">
+      <button type="button" class="btn-lancar" id="lancar-obra">+ Lançar obra</button>
       <button type="button" class="btn-incluir" id="incluir">+ Incluir lembrete</button>
       <button type="button" class="btn-relatorio" id="relatorio">Gerar relatório</button>
       <button type="button" class="btn-relatorio" id="relatorio-entregas">Gerar relatório de entregas</button>
@@ -522,23 +511,20 @@
     </div>
   </header>
 
-  <details class="resumo-emp" id="resumo-emp" hidden>
-    <summary><span class="re-tit">Resumo por empreendimento</span><span class="re-tot" id="re-tot"></span></summary>
-    <div class="re-aviso">Soma dos blocos de kit de todas as datas, com os filtros Cliente e Tipo. Totais em kits, não em apartamentos. Por tipo: entregue/pedido.</div>
-    <div class="re-lista" id="re-lista"></div>
-  </details>
 
   <div class="resumo-tipos-cab">
     <div class="resumo-sub" id="resumo-sub">Aptos da semana por tipo</div>
   </div>
   <div class="resumo" id="resumo-totais"></div>
-  <div class="resumo" id="resumo-extra"><div class="box" id="box-cba" style="border-left-color:#c0392b"><div class="rot">Não pode falhar</div><div class="val" style="color:#c0392b;font-size:19px">CBA · Sex 13/11</div><div class="sub">Entrega em Santa Catarina</div></div></div>
   <div class="resumo-nota"><div class="tot-kits" id="r-kits" hidden></div><div class="sub" id="r-semq"></div></div>
   <div id="pendencias" class="pendencias" hidden></div>
 
+  <details class="alertas-wrap" id="alertas-wrap">
+    <summary><span class="aw-tit">Alertas e lembretes</span><span class="aw-n" id="alertas-n"></span><span class="aw-dica">toque para abrir ou fechar</span></summary>
   <div id="alertas-cerca"></div>
   <div id="alertas-carry"></div>
   <div id="lembretes"></div>
+  </details>
 
   <div class="legenda">
     <span><i style="background:#2e8b57"></i>Pronto</span>
@@ -1446,7 +1432,7 @@
     var tit=tituloSemana();document.getElementById("titulo").textContent="Dashboard de Entregas – "+tit;document.title="Dashboard de Entregas – "+tit;
     atualizaSeletorCliente();
     var fixa=(SEMANA===SEM_FIXA),mostraCba=fixa&&(!FILTRO_CLIENTE||/cba/i.test(FILTRO_CLIENTE));
-    document.getElementById("box-cba").classList.toggle("esconde",!mostraCba);var ex=document.getElementById("resumo-extra");if(ex)ex.classList.toggle("esconde",!mostraCba);
+    var bc=document.getElementById("box-cba");if(bc)bc.classList.toggle("esconde",!mostraCba);var ex=document.getElementById("resumo-extra");if(ex)ex.classList.toggle("esconde",!mostraCba);
     document.getElementById("hoje").disabled=(SEMANA===limita(iso(segunda(deIso(HOJE)))));
     var sl=document.getElementById("semanas");if(sl&&sl.options.length){var tem=[].some.call(sl.options,function(o){return o.value===SEMANA});sl.value=tem?SEMANA:"";}
     var px=document.getElementById("prox");px.disabled=(SEMANA>=ULTIMA_SEMANA);px.title=px.disabled?"Último período: recesso a partir de 24/12":"";
@@ -1509,11 +1495,11 @@
     var sq=!sem.length?"Nenhuma entrega nesta semana":(nuniq+(nuniq===1?" entrega":" entregas")+" nesta semana")+(semq.length?". "+(semq.length===1?semq[0]:semq.slice(0,-1).join(", ")+" e "+semq[semq.length-1])+" sem quantidade":". Todas com quantidade");
     document.getElementById("r-semq").textContent=sq;
     renderValorSemana(sem,L);
-    renderResumoEmp();
     renderPendencias();
     renderLembretes();
     renderAlertasCerca();
     renderLembretesCarry();
+    contaAlertas();
     if(cur){var o=fonte()[cur];if(o){preencheTopo(cur,o)}else{atual.textContent="Esta entrega foi removida.";}}
   }
 
@@ -1642,39 +1628,6 @@
     if(r.nSemQtd)falta.push(r.nSemQtd+(r.nSemQtd===1?" obra sem quantidade pedida":" obras sem quantidade pedida"));
     $("vs-falta").textContent=falta.join(" · ");
     $("vs-falta").title=r.pN+" obras na semana · "+r.pComV+" com valor no projetado · "+r.nDigProj+" com valor projetado digitado · "+r.nDigReal+" com valor real digitado";
-  }
-  // ===== Resumo por empreendimento (todas as datas, filtros Cliente/Tipo aplicados) =====
-  var RE_KEY="hgi-agenda-resumo-emp-aberto";
-  function renderResumoEmp(){
-    var det=document.getElementById("resumo-emp");if(!det)return;
-    if(!VS_ON){det.hidden=true;return}
-    det.hidden=false;
-    var C=window.HGICalc,scope=chavesFiltroTipo(FILTRO_TIPO),grupos={},ordem=[];
-    listaVisivel().forEach(function(x){
-      var nome=nomeCliente(x.o,x.id),k=chaveNome(nome)||x.id;
-      if(!grupos[k]){grupos[k]={nome:nome,n:0,ped:0,ent:0,semQtd:0,tipos:{}};ordem.push(k)}
-      var g=grupos[k];g.n++;
-      kitsNoEscopo(x.o,scope).forEach(function(b){
-        if(b.qtdPedido===null){g.semQtd++;return}
-        var t=g.tipos[b.id]||(g.tipos[b.id]={rot:b.rot,cls:b.cls,ped:0,ent:0});
-        t.ped+=b.qtdPedido;t.ent+=(b.qtdEntregue||0);g.ped+=b.qtdPedido;g.ent+=(b.qtdEntregue||0);
-      });
-    });
-    var arr=ordem.map(function(k){var g=grupos[k];g.saldo=g.ped-g.ent;return g});
-    arr.sort(function(a,b){return (b.saldo-a.saldo)||a.nome.localeCompare(b.nome,"pt-BR",{sensitivity:"base"})});
-    var tot={ped:0,ent:0};arr.forEach(function(g){tot.ped+=g.ped;tot.ent+=g.ent});
-    document.getElementById("re-tot").textContent=arr.length+(arr.length===1?" empreendimento":" empreendimentos")+" · pedido "+C.formatQtd(tot.ped)+" · entregue "+C.formatQtd(tot.ent)+" · saldo "+C.formatQtd(tot.ped-tot.ent)+" kits";
-    var box=document.getElementById("re-lista");box.innerHTML="";
-    if(!arr.length){box.innerHTML='<div class="re-vazio">Nenhum empreendimento com estes filtros.</div>';return}
-    arr.forEach(function(g){
-      var d=document.createElement("div");d.className="re-card"+(g.saldo<=0&&g.ped>0?" re-ok":"");
-      var h='<div class="re-nome" title="'+C.esc(g.nome)+'">'+C.esc(g.nome)+(g.n>1?' <span class="re-n">'+g.n+' lançamentos</span>':"")+'</div>';
-      h+='<div class="re-nums"><div><span>Pedido</span><b>'+C.formatQtd(g.ped)+'</b></div><div><span>Entregue</span><b>'+C.formatQtd(g.ent)+'</b></div><div class="re-saldo"><span>Saldo</span><b>'+C.formatQtd(g.saldo)+'</b></div></div>';
-      var tps=Object.keys(g.tipos).map(function(k){var t=g.tipos[k];return '<span class="re-tipo" title="'+C.esc(t.rot)+': pedido '+t.ped+', entregue '+t.ent+', saldo '+(t.ped-t.ent)+'">'+C.esc(t.rot.replace("Hidráulica ","H. "))+" "+t.ent+"/"+t.ped+"</span>"});
-      if(g.semQtd)tps.push('<span class="re-tipo re-sq">'+g.semQtd+' sem qtd</span>');
-      h+='<div class="re-tipos">'+tps.join("")+'</div>';
-      d.innerHTML=h;box.appendChild(d);
-    });
   }
   // ===== Formulário: blocos de kit por tipo + valor projetado/real da obra =====
   var KF={};
@@ -1807,8 +1760,14 @@
   }
   var _preencheTopoBase=preencheTopo;
   preencheTopo=function(id,o){_preencheTopoBase(id,o);resumoKitsFicha(o)};
-  (function(){var d=document.getElementById("resumo-emp");if(!d)return;try{if(localStorage.getItem(RE_KEY)==="1")d.open=true}catch(e){}
-    d.addEventListener("toggle",function(){try{localStorage.setItem(RE_KEY,d.open?"1":"0")}catch(e){}})})();
+  function contaAlertas(){
+    var w=document.getElementById("alertas-wrap"),n=document.getElementById("alertas-n");if(!w||!n)return;
+    var c=0;["alertas-cerca","alertas-carry","lembretes"].forEach(function(id){var b=document.getElementById(id);if(b)c+=b.querySelectorAll(".alerta").length});
+    n.textContent=c?String(c):"nenhum";w.classList.toggle("vazio",!c);
+  }
+  (function(){var w=document.getElementById("alertas-wrap");if(!w)return;var v=null;try{v=localStorage.getItem("hgi-agenda-alertas-abertos")}catch(e){}
+    w.open=v==="1";
+    w.addEventListener("toggle",function(){try{localStorage.setItem("hgi-agenda-alertas-abertos",w.open?"1":"0")}catch(e){}})})();
   // painel de detalhe
   var ov=document.getElementById("ov"),atual=document.getElementById("atual"),campo=document.getElementById("campo"),ok=document.getElementById("ok"),upd=document.getElementById("upd"),cur=null;
   var eS=document.getElementById("e-status"),eD=document.getElementById("e-data"),eQ=document.getElementById("e-qtd");
@@ -2345,6 +2304,7 @@
     ok2.textContent="";ok2.style.color="";ov2.classList.add("on");nN.focus()}
   function fecharNovo(){fechaDDs();ov2.classList.remove("on")}
   document.getElementById("incluir").onclick=abrirLembrete;
+  (function(){var bl=document.getElementById("lancar-obra");if(bl)bl.onclick=function(){var d=(HOJE>=DIAS[0].iso&&HOJE<=DIAS[6].iso)?HOJE:DIAS[0].iso;abrirNovo(d)}})();
   var selS=document.getElementById("semanas");
   (function(){var d=deIso("2026-11-09");while(iso(d)<=ULTIMA_SEMANA){var a=new Date(d),b=new Date(d);b.setDate(b.getDate()+6);
     var t=(a.getMonth()===b.getMonth()?pad(a.getDate()):pad(a.getDate())+"/"+pad(a.getMonth()+1))+"–"+pad(b.getDate())+"/"+pad(b.getMonth()+1);

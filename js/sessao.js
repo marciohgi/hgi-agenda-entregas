@@ -1,6 +1,8 @@
 (function () {
   var cfg = window.HGI_FIREBASE || {};
   var calc = window.HGICalc;
+  var EQUIPE_OCULTA = true;
+  if (EQUIPE_OCULTA && /equipe\.html$/i.test(location.pathname)) { location.replace("index.html"); return; }
   var paginaNova = /(?:almoxarifado|romaneio|financeiro|painel|equipe)\.html$/i.test(location.pathname);
   var exemplo = paginaNova && /(?:\?|&)exemplo=1(?:&|$)/.test(location.search);
   var papelExemplo = /(?:\?|&)papel=almoxarife(?:&|$)/.test(location.search) ? "almoxarife" : "total";
@@ -34,16 +36,17 @@
     { id: "agenda", href: "index.html", rot: "Agenda", papeis: ["total"] },
     { id: "almoxarifado", href: "almoxarifado.html", rot: "Almoxarifado", papeis: ["total", "almoxarife"] },
     { id: "romaneio", href: "romaneio.html", rot: "Romaneio", papeis: ["total", "almoxarife"] },
-    { id: "financeiro", href: "financeiro.html", rot: "Financeiro", papeis: ["total"] },
+    { id: "financeiro", href: "financeiro.html", rot: "Resumo por Empreendimento", papeis: ["total"] },
     { id: "painel", href: "painel.html", rot: "Painel", papeis: ["total"] },
-    { id: "equipe", href: "equipe.html", rot: "Equipe", papeis: ["total"] }
+    // Equipe escondida da barra por enquanto (pedido do Márcio, 24/11). Para voltar: oculto: false.
+    { id: "equipe", href: "equipe.html", rot: "Equipe", papeis: ["total"], oculto: EQUIPE_OCULTA }
   ];
   function montarChrome(pagina) {
     var nav = document.getElementById("hgi-nav");
     if (nav) {
       nav.innerHTML = "";
       LINKS.forEach(function (l) {
-        if (l.papeis.indexOf(state.papel) < 0) return;
+        if (l.papeis.indexOf(state.papel) < 0 || l.oculto) return;
         var a = document.createElement("a");
         a.href = l.href + qs();
         a.textContent = l.rot;
