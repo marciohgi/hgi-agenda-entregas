@@ -11,6 +11,7 @@
   var RITMO = { "Minha Casa Minha Vida": "50 aptos/dia", "Médio Padrão": "30 aptos/dia", "Alto Padrão": "20 aptos/dia", "Altíssimo Padrão": "5–10 aptos/dia" };
   var TIPOS = [
     { v: "eletrica", rot: "Elétrico" },
+    { v: "qdc", rot: "QDC" },
     { v: "gas", rot: "Gás" },
     { v: "hidraulica:agua-fria", rot: "Água / Hidráulica · água fria" },
     { v: "hidraulica:agua-quente", rot: "Água / Hidráulica · água quente" },
