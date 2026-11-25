@@ -123,6 +123,7 @@
   .mb{padding:16px 18px;max-height:calc(96vh - 56px);overflow:auto}
   .meta{font-size:13px;color:#3d4d5f;margin-bottom:12px}
   .pill{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:2px 9px;margin-left:6px;color:#fff}
+  .pill.p-fds{background:#E87731;color:#fff}.pill.p-ajuste{background:#111;color:#fff}
   .p-pronto{background:#2e8b57}.p-andamento{background:#b8900f}.p-aguardando{background:#e07b1a}.p-critico{background:#c0392b}.p-concluido{background:#1e9a4a}
   .atual{background:#f5f7fa;border:1px solid #d5dce5;border-radius:6px;padding:10px 12px;font-size:15px;margin:6px 0 14px;white-space:pre-wrap}
   textarea{width:100%;min-height:100px;font:inherit;font-size:14px;padding:10px;border:1px solid #b8c4d2;border-radius:6px;resize:vertical;margin-top:6px}
@@ -492,7 +493,7 @@
   }
   @media (prefers-reduced-motion:reduce){.item .alerta-mini.lote-vencido,.alerta-lote-vencido.alerta{animation:none}}
 </style>
-<link rel="stylesheet" href="css/modulos.css?v=20261124-1357">
+<link rel="stylesheet" href="css/modulos.css?v=20261125-0956">
 </head>
 <body>
 <div id="hgi-gate" role="dialog" aria-modal="true" aria-labelledby="hgi-gate-titulo">
@@ -572,7 +573,7 @@
 
   <div class="outras" id="outras"><div class="rot" id="outras-rot">Sem data definida</div><div class="lista" id="outras-lista"></div></div>
 
-  <footer>Meta mínima: 50 apartamentos/dia<span class="versao" id="hgi-versao"> · versão 20261124-1357</span></footer>
+  <footer>Meta mínima: 50 apartamentos/dia<span class="versao" id="hgi-versao"> · versão 20261125-0956</span></footer>
 </div>
 
 <div class="ov" id="ov">
@@ -756,11 +757,11 @@
 
 <div class="dd-etapa" id="n-dd-etapa" role="listbox" hidden></div>
 
-<script src="js/firebase-config.js?v=20261124-1357"></script>
-<script src="js/calculos.js?v=20261124-1357"></script>
-<script src="js/sessao.js?v=20261124-1357"></script>
-<script src="js/kits-resumo.js?v=20261124-1357"></script>
-<script src="js/relatorio-pdf.js?v=20261124-1357"></script>
+<script src="js/firebase-config.js?v=20261125-0956"></script>
+<script src="js/calculos.js?v=20261125-0956"></script>
+<script src="js/sessao.js?v=20261125-0956"></script>
+<script src="js/kits-resumo.js?v=20261125-0956"></script>
+<script src="js/relatorio-pdf.js?v=20261125-0956"></script>
 <script>
 (function(){
   var DB="https://hgi-agenda-entregas-ab559-default-rtdb.firebaseio.com";
@@ -1947,10 +1948,14 @@
     if(st.tipo==="entrou"){var motivo=etapaNum(o)>=3?rotEtapaDe(o,true):(o.entrouProducao?"marcada em "+rotDataCurto(o.entrouProducao):"status "+ROT[cod(o)]);cb.innerHTML+="<br>Já entrou na produção ("+esc(motivo)+")."}
     cb.innerHTML+=acrescentaAlertas("");
   }
+  function infoCliente(o){if(!o||!o.clienteId)return "";var t="Cadastro de Cliente · lote "+(o.clienteLote||"")+(o.clienteLotes?" de "+o.clienteLotes:"");
+    if(deIso(o.dataPrevisaoCliente))t+=" · previsão do cliente "+rotDataCurto(o.dataPrevisaoCliente);
+    var h="<br>"+esc(t);if(o.fimDeSemana&&deIso(o.data)){var w=deIso(o.data).getDay();if(w===0||w===6)h+=' <span class="pill p-fds">cai '+(w===6?"no sábado":"no domingo")+"</span>"}
+    if(o.ajustadoManual)h+=' <span class="pill p-ajuste">ajustado na agenda</span>';return h}
   function preencheTopo(id,o){var c=cod(o);
     document.getElementById("mt").textContent=o.nome||id;
     var inf=infoPadrao(o.padrao),ex="";if(inf){var pz=prazoTxt(qnum(o),inf);ex="<br>"+esc(inf.id)+" · "+esc(inf.ritmo)+(pz?" · "+esc(pz):"")}
-    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span> <span class="pill '+clsTipo(o)+'">'+esc(rotTipo(o))+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex;
+    document.getElementById("meta").innerHTML=esc(rotData(o.data))+' <span class="pill p-'+c+'">'+ROT[c]+'</span> <span class="pill '+clsTipo(o)+'">'+esc(rotTipo(o))+'</span>'+(NOTA[id]?"<br>"+esc(NOTA[id]):"")+ex+infoCliente(o);
     preencheDestaque(id,o);
     rotuloEtapaEls("e-etapa-nota",o);
     setEtapaCaixa("e",etapaBruta(o)||etapaNum(o));
@@ -2556,6 +2561,7 @@
     if(etapaEdit>=1&&(etapaEdit<=nEtapas(o)||etapaEdit===etapaBruta(o))){p.etapa=etapaEdit;if(etapaNum(Object.assign({},o,{etapa:etapaEdit}))>=3){if(!o.entrouProducao)p.entrouProducao=HOJE}else if(!etapaIncompativel(Object.assign({},o,{etapa:etapaEdit}))){p.entrouProducao=null}}else{p.etapa=null;p.entrouProducao=null}
     var nLt=eLote?parseInt(eLote.value,10)||0:0;if(nLt>=1)p.lotes=nLt;else p.lotes=null;
     var px=document.getElementById("e-prox-lote");if(px){p.proximoLoteData=px.value||null}
+    if(o.clienteId&&((o.data||"")!==p.data||(qnum(o)||null)!==p.qtd||cod(o)!==c)){p.ajustadoManual=true;p.ajustadoEm=agora}
     ok.style.color="";ok.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]});render()}
@@ -2953,6 +2959,7 @@
     if(!edId)return;var id=edId,r=objetoEdicao(),p=r.p;
     if(!p.nome){erro(okE,"Informe a obra / nome.");edNome.focus();return}
     if(VS_ON){var kpE=coletaKits("ed");if(kpE.erro){erro(okE,kpE.erro);return}p.kits=kpE.kits;p.valorProjetado=kpE.vp;p.valorReal=kpE.vr}
+    var bE=fonte()[id]||{};if(bE.clienteId){p.ajustadoManual=true;p.ajustadoEm=p.atualizadoEm}
     okE.style.color="";okE.textContent="Salvando…";
     req("PATCH","/entregas/"+id+".json",p).then(function(){
       if(REM&&REM[id]){Object.keys(p).forEach(function(k){if(p[k]===null)delete REM[id][k];else REM[id][k]=p[k]})}

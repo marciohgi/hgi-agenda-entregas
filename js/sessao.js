@@ -3,7 +3,7 @@
   var calc = window.HGICalc;
   var EQUIPE_OCULTA = true;
   /* Versão publicada: se a página aberta for de uma versão antiga, recarrega uma vez sem cache. */
-  var VERSAO = "20261124-1357";
+  var VERSAO = "20261125-0956";
   try {
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
     if (window.caches && caches.keys) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
@@ -56,6 +56,7 @@
     { id: "almoxarifado", href: "almoxarifado.html", rot: "Almoxarifado", papeis: ["total", "almoxarife"] },
     { id: "romaneio", href: "romaneio.html", rot: "Romaneio", papeis: ["total", "almoxarife"] },
     { id: "financeiro", href: "financeiro.html", rot: "Resumo por Empreendimento", papeis: ["total"] },
+    { id: "cliente", href: "cliente.html", rot: "Cadastro de Cliente", papeis: ["total"] },
     { id: "painel", href: "painel.html", rot: "Painel", papeis: ["total"] },
     // Equipe escondida da barra por enquanto (pedido do Márcio, 24/11). Para voltar: oculto: false.
     { id: "equipe", href: "equipe.html", rot: "Equipe", papeis: ["total"], oculto: EQUIPE_OCULTA }

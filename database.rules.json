@@ -2,22 +2,34 @@
   "rules": {
     ".read": false,
     ".write": false,
-
     "usuarios": {
       ".read": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
       "$uid": {
         ".read": "auth != null && (auth.uid == $uid || root.child('usuarios').child(auth.uid).child('papel').val() == 'total')",
         ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
-        "uid": { ".validate": "newData.val() == $uid" },
-        "nome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
-        "email": { ".validate": "newData.isString() && newData.val().length <= 120" },
-        "papel": { ".validate": "newData.val() == 'total' || newData.val() == 'almoxarife'" },
-        "atualizadoEm": { ".validate": "newData.isNumber()" },
-        "atualizadoPor": { ".validate": "newData.isString() && newData.val().length <= 128" },
-        "$other": { ".validate": false }
+        "uid": {
+          ".validate": "newData.val() == $uid"
+        },
+        "nome": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 120"
+        },
+        "papel": {
+          ".validate": "newData.val() == 'total' || newData.val() == 'almoxarife'"
+        },
+        "atualizadoEm": {
+          ".validate": "newData.isNumber()"
+        },
+        "atualizadoPor": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
-
     "entregas": {
       ".read": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
       ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'"
@@ -26,21 +38,38 @@
       ".read": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
       ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'"
     },
-
     "empreendimentos": {
       ".read": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
       "$id": {
         ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
         ".validate": "newData.child('nome').isString() && newData.child('nome').val().length > 0",
-        "nome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-        "valorKitEletrico": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "valorKitQdc": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "qtdContratada": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "lancadoPorUid": { ".validate": "newData.isString() && newData.val().length <= 128" },
-        "lancadoPorNome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
-        "atualizadoEm": { ".validate": "newData.isNumber()" },
-        "criadoEm": { ".validate": "newData.isNumber()" },
-        "$other": { ".validate": false }
+        "nome": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "valorKitEletrico": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "valorKitQdc": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "qtdContratada": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "lancadoPorUid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "lancadoPorNome": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80"
+        },
+        "atualizadoEm": {
+          ".validate": "newData.isNumber()"
+        },
+        "criadoEm": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "producao": {
@@ -48,48 +77,96 @@
       "$id": {
         ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
         ".validate": "newData.child('qtd').isNumber() && newData.child('qtd').val() >= 0 && (newData.child('tipo').val() == 'entrega' || newData.child('tipo').val() == 'produzido' || newData.child('tipo').val() == 'projecao')",
-        "tipo": { ".validate": "newData.val() == 'entrega' || newData.val() == 'produzido' || newData.val() == 'projecao'" },
-        "empreendimentoId": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-        "data": { ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)" },
-        "qtd": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "valorUnitario": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "valorTotal": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-        "lancadoPorUid": { ".validate": "newData.isString() && newData.val().length <= 128" },
-        "lancadoPorNome": { ".validate": "newData.isString() && newData.val().length <= 80" },
-        "criadoEm": { ".validate": "newData.isNumber()" },
-        "$other": { ".validate": false }
+        "tipo": {
+          ".validate": "newData.val() == 'entrega' || newData.val() == 'produzido' || newData.val() == 'projecao'"
+        },
+        "empreendimentoId": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "data": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)"
+        },
+        "qtd": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "valorUnitario": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "valorTotal": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "lancadoPorUid": {
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "lancadoPorNome": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "criadoEm": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
-
     "almoxarifado": {
       ".read": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
       "itens": {
         "$id": {
           ".write": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
           ".validate": "newData.child('item').isString() && newData.child('item').val().length > 0 && newData.child('lancadoPorUid').val() == auth.uid && !newData.child('saldo').exists() && !newData.child('status').exists() && !newData.child('valor').exists() && !newData.child('preco').exists()",
-          "codigo": { ".validate": "newData.isString() && newData.val().length <= 40" },
-          "item": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-          "categoria": { ".validate": "newData.isString() && newData.val().length <= 40" },
-          "unidade": { ".validate": "newData.isString() && newData.val().length <= 12" },
-          "estoqueMinimo": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-          "entrada": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-          "saida": { ".validate": "newData.isNumber() && newData.val() >= 0" },
-          "observacao": { ".validate": "newData.isString() && newData.val().length <= 500" },
-          "lancadoPorUid": { ".validate": "newData.val() == auth.uid" },
-          "lancadoPorNome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
-          "atualizadoEm": { ".validate": "newData.isNumber()" },
-          "criadoEm": { ".validate": "newData.isNumber()" },
-          "$other": { ".validate": false }
+          "codigo": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "item": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+          },
+          "categoria": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "unidade": {
+            ".validate": "newData.isString() && newData.val().length <= 12"
+          },
+          "estoqueMinimo": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "entrada": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "saida": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "observacao": {
+            ".validate": "newData.isString() && newData.val().length <= 500"
+          },
+          "lancadoPorUid": {
+            ".validate": "newData.val() == auth.uid"
+          },
+          "lancadoPorNome": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80"
+          },
+          "atualizadoEm": {
+            ".validate": "newData.isNumber()"
+          },
+          "criadoEm": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
         }
       }
     },
-
     "filaRomaneio": {
       ".read": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
       "$id": {
         ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
-        "nome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-        "qtdContratada": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+        "nome": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "qtdContratada": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
         "pronto": {
           ".write": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
           ".validate": "newData.isBoolean()"
@@ -114,33 +191,60 @@
           ".write": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
           ".validate": "newData.isNumber()"
         },
-        "$other": { ".validate": false }
+        "$other": {
+          ".validate": false
+        }
       }
     },
-
     "romaneios": {
       ".read": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
       "$numero": {
         ".write": "auth != null && !data.exists() && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
         ".validate": "newData.child('numero').isNumber() && (newData.child('numero').val() + '') == $numero && newData.child('qtd').isNumber() && newData.child('qtd').val() > 0 && newData.child('lancadoPorUid').val() == auth.uid && newData.child('nome').isString() && newData.child('empreendimentoId').isString() && root.child('filaRomaneio').child(newData.child('empreendimentoId').val()).child('romaneioNumero').val() == newData.child('numero').val() && !newData.child('valor').exists() && !newData.child('valorKitEletrico').exists() && !newData.child('preco').exists()",
-        "numero": { ".validate": "newData.isNumber() && (newData.val() + '') == $numero && newData.val() >= 260001" },
-        "empreendimentoId": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-        "nome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120" },
-        "qtd": { ".validate": "newData.isNumber() && newData.val() > 0" },
-        "observacao": { ".validate": "newData.isString() && newData.val().length <= 500" },
-        "data": { ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)" },
-        "criadoEm": { ".validate": "newData.isNumber()" },
-        "lancadoPorUid": { ".validate": "newData.val() == auth.uid" },
-        "lancadoPorNome": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80" },
-        "$other": { ".validate": false }
+        "numero": {
+          ".validate": "newData.isNumber() && (newData.val() + '') == $numero && newData.val() >= 260001"
+        },
+        "empreendimentoId": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "nome": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 120"
+        },
+        "qtd": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "observacao": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "data": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)"
+        },
+        "criadoEm": {
+          ".validate": "newData.isNumber()"
+        },
+        "lancadoPorUid": {
+          ".validate": "newData.val() == auth.uid"
+        },
+        "lancadoPorNome": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 80"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
-
     "contadores": {
       "romaneio": {
         ".read": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
         ".write": "auth != null && (root.child('usuarios').child(auth.uid).child('papel').val() == 'total' || root.child('usuarios').child(auth.uid).child('papel').val() == 'almoxarife')",
         ".validate": "newData.isNumber() && newData.val() >= 260001 && newData.val() <= 999999 && newData.val() % 10000 >= 1 && newData.val() % 10000 <= 9999 && (!data.exists() && newData.val() % 10000 == 1 || data.exists() && newData.val() == data.val() + 1 && newData.val() % 10000 != 0 || data.exists() && newData.val() > data.val() && newData.val() % 10000 == 1 && newData.val() - data.val() <= 100000)"
+      }
+    },
+    "clientes": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
+      "$id": {
+        ".write": "auth != null && root.child('usuarios').child(auth.uid).child('papel').val() == 'total'",
+        ".validate": "newData.child('nome').isString() && newData.child('nome').val().length > 0 && newData.child('nome').val().length <= 120"
       }
     }
   }

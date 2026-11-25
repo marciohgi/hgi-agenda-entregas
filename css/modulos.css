@@ -156,3 +156,17 @@ body.pagina .topo-acoes .btn.lar{background:var(--laranja);color:#111}
 .re-parc{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .re-parc-btn{font-size:11px;font-weight:800;background:var(--laranja);color:#111;border-radius:5px;padding:4px 8px;text-decoration:none}
 .re-parc-btn:hover{background:#fff}
+/* Cadastro de Cliente */
+.form-grid label.full{grid-column:1/-1}
+.cli-sub{margin:16px 0 6px;font-size:15px;color:#111}
+.cli-lotes-cab,.cli-lote{display:grid;grid-template-columns:44px 1fr 1.3fr 1.3fr auto;gap:8px;align-items:center}
+.cli-lotes-cab{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.cli-lote{margin-bottom:6px}
+.cli-lote b{text-align:center;font-size:15px}
+.cli-lote input{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid #b8c4d2;border-radius:6px;background:#fff}
+.cli-dag{font-weight:800;color:#111;font-size:15px}
+.cli-fds{display:inline-block;background:#E87731;color:#fff;font-size:11px;font-weight:800;border-radius:4px;padding:2px 6px;margin-left:4px;text-transform:uppercase}
+.cli-soma{font-size:13px;font-weight:700;margin-left:8px}
+.cli-soma.cli-diverge{color:#c0392b}
+body.pagina .btn.mini{padding:7px 10px;font-size:13px}
+@media (max-width:640px){.cli-lotes-cab{display:none}.cli-lote{grid-template-columns:32px 1fr 1fr;}.cli-lote .cli-dag{grid-column:2/3}.cli-lote button{grid-column:3/4}}
