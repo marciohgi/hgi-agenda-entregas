@@ -169,4 +169,4 @@ body.pagina .topo-acoes .btn.lar{background:var(--laranja);color:#111}
 .cli-soma{font-size:13px;font-weight:700;margin-left:8px}
 .cli-soma.cli-diverge{color:#c0392b}
 body.pagina .btn.mini{padding:7px 10px;font-size:13px}
-@media (max-width:640px){.cli-lotes-cab{display:none}.cli-lote{grid-template-columns:32px 1fr 1fr;}.cli-lote .cli-dag{grid-column:2/3}.cli-lote button{grid-column:3/4}}
+@media (max-width:640px){.cli-lotes-cab,.cli-lote{grid-template-columns:32px 1fr 1fr}.cli-lotes-cab span:nth-child(n+4){display:none}.cli-lote .cli-dag{grid-column:2/3}.cli-lote button{grid-column:3/4}}

@@ -42,7 +42,7 @@
     var tv = c ? (c.tipo === "hidraulica" ? "hidraulica:" + (c.ramal || "agua-fria") : c.tipo) : "eletrica";
     h += '<label>Tipo de kit<select id="c-tipo">' + TIPOS.map(function (t) { return '<option value="' + t.v + '"' + (t.v === tv ? " selected" : "") + ">" + esc(t.rot) + "</option>"; }).join("") + "</select></label>";
     h += '<label>Valor por kit (R$)<input id="c-valor" inputmode="decimal" value="' + (c && c.valorKit != null ? String(c.valorKit).replace(".", ",") : "") + '"></label>';
-    h += '<label>Padrão do imóvel<select id="c-padrao"><option value="">— escolha —</option>' + Object.keys(ANTECIPACAO_DIAS).map(function (p) { return '<option' + (c && c.padrao === p ? " selected" : "") + ">" + esc(p) + "</option>"; }).join("") + "</select></label>";
+    h += '<label>Padrão do imóvel<select id="c-padrao"><option value="">Escolha o padrão</option>' + Object.keys(ANTECIPACAO_DIAS).map(function (p) { return '<option' + (c && c.padrao === p ? " selected" : "") + ">" + esc(p) + "</option>"; }).join("") + "</select></label>";
     h += "</div>";
     h += '<h3 class="cli-sub">Lotes</h3><div class="cli-lotes-cab"><span>Lote</span><span>Quantidade</span><span>Previsão do cliente</span><span>Data na agenda</span><span></span></div><div id="c-lotes"></div>';
     h += '<button type="button" class="btn sec" id="c-add-lote">+ Adicionar lote</button> <span class="cli-soma" id="c-soma"></span>';
@@ -52,7 +52,7 @@
   function desenhaLotes() {
     var box = document.getElementById("c-lotes"); if (!box) return;
     box.innerHTML = lotes.map(function (l, i) {
-      return '<div class="cli-lote" data-i="' + i + '"><b>' + (i + 1) + '</b><input data-f="qtd" inputmode="numeric" value="' + (l.qtd || "") + '" aria-label="Quantidade do lote ' + (i + 1) + '"><input type="date" data-f="prev" value="' + (l.prev || "") + '" aria-label="Previsão do cliente, lote ' + (i + 1) + '"><span class="cli-dag" id="c-dag' + i + '"></span><button type="button" class="btn verm mini" data-del="' + i + '">Excluir</button></div>';
+      return '<div class="cli-lote" data-i="' + i + '"><b>' + (i + 1) + '</b><input data-f="qtd" inputmode="numeric" placeholder="Qtd" value="' + (l.qtd || "") + '" aria-label="Quantidade do lote ' + (i + 1) + '"><input type="date" data-f="prev" value="' + (l.prev || "") + '" aria-label="Previsão do cliente, lote ' + (i + 1) + '"><span class="cli-dag" id="c-dag' + i + '"></span><button type="button" class="btn verm mini" data-del="' + i + '">Excluir</button></div>';
     }).join("");
     calcula();
   }
