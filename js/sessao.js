@@ -3,7 +3,7 @@
   var calc = window.HGICalc;
   var EQUIPE_OCULTA = true;
   /* Versão publicada: se a página aberta for de uma versão antiga, recarrega uma vez sem cache. */
-  var VERSAO = "20261125-1335";
+  var VERSAO = "20261126-1745";
   try {
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
     if (window.caches && caches.keys) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
@@ -22,7 +22,7 @@
   conferirVersao();
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") conferirVersao(); });
   if (EQUIPE_OCULTA && /equipe\.html$/i.test(location.pathname)) { location.replace("index.html"); return; }
-  var paginaNova = /(?:almoxarifado|romaneio|financeiro|painel|equipe)\.html$/i.test(location.pathname);
+  var paginaNova = /(?:almoxarifado|romaneio|financeiro|painel|heitor|equipe)\.html$/i.test(location.pathname);
   var exemplo = paginaNova && /(?:\?|&)exemplo=1(?:&|$)/.test(location.search);
   var papelExemplo = /(?:\?|&)papel=almoxarife(?:&|$)/.test(location.search) ? "almoxarife" : "total";
   var state = { pronto: false, uid: "", email: "", nome: "", setor: "", papel: "", token: "" };
@@ -58,6 +58,8 @@
     { id: "financeiro", href: "financeiro.html", rot: "Resumo por Empreendimento", papeis: ["total"] },
     { id: "cliente", href: "cliente.html", rot: "Cadastro de Cliente", papeis: ["total"] },
     { id: "painel", href: "painel.html", rot: "Painel", papeis: ["total"] },
+    // Dashboard de acompanhamento da direção (pedido do Márcio, 26/11): copos semanais de entrega e faturamento.
+    { id: "heitor", href: "heitor.html", rot: "Heitor", papeis: ["total"] },
     // Equipe escondida da barra por enquanto (pedido do Márcio, 24/11). Para voltar: oculto: false.
     { id: "equipe", href: "equipe.html", rot: "Equipe", papeis: ["total"], oculto: EQUIPE_OCULTA }
   ];

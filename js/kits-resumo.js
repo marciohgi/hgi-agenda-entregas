@@ -273,6 +273,6 @@
   }
   function moeda(n) { return n === null || n === undefined ? "" : calc.formatBRL(n); }
   function pctTxt(n) { return n === null || n === undefined ? "" : n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%"; }
-  window.HGIKitsExtra = { metaSemana: metaSemana, META_SEMANA: META_SEMANA, semana: semana, porTipo: porTipo, parciais: parciais, dataFinal: dataFinal, precoKit: precoKit, mapaEmps: mapaEmps, moeda: moeda, pctTxt: pctTxt, numV: numV, qnum: qnum, chaveTotal: chaveTotal };
+  window.HGIKitsExtra = { metaSemana: metaSemana, META_SEMANA: META_SEMANA, semana: semana, porTipo: porTipo, parciais: parciais, dataFinal: dataFinal, precoKit: precoKit, mapaEmps: mapaEmps, moeda: moeda, pctTxt: pctTxt, numV: numV, qnum: qnum, chaveTotal: chaveTotal, datasNaSemana: datasNaSemana, entregueNaSemana: entregueNaSemana, estaConcluido: estaConcluido, integral: integral, kitsDe: kitsDe };
   window.HGIKits = { LINHAS: LINHAS, kitsDe: kitsDe, chaveNome: chaveNome, agrupar: agrupar, htmlCards: htmlCards };
 })();
