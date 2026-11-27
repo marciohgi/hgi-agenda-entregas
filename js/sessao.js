@@ -3,7 +3,7 @@
   var calc = window.HGICalc;
   var EQUIPE_OCULTA = true;
   /* Versão publicada: se a página aberta for de uma versão antiga, recarrega uma vez sem cache. */
-  var VERSAO = "20261126-1745";
+  var VERSAO = "20261127-0814";
   try {
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
     if (window.caches && caches.keys) caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); });
